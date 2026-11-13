@@ -1,0 +1,29 @@
+# Internal notes (never public; PRD §4.12)
+/dalaman/
+/CLAUDE.md
+/CLAUDE.local.md
+/NEXT.md
+/PELAN-*.md
+/PASTE-*.md
+/.claude/
+/docs/hantar/
+# Secrets and keys
+.env*
+!.env.example
+deploy/hos.env
+keys/
+*-keypair.json
+# Build output
+target/
+node_modules/
+.next/
+.anchor/
+test-ledger/
+dist/
+coverage/
+playwright-report/
+test-results/
+*.db
+*.sqlite
+*.sqlite3
+.autopilot/
