@@ -18,6 +18,10 @@ use solana_message::{Message, VersionedMessage};
 use solana_signer::Signer;
 use solana_transaction::versioned::VersionedTransaction;
 
+mod claims;
+#[allow(unused_imports)]
+pub use claims::*;
+
 pub const T0: i64 = 1_800_000_000;
 pub const DECIMALS: u8 = 6;
 pub const DAY: i64 = 86_400;

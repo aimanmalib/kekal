@@ -52,4 +52,32 @@ pub mod kekal {
     pub fn heartbeat(ctx: Context<OwnerShop>) -> Result<()> {
         instructions::shop::handle_heartbeat(ctx)
     }
+
+    pub fn transfer_holder(ctx: Context<TransferHolder>, new_holder: Pubkey) -> Result<()> {
+        instructions::holder::handle_transfer_holder(ctx, new_holder)
+    }
+
+    pub fn file_claim(ctx: Context<FileClaim>, evidence_hash: [u8; 32]) -> Result<()> {
+        instructions::holder::handle_file_claim(ctx, evidence_hash)
+    }
+
+    pub fn respond_claim(
+        ctx: Context<RespondClaim>,
+        accept: bool,
+        response_hash: [u8; 32],
+    ) -> Result<()> {
+        instructions::respond::handle_respond_claim(ctx, accept, response_hash)
+    }
+
+    pub fn confirm_resolved(ctx: Context<HolderClaim>) -> Result<()> {
+        instructions::holder::handle_confirm_resolved(ctx)
+    }
+
+    pub fn escalate(ctx: Context<HolderClaim>) -> Result<()> {
+        instructions::holder::handle_escalate(ctx)
+    }
+
+    pub fn resolve_dispute(ctx: Context<ResolveDispute>, buyer_wins: bool) -> Result<()> {
+        instructions::respond::handle_resolve_dispute(ctx, buyer_wins)
+    }
 }

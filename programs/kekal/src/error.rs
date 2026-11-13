@@ -32,4 +32,26 @@ pub enum KekalError {
     HeartbeatLapsed,
     #[msg("Arithmetic overflow")]
     Overflow,
+    #[msg("Signer is not the warranty holder")]
+    NotHolder,
+    #[msg("New holder must be a real key different from the current one")]
+    InvalidHolder,
+    #[msg("Warranty is not in a state that allows this action")]
+    WarrantyNotActive,
+    #[msg("Warranty has expired")]
+    WarrantyExpired,
+    #[msg("Warranty reached the maximum number of claims")]
+    TooManyClaims,
+    #[msg("A new claim must wait for the cooldown after the last one closed")]
+    ClaimCooldown,
+    #[msg("Claim is not in a state that allows this action")]
+    InvalidClaimState,
+    #[msg("Response window has closed")]
+    ResponseWindowClosed,
+    #[msg("Escalation is not allowed at this time")]
+    EscalationNotAllowed,
+    #[msg("Signer is not the shop's arbiter")]
+    NotArbiter,
+    #[msg("Account does not belong to this shop or warranty")]
+    AccountMismatch,
 }
