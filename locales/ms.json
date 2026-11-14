@@ -1,0 +1,20 @@
+{
+  "app.name": "Kekal",
+  "status.shop.active": "Aktif",
+  "status.shop.dormant": "Kedai senyap",
+  "status.warranty.active": "Aktif",
+  "status.warranty.claimed": "Tuntutan dibuka",
+  "status.warranty.paidOut": "Dibayar kepada anda",
+  "status.warranty.released": "Tamat, rizab pulang ke kedai",
+  "status.claim.pending": "Menunggu kedai",
+  "status.claim.accepted": "Kedai terima, sedang dibaiki",
+  "status.claim.rejected": "Kedai tolak",
+  "status.claim.disputed": "Di tangan penimbang tara",
+  "status.claim.resolved": "Selesai",
+  "status.claim.paidTimeout": "Dibayar: kedai tidak menjawab",
+  "status.claim.paidArbiter": "Dibayar: penimbang tara memihak anda",
+  "status.claim.dismissed": "Ditolak penimbang tara",
+  "status.claim.closed": "Ditutup",
+  "status.claim.paidOrphan": "Dibayar: kedai senyap",
+  "status.claim.paidStale": "Dibayar: penimbang tara tidak memutuskan tepat pada masanya"
+}

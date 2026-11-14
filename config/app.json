@@ -1,0 +1,79 @@
+{
+  "_doc": "Runtime values read by the SDK scripts, web app and keeper. programId null = the address in the SDK IDL. Mint null = created on demand (localnet) or set after the devnet deploy.",
+  "defaultCluster": "devnet",
+  "clusters": {
+    "localnet": {
+      "rpcUrls": ["http://127.0.0.1:18899"],
+      "validator": { "rpcPort": 18899, "faucetPort": 19900, "gossipPort": 18000, "dynamicPortRange": "18001-18040" },
+      "explorerTx": "https://explorer.solana.com/tx/{sig}?cluster=custom&customUrl=http%3A%2F%2F127.0.0.1%3A18899",
+      "programId": null,
+      "keysDir": null,
+      "mints": { "kusd": null, "usdc": null },
+      "tokenDecimals": 6,
+      "limits": {
+        "minResponseSecs": 5,
+        "maxResponseSecs": 7776000,
+        "minRepairSecs": 5,
+        "maxRepairSecs": 7776000,
+        "minDisputeSecs": 5,
+        "maxDisputeSecs": 7776000,
+        "minHeartbeatSecs": 5,
+        "maxHeartbeatSecs": 15552000,
+        "maxGraceSecs": 2592000,
+        "minTermSecs": 5,
+        "maxTermSecs": 473040000,
+        "disputeTimeoutSecs": 5,
+        "claimCooldownSecs": 1,
+        "maxClaimsPerWarranty": 8
+      },
+      "lifecycle": {
+        "airdropSol": 10,
+        "mintAmount": "1000000000",
+        "depositAmount": "500000000",
+        "reserve": "25000000",
+        "termSecs": 86400,
+        "shortTermSecs": 8,
+        "shopWindows": { "responseSecs": 5, "repairSecs": 5, "disputeSecs": 5, "heartbeatSecs": 3600, "graceSecs": 0 },
+        "dyingShopWindows": { "responseSecs": 5, "repairSecs": 5, "disputeSecs": 5, "heartbeatSecs": 5, "graceSecs": 0 },
+        "dyingShopSol": 0.05,
+        "timeoutSecs": 180
+      }
+    },
+    "devnet": {
+      "rpcUrls": ["https://api.devnet.solana.com"],
+      "explorerTx": "https://explorer.solana.com/tx/{sig}?cluster=devnet",
+      "programId": null,
+      "keysDir": "~/.config/kekal/keys",
+      "mints": { "kusd": null, "usdc": null },
+      "tokenDecimals": 6,
+      "limits": {
+        "minResponseSecs": 60,
+        "maxResponseSecs": 7776000,
+        "minRepairSecs": 60,
+        "maxRepairSecs": 7776000,
+        "minDisputeSecs": 60,
+        "maxDisputeSecs": 7776000,
+        "minHeartbeatSecs": 60,
+        "maxHeartbeatSecs": 15552000,
+        "maxGraceSecs": 2592000,
+        "minTermSecs": 300,
+        "maxTermSecs": 473040000,
+        "disputeTimeoutSecs": 300,
+        "claimCooldownSecs": 30,
+        "maxClaimsPerWarranty": 8
+      },
+      "lifecycle": {
+        "airdropSol": 0,
+        "mintAmount": "1000000000",
+        "depositAmount": "200000000",
+        "reserve": "25000000",
+        "termSecs": 31536000,
+        "shortTermSecs": 300,
+        "shopWindows": { "responseSecs": 60, "repairSecs": 120, "disputeSecs": 60, "heartbeatSecs": 86400, "graceSecs": 3600 },
+        "dyingShopWindows": { "responseSecs": 60, "repairSecs": 60, "disputeSecs": 60, "heartbeatSecs": 60, "graceSecs": 0 },
+        "dyingShopSol": 0.03,
+        "timeoutSecs": 900
+      }
+    }
+  }
+}

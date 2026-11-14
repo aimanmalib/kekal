@@ -1,0 +1,20 @@
+{
+  "app.name": "Kekal",
+  "status.shop.active": "Active",
+  "status.shop.dormant": "Shop went silent",
+  "status.warranty.active": "Active",
+  "status.warranty.claimed": "Claim open",
+  "status.warranty.paidOut": "Paid to you",
+  "status.warranty.released": "Ended, reserve returned to shop",
+  "status.claim.pending": "Waiting for the shop",
+  "status.claim.accepted": "Shop accepted, repair under way",
+  "status.claim.rejected": "Shop rejected",
+  "status.claim.disputed": "With the arbiter",
+  "status.claim.resolved": "Resolved",
+  "status.claim.paidTimeout": "Paid: the shop did not answer",
+  "status.claim.paidArbiter": "Paid: the arbiter decided for you",
+  "status.claim.dismissed": "Dismissed by the arbiter",
+  "status.claim.closed": "Closed",
+  "status.claim.paidOrphan": "Paid: the shop went silent",
+  "status.claim.paidStale": "Paid: the arbiter did not decide in time"
+}
