@@ -1,0 +1,21 @@
+{
+  "name": "@kekal/scripts",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run --reporter=dot",
+    "lifecycle": "tsx lifecycle.ts"
+  },
+  "dependencies": {
+    "@kekal/sdk": "workspace:*",
+    "@solana/spl-token": "0.4.15",
+    "@solana/web3.js": "1.99.0"
+  },
+  "devDependencies": {
+    "tsx": "4.23.15",
+    "vitest": "5.1.0"
+  }
+}

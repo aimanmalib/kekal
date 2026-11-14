@@ -1,0 +1,2751 @@
+{
+  "address": "3dTk2T83xQWAat7iWDjfCzijdCQWhstUxFtwLk8HUo3X",
+  "metadata": {
+    "name": "kekal",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "claim_orphan",
+      "discriminator": [
+        7,
+        188,
+        96,
+        125,
+        34,
+        71,
+        111,
+        111
+      ],
+      "accounts": [
+        {
+          "name": "shop",
+          "writable": true,
+          "relations": [
+            "warranty"
+          ]
+        },
+        {
+          "name": "warranty",
+          "writable": true,
+          "relations": [
+            "claim"
+          ]
+        },
+        {
+          "name": "claim",
+          "writable": true,
+          "optional": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  108,
+                  97,
+                  105,
+                  109
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "warranty"
+              },
+              {
+                "kind": "account",
+                "path": "warranty.open_claim",
+                "account": "Warranty"
+              }
+            ]
+          }
+        },
+        {
+          "name": "payout",
+          "accounts": [
+            {
+              "name": "payer",
+              "writable": true,
+              "signer": true
+            },
+            {
+              "name": "mint"
+            },
+            {
+              "name": "vault",
+              "writable": true
+            },
+            {
+              "name": "holder"
+            },
+            {
+              "name": "holder_token",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "account",
+                    "path": "holder"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "token_program"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "mint"
+                  }
+                ],
+                "program": {
+                  "kind": "const",
+                  "value": [
+                    140,
+                    151,
+                    37,
+                    143,
+                    78,
+                    36,
+                    137,
+                    241,
+                    187,
+                    61,
+                    16,
+                    41,
+                    20,
+                    142,
+                    13,
+                    131,
+                    11,
+                    90,
+                    19,
+                    153,
+                    218,
+                    255,
+                    16,
+                    132,
+                    4,
+                    142,
+                    123,
+                    216,
+                    219,
+                    233,
+                    248,
+                    89
+                  ]
+                }
+              }
+            },
+            {
+              "name": "token_program",
+              "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+            },
+            {
+              "name": "associated_token_program",
+              "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+            },
+            {
+              "name": "system_program",
+              "address": "11111111111111111111111111111111"
+            }
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "close_stale",
+      "discriminator": [
+        218,
+        118,
+        243,
+        64,
+        129,
+        11,
+        182,
+        215
+      ],
+      "accounts": [
+        {
+          "name": "shop",
+          "writable": true,
+          "relations": [
+            "warranty"
+          ]
+        },
+        {
+          "name": "warranty",
+          "writable": true,
+          "relations": [
+            "claim"
+          ]
+        },
+        {
+          "name": "claim",
+          "writable": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "confirm_resolved",
+      "discriminator": [
+        165,
+        11,
+        151,
+        144,
+        155,
+        241,
+        157,
+        167
+      ],
+      "accounts": [
+        {
+          "name": "holder",
+          "signer": true,
+          "relations": [
+            "warranty"
+          ]
+        },
+        {
+          "name": "shop",
+          "writable": true,
+          "relations": [
+            "warranty"
+          ]
+        },
+        {
+          "name": "warranty",
+          "writable": true,
+          "relations": [
+            "claim"
+          ]
+        },
+        {
+          "name": "claim",
+          "writable": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "create_shop",
+      "discriminator": [
+        83,
+        215,
+        157,
+        151,
+        185,
+        162,
+        84,
+        154
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint"
+        },
+        {
+          "name": "shop",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  111,
+                  112
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "shop"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "windows",
+          "type": {
+            "defined": {
+              "name": "ShopWindows"
+            }
+          }
+        },
+        {
+          "name": "arbiter",
+          "type": {
+            "option": "pubkey"
+          }
+        },
+        {
+          "name": "profile_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "declare_dormant",
+      "discriminator": [
+        31,
+        134,
+        24,
+        168,
+        26,
+        194,
+        154,
+        146
+      ],
+      "accounts": [
+        {
+          "name": "shop",
+          "writable": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "deposit",
+      "discriminator": [
+        242,
+        35,
+        198,
+        137,
+        82,
+        225,
+        242,
+        182
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "signer": true,
+          "relations": [
+            "shop"
+          ]
+        },
+        {
+          "name": "shop",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  111,
+                  112
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint",
+          "relations": [
+            "shop"
+          ]
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "relations": [
+            "shop"
+          ]
+        },
+        {
+          "name": "owner_token",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "escalate",
+      "discriminator": [
+        123,
+        99,
+        100,
+        10,
+        66,
+        238,
+        154,
+        23
+      ],
+      "accounts": [
+        {
+          "name": "holder",
+          "signer": true,
+          "relations": [
+            "warranty"
+          ]
+        },
+        {
+          "name": "shop",
+          "writable": true,
+          "relations": [
+            "warranty"
+          ]
+        },
+        {
+          "name": "warranty",
+          "writable": true,
+          "relations": [
+            "claim"
+          ]
+        },
+        {
+          "name": "claim",
+          "writable": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "file_claim",
+      "discriminator": [
+        187,
+        254,
+        40,
+        13,
+        146,
+        223,
+        230,
+        97
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "holder",
+          "signer": true,
+          "relations": [
+            "warranty"
+          ]
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "shop",
+          "writable": true,
+          "relations": [
+            "warranty"
+          ]
+        },
+        {
+          "name": "warranty",
+          "writable": true
+        },
+        {
+          "name": "claim",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  108,
+                  97,
+                  105,
+                  109
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "warranty"
+              },
+              {
+                "kind": "account",
+                "path": "warranty.claim_count",
+                "account": "Warranty"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "evidence_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "heartbeat",
+      "discriminator": [
+        202,
+        104,
+        56,
+        6,
+        240,
+        170,
+        63,
+        134
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "signer": true,
+          "relations": [
+            "shop"
+          ]
+        },
+        {
+          "name": "shop",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  111,
+                  112
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "init_config",
+      "discriminator": [
+        23,
+        235,
+        115,
+        232,
+        168,
+        96,
+        1,
+        231
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "ConfigParams"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "issue_warranty",
+      "discriminator": [
+        86,
+        216,
+        243,
+        39,
+        189,
+        40,
+        247,
+        132
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "shop"
+          ]
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "shop",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  111,
+                  112
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "warranty",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  119,
+                  97,
+                  114,
+                  114,
+                  97,
+                  110,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "shop"
+              },
+              {
+                "kind": "account",
+                "path": "shop.next_warranty_id",
+                "account": "Shop"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "IssueParams"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "release_expired",
+      "discriminator": [
+        150,
+        199,
+        225,
+        10,
+        15,
+        244,
+        46,
+        47
+      ],
+      "accounts": [
+        {
+          "name": "shop",
+          "writable": true,
+          "relations": [
+            "warranty"
+          ]
+        },
+        {
+          "name": "warranty",
+          "writable": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "resolve_dispute",
+      "discriminator": [
+        231,
+        6,
+        202,
+        6,
+        96,
+        103,
+        12,
+        230
+      ],
+      "accounts": [
+        {
+          "name": "arbiter",
+          "signer": true,
+          "relations": [
+            "shop"
+          ]
+        },
+        {
+          "name": "shop",
+          "writable": true,
+          "relations": [
+            "warranty"
+          ]
+        },
+        {
+          "name": "warranty",
+          "writable": true,
+          "relations": [
+            "claim"
+          ]
+        },
+        {
+          "name": "claim",
+          "writable": true
+        },
+        {
+          "name": "payout",
+          "accounts": [
+            {
+              "name": "payer",
+              "writable": true,
+              "signer": true
+            },
+            {
+              "name": "mint"
+            },
+            {
+              "name": "vault",
+              "writable": true
+            },
+            {
+              "name": "holder"
+            },
+            {
+              "name": "holder_token",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "account",
+                    "path": "holder"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "token_program"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "mint"
+                  }
+                ],
+                "program": {
+                  "kind": "const",
+                  "value": [
+                    140,
+                    151,
+                    37,
+                    143,
+                    78,
+                    36,
+                    137,
+                    241,
+                    187,
+                    61,
+                    16,
+                    41,
+                    20,
+                    142,
+                    13,
+                    131,
+                    11,
+                    90,
+                    19,
+                    153,
+                    218,
+                    255,
+                    16,
+                    132,
+                    4,
+                    142,
+                    123,
+                    216,
+                    219,
+                    233,
+                    248,
+                    89
+                  ]
+                }
+              }
+            },
+            {
+              "name": "token_program",
+              "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+            },
+            {
+              "name": "associated_token_program",
+              "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+            },
+            {
+              "name": "system_program",
+              "address": "11111111111111111111111111111111"
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "buyer_wins",
+          "type": "bool"
+        }
+      ]
+    },
+    {
+      "name": "respond_claim",
+      "discriminator": [
+        39,
+        41,
+        192,
+        73,
+        240,
+        133,
+        217,
+        139
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "signer": true,
+          "relations": [
+            "shop"
+          ]
+        },
+        {
+          "name": "shop",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  111,
+                  112
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          },
+          "relations": [
+            "warranty"
+          ]
+        },
+        {
+          "name": "warranty",
+          "relations": [
+            "claim"
+          ]
+        },
+        {
+          "name": "claim",
+          "writable": true
+        }
+      ],
+      "args": [
+        {
+          "name": "accept",
+          "type": "bool"
+        },
+        {
+          "name": "response_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "set_config",
+      "discriminator": [
+        108,
+        158,
+        154,
+        175,
+        212,
+        98,
+        52,
+        66
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "ConfigParams"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "settle_stale_dispute",
+      "discriminator": [
+        61,
+        46,
+        245,
+        248,
+        124,
+        0,
+        13,
+        147
+      ],
+      "accounts": [
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "shop",
+          "writable": true,
+          "relations": [
+            "warranty"
+          ]
+        },
+        {
+          "name": "warranty",
+          "writable": true,
+          "relations": [
+            "claim"
+          ]
+        },
+        {
+          "name": "claim",
+          "writable": true
+        },
+        {
+          "name": "payout",
+          "accounts": [
+            {
+              "name": "payer",
+              "writable": true,
+              "signer": true
+            },
+            {
+              "name": "mint"
+            },
+            {
+              "name": "vault",
+              "writable": true
+            },
+            {
+              "name": "holder"
+            },
+            {
+              "name": "holder_token",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "account",
+                    "path": "holder"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "token_program"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "mint"
+                  }
+                ],
+                "program": {
+                  "kind": "const",
+                  "value": [
+                    140,
+                    151,
+                    37,
+                    143,
+                    78,
+                    36,
+                    137,
+                    241,
+                    187,
+                    61,
+                    16,
+                    41,
+                    20,
+                    142,
+                    13,
+                    131,
+                    11,
+                    90,
+                    19,
+                    153,
+                    218,
+                    255,
+                    16,
+                    132,
+                    4,
+                    142,
+                    123,
+                    216,
+                    219,
+                    233,
+                    248,
+                    89
+                  ]
+                }
+              }
+            },
+            {
+              "name": "token_program",
+              "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+            },
+            {
+              "name": "associated_token_program",
+              "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+            },
+            {
+              "name": "system_program",
+              "address": "11111111111111111111111111111111"
+            }
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "settle_unanswered",
+      "discriminator": [
+        118,
+        51,
+        91,
+        24,
+        118,
+        223,
+        36,
+        133
+      ],
+      "accounts": [
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "shop",
+          "writable": true,
+          "relations": [
+            "warranty"
+          ]
+        },
+        {
+          "name": "warranty",
+          "writable": true,
+          "relations": [
+            "claim"
+          ]
+        },
+        {
+          "name": "claim",
+          "writable": true
+        },
+        {
+          "name": "payout",
+          "accounts": [
+            {
+              "name": "payer",
+              "writable": true,
+              "signer": true
+            },
+            {
+              "name": "mint"
+            },
+            {
+              "name": "vault",
+              "writable": true
+            },
+            {
+              "name": "holder"
+            },
+            {
+              "name": "holder_token",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "account",
+                    "path": "holder"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "token_program"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "mint"
+                  }
+                ],
+                "program": {
+                  "kind": "const",
+                  "value": [
+                    140,
+                    151,
+                    37,
+                    143,
+                    78,
+                    36,
+                    137,
+                    241,
+                    187,
+                    61,
+                    16,
+                    41,
+                    20,
+                    142,
+                    13,
+                    131,
+                    11,
+                    90,
+                    19,
+                    153,
+                    218,
+                    255,
+                    16,
+                    132,
+                    4,
+                    142,
+                    123,
+                    216,
+                    219,
+                    233,
+                    248,
+                    89
+                  ]
+                }
+              }
+            },
+            {
+              "name": "token_program",
+              "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+            },
+            {
+              "name": "associated_token_program",
+              "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+            },
+            {
+              "name": "system_program",
+              "address": "11111111111111111111111111111111"
+            }
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "transfer_holder",
+      "discriminator": [
+        64,
+        150,
+        183,
+        246,
+        96,
+        14,
+        43,
+        79
+      ],
+      "accounts": [
+        {
+          "name": "holder",
+          "signer": true,
+          "relations": [
+            "warranty"
+          ]
+        },
+        {
+          "name": "warranty",
+          "writable": true
+        }
+      ],
+      "args": [
+        {
+          "name": "new_holder",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "update_shop_profile",
+      "discriminator": [
+        213,
+        42,
+        63,
+        17,
+        0,
+        96,
+        169,
+        237
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "signer": true,
+          "relations": [
+            "shop"
+          ]
+        },
+        {
+          "name": "shop",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  111,
+                  112
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "profile_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "withdraw",
+      "discriminator": [
+        183,
+        18,
+        70,
+        156,
+        148,
+        109,
+        161,
+        34
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "signer": true,
+          "relations": [
+            "shop"
+          ]
+        },
+        {
+          "name": "shop",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  111,
+                  112
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint",
+          "relations": [
+            "shop"
+          ]
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "relations": [
+            "shop"
+          ]
+        },
+        {
+          "name": "owner_token",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Claim",
+      "discriminator": [
+        155,
+        70,
+        22,
+        176,
+        123,
+        215,
+        246,
+        102
+      ]
+    },
+    {
+      "name": "Config",
+      "discriminator": [
+        155,
+        12,
+        170,
+        224,
+        30,
+        250,
+        204,
+        130
+      ]
+    },
+    {
+      "name": "Shop",
+      "discriminator": [
+        57,
+        31,
+        123,
+        216,
+        254,
+        72,
+        11,
+        77
+      ]
+    },
+    {
+      "name": "Warranty",
+      "discriminator": [
+        50,
+        42,
+        99,
+        41,
+        219,
+        28,
+        135,
+        204
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "ClaimFiled",
+      "discriminator": [
+        78,
+        228,
+        214,
+        247,
+        197,
+        67,
+        130,
+        19
+      ]
+    },
+    {
+      "name": "ClaimResponded",
+      "discriminator": [
+        65,
+        73,
+        116,
+        238,
+        215,
+        173,
+        99,
+        19
+      ]
+    },
+    {
+      "name": "ClaimStatusChanged",
+      "discriminator": [
+        216,
+        31,
+        249,
+        76,
+        119,
+        54,
+        103,
+        65
+      ]
+    },
+    {
+      "name": "ConfigInitialized",
+      "discriminator": [
+        181,
+        49,
+        200,
+        156,
+        19,
+        167,
+        178,
+        91
+      ]
+    },
+    {
+      "name": "ConfigUpdated",
+      "discriminator": [
+        40,
+        241,
+        230,
+        122,
+        11,
+        19,
+        198,
+        194
+      ]
+    },
+    {
+      "name": "Deposited",
+      "discriminator": [
+        111,
+        141,
+        26,
+        45,
+        161,
+        35,
+        100,
+        57
+      ]
+    },
+    {
+      "name": "HeartbeatSent",
+      "discriminator": [
+        104,
+        195,
+        123,
+        96,
+        64,
+        85,
+        251,
+        122
+      ]
+    },
+    {
+      "name": "HolderTransferred",
+      "discriminator": [
+        85,
+        89,
+        100,
+        133,
+        241,
+        134,
+        108,
+        241
+      ]
+    },
+    {
+      "name": "ReservePaid",
+      "discriminator": [
+        225,
+        48,
+        61,
+        165,
+        66,
+        241,
+        212,
+        88
+      ]
+    },
+    {
+      "name": "ShopCreated",
+      "discriminator": [
+        78,
+        4,
+        4,
+        127,
+        138,
+        229,
+        203,
+        228
+      ]
+    },
+    {
+      "name": "ShopDeclaredDormant",
+      "discriminator": [
+        147,
+        167,
+        240,
+        97,
+        53,
+        56,
+        220,
+        5
+      ]
+    },
+    {
+      "name": "ShopProfileUpdated",
+      "discriminator": [
+        132,
+        38,
+        82,
+        31,
+        227,
+        46,
+        65,
+        170
+      ]
+    },
+    {
+      "name": "WarrantyIssued",
+      "discriminator": [
+        134,
+        167,
+        234,
+        27,
+        237,
+        76,
+        41,
+        50
+      ]
+    },
+    {
+      "name": "WarrantyReleased",
+      "discriminator": [
+        102,
+        220,
+        233,
+        193,
+        190,
+        143,
+        183,
+        0
+      ]
+    },
+    {
+      "name": "Withdrawn",
+      "discriminator": [
+        20,
+        89,
+        223,
+        198,
+        194,
+        124,
+        219,
+        13
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidLimits",
+      "msg": "A minimum limit is zero or greater than its maximum"
+    },
+    {
+      "code": 6001,
+      "name": "Paused",
+      "msg": "Program is paused for new shops and new warranties"
+    },
+    {
+      "code": 6002,
+      "name": "MintNotAllowed",
+      "msg": "Mint is not in the allowed list"
+    },
+    {
+      "code": 6003,
+      "name": "ArbiterIsOwner",
+      "msg": "The arbiter cannot be the shop owner"
+    },
+    {
+      "code": 6004,
+      "name": "ResponseWindowOutOfRange",
+      "msg": "Response window is outside the configured limits"
+    },
+    {
+      "code": 6005,
+      "name": "RepairWindowOutOfRange",
+      "msg": "Repair window is outside the configured limits"
+    },
+    {
+      "code": 6006,
+      "name": "DisputeWindowOutOfRange",
+      "msg": "Dispute window is outside the configured limits"
+    },
+    {
+      "code": 6007,
+      "name": "HeartbeatWindowOutOfRange",
+      "msg": "Heartbeat window is outside the configured limits"
+    },
+    {
+      "code": 6008,
+      "name": "GraceOutOfRange",
+      "msg": "Grace period is above the configured maximum"
+    },
+    {
+      "code": 6009,
+      "name": "TermOutOfRange",
+      "msg": "Warranty term is outside the configured limits"
+    },
+    {
+      "code": 6010,
+      "name": "ZeroAmount",
+      "msg": "Amount must be greater than zero"
+    },
+    {
+      "code": 6011,
+      "name": "InsufficientFreeBalance",
+      "msg": "Amount is larger than the shop's free balance"
+    },
+    {
+      "code": 6012,
+      "name": "ShopDormant",
+      "msg": "Shop is dormant"
+    },
+    {
+      "code": 6013,
+      "name": "HeartbeatLapsed",
+      "msg": "Shop missed its heartbeat window and cannot issue warranties"
+    },
+    {
+      "code": 6014,
+      "name": "Overflow",
+      "msg": "Arithmetic overflow"
+    },
+    {
+      "code": 6015,
+      "name": "NotHolder",
+      "msg": "Signer is not the warranty holder"
+    },
+    {
+      "code": 6016,
+      "name": "InvalidHolder",
+      "msg": "New holder must be a real key different from the current one"
+    },
+    {
+      "code": 6017,
+      "name": "WarrantyNotActive",
+      "msg": "Warranty is not in a state that allows this action"
+    },
+    {
+      "code": 6018,
+      "name": "WarrantyExpired",
+      "msg": "Warranty has expired"
+    },
+    {
+      "code": 6019,
+      "name": "TooManyClaims",
+      "msg": "Warranty reached the maximum number of claims"
+    },
+    {
+      "code": 6020,
+      "name": "ClaimCooldown",
+      "msg": "A new claim must wait for the cooldown after the last one closed"
+    },
+    {
+      "code": 6021,
+      "name": "InvalidClaimState",
+      "msg": "Claim is not in a state that allows this action"
+    },
+    {
+      "code": 6022,
+      "name": "ResponseWindowClosed",
+      "msg": "Response window has closed"
+    },
+    {
+      "code": 6023,
+      "name": "EscalationNotAllowed",
+      "msg": "Escalation is not allowed at this time"
+    },
+    {
+      "code": 6024,
+      "name": "NotArbiter",
+      "msg": "Signer is not the shop's arbiter"
+    },
+    {
+      "code": 6025,
+      "name": "AccountMismatch",
+      "msg": "Account does not belong to this shop or warranty"
+    },
+    {
+      "code": 6026,
+      "name": "WindowStillOpen",
+      "msg": "The window for this action has not closed yet"
+    },
+    {
+      "code": 6027,
+      "name": "ShopStillActive",
+      "msg": "Shop has not missed its heartbeat and grace period"
+    },
+    {
+      "code": 6028,
+      "name": "ShopNotDormant",
+      "msg": "Shop is not dormant"
+    },
+    {
+      "code": 6029,
+      "name": "ExpiredBeforeDormant",
+      "msg": "Warranty expired before the shop went dormant"
+    },
+    {
+      "code": 6030,
+      "name": "WarrantyNotExpired",
+      "msg": "Warranty has not expired"
+    },
+    {
+      "code": 6031,
+      "name": "OwedToHolder",
+      "msg": "Reserve is owed to the holder because the shop went dormant before expiry"
+    }
+  ],
+  "types": [
+    {
+      "name": "Claim",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "warranty",
+            "type": "pubkey"
+          },
+          {
+            "name": "index",
+            "type": "u16"
+          },
+          {
+            "name": "evidence_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "filed_at",
+            "type": "i64"
+          },
+          {
+            "name": "status",
+            "type": "u8"
+          },
+          {
+            "name": "response_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "responded_at",
+            "type": "i64"
+          },
+          {
+            "name": "repair_deadline",
+            "type": "i64"
+          },
+          {
+            "name": "dispute_deadline",
+            "type": "i64"
+          },
+          {
+            "name": "escalated_at",
+            "type": "i64"
+          },
+          {
+            "name": "attest_verdict",
+            "type": "u8"
+          },
+          {
+            "name": "attest_at",
+            "type": "i64"
+          },
+          {
+            "name": "rent_payer",
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ClaimFiled",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "warranty",
+            "type": "pubkey"
+          },
+          {
+            "name": "claim",
+            "type": "pubkey"
+          },
+          {
+            "name": "index",
+            "type": "u16"
+          },
+          {
+            "name": "evidence_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "ClaimResponded",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "claim",
+            "type": "pubkey"
+          },
+          {
+            "name": "accepted",
+            "type": "bool"
+          },
+          {
+            "name": "deadline",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ClaimStatusChanged",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "claim",
+            "type": "pubkey"
+          },
+          {
+            "name": "status",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Config",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "type": "pubkey"
+          },
+          {
+            "name": "default_arbiter",
+            "type": "pubkey"
+          },
+          {
+            "name": "assessor",
+            "type": "pubkey"
+          },
+          {
+            "name": "limits",
+            "type": {
+              "defined": {
+                "name": "ConfigLimits"
+              }
+            }
+          },
+          {
+            "name": "allowed_mints",
+            "type": {
+              "array": [
+                "pubkey",
+                4
+              ]
+            }
+          },
+          {
+            "name": "paused",
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ConfigInitialized",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ConfigLimits",
+      "docs": [
+        "Limits the admin sets. Shops pick their own windows inside these limits at creation."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "min_response_secs",
+            "type": "i64"
+          },
+          {
+            "name": "max_response_secs",
+            "type": "i64"
+          },
+          {
+            "name": "min_repair_secs",
+            "type": "i64"
+          },
+          {
+            "name": "max_repair_secs",
+            "type": "i64"
+          },
+          {
+            "name": "min_dispute_secs",
+            "type": "i64"
+          },
+          {
+            "name": "max_dispute_secs",
+            "type": "i64"
+          },
+          {
+            "name": "min_heartbeat_secs",
+            "type": "i64"
+          },
+          {
+            "name": "max_heartbeat_secs",
+            "type": "i64"
+          },
+          {
+            "name": "max_grace_secs",
+            "type": "i64"
+          },
+          {
+            "name": "min_term_secs",
+            "type": "i64"
+          },
+          {
+            "name": "max_term_secs",
+            "type": "i64"
+          },
+          {
+            "name": "dispute_timeout_secs",
+            "type": "i64"
+          },
+          {
+            "name": "claim_cooldown_secs",
+            "type": "i64"
+          },
+          {
+            "name": "max_claims_per_warranty",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ConfigParams",
+      "docs": [
+        "Everything the admin controls in `Config`."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "default_arbiter",
+            "type": "pubkey"
+          },
+          {
+            "name": "assessor",
+            "type": "pubkey"
+          },
+          {
+            "name": "limits",
+            "type": {
+              "defined": {
+                "name": "ConfigLimits"
+              }
+            }
+          },
+          {
+            "name": "allowed_mints",
+            "type": {
+              "array": [
+                "pubkey",
+                4
+              ]
+            }
+          },
+          {
+            "name": "paused",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ConfigUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "type": "pubkey"
+          },
+          {
+            "name": "paused",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Deposited",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "shop",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "free_balance",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "HeartbeatSent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "shop",
+            "type": "pubkey"
+          },
+          {
+            "name": "last_seen",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "HolderTransferred",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "warranty",
+            "type": "pubkey"
+          },
+          {
+            "name": "old_holder",
+            "type": "pubkey"
+          },
+          {
+            "name": "new_holder",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "IssueParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "holder",
+            "type": "pubkey"
+          },
+          {
+            "name": "reserve",
+            "type": "u64"
+          },
+          {
+            "name": "term_secs",
+            "type": "i64"
+          },
+          {
+            "name": "terms_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "product_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "ReservePaid",
+      "docs": [
+        "Reserve moved from the vault to the holder; `claim_status` says why."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "shop",
+            "type": "pubkey"
+          },
+          {
+            "name": "warranty",
+            "type": "pubkey"
+          },
+          {
+            "name": "holder",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "claim_status",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Shop",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "vault",
+            "type": "pubkey"
+          },
+          {
+            "name": "arbiter",
+            "type": "pubkey"
+          },
+          {
+            "name": "free_balance",
+            "type": "u64"
+          },
+          {
+            "name": "locked_balance",
+            "type": "u64"
+          },
+          {
+            "name": "response_secs",
+            "type": "i64"
+          },
+          {
+            "name": "repair_secs",
+            "type": "i64"
+          },
+          {
+            "name": "dispute_secs",
+            "type": "i64"
+          },
+          {
+            "name": "heartbeat_secs",
+            "type": "i64"
+          },
+          {
+            "name": "grace_secs",
+            "type": "i64"
+          },
+          {
+            "name": "last_seen",
+            "type": "i64"
+          },
+          {
+            "name": "status",
+            "type": "u8"
+          },
+          {
+            "name": "dormant_at",
+            "type": "i64"
+          },
+          {
+            "name": "next_warranty_id",
+            "type": "u64"
+          },
+          {
+            "name": "active_warranties",
+            "type": "u32"
+          },
+          {
+            "name": "open_claims",
+            "type": "u32"
+          },
+          {
+            "name": "issued",
+            "type": "u64"
+          },
+          {
+            "name": "paid_count",
+            "type": "u64"
+          },
+          {
+            "name": "paid_amount",
+            "type": "u64"
+          },
+          {
+            "name": "released_amount",
+            "type": "u64"
+          },
+          {
+            "name": "flags",
+            "docs": [
+              "Bit 0: auto-accept a claim when the assessor attests it is covered (S2)."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "profile_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "vault_bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ShopCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "shop",
+            "type": "pubkey"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "arbiter",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ShopDeclaredDormant",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "shop",
+            "type": "pubkey"
+          },
+          {
+            "name": "last_seen",
+            "type": "i64"
+          },
+          {
+            "name": "dormant_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ShopProfileUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "shop",
+            "type": "pubkey"
+          },
+          {
+            "name": "profile_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "ShopWindows",
+      "docs": [
+        "Shop windows chosen at creation; they cannot change afterwards."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "response_secs",
+            "type": "i64"
+          },
+          {
+            "name": "repair_secs",
+            "type": "i64"
+          },
+          {
+            "name": "dispute_secs",
+            "type": "i64"
+          },
+          {
+            "name": "heartbeat_secs",
+            "type": "i64"
+          },
+          {
+            "name": "grace_secs",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Warranty",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "shop",
+            "type": "pubkey"
+          },
+          {
+            "name": "id",
+            "type": "u64"
+          },
+          {
+            "name": "holder",
+            "type": "pubkey"
+          },
+          {
+            "name": "reserve",
+            "type": "u64"
+          },
+          {
+            "name": "terms_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "product_hash",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "issued_at",
+            "type": "i64"
+          },
+          {
+            "name": "expires_at",
+            "type": "i64"
+          },
+          {
+            "name": "status",
+            "type": "u8"
+          },
+          {
+            "name": "claim_count",
+            "type": "u16"
+          },
+          {
+            "name": "open_claim",
+            "type": "u16"
+          },
+          {
+            "name": "last_claim_closed_at",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "WarrantyIssued",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "shop",
+            "type": "pubkey"
+          },
+          {
+            "name": "warranty",
+            "type": "pubkey"
+          },
+          {
+            "name": "id",
+            "type": "u64"
+          },
+          {
+            "name": "holder",
+            "type": "pubkey"
+          },
+          {
+            "name": "reserve",
+            "type": "u64"
+          },
+          {
+            "name": "expires_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "WarrantyReleased",
+      "docs": [
+        "Reserve moved from locked back to the shop's free balance after expiry."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "shop",
+            "type": "pubkey"
+          },
+          {
+            "name": "warranty",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Withdrawn",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "shop",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "free_balance",
+            "type": "u64"
+          }
+        ]
+      }
+    }
+  ],
+  "constants": [
+    {
+      "name": "CLAIM_SEED",
+      "type": "bytes",
+      "value": "[99, 108, 97, 105, 109]"
+    },
+    {
+      "name": "CONFIG_SEED",
+      "type": "bytes",
+      "value": "[99, 111, 110, 102, 105, 103]"
+    },
+    {
+      "name": "SHOP_SEED",
+      "type": "bytes",
+      "value": "[115, 104, 111, 112]"
+    },
+    {
+      "name": "VAULT_SEED",
+      "type": "bytes",
+      "value": "[118, 97, 117, 108, 116]"
+    },
+    {
+      "name": "WARRANTY_SEED",
+      "type": "bytes",
+      "value": "[119, 97, 114, 114, 97, 110, 116, 121]"
+    }
+  ]
+}
