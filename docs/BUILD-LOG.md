@@ -9,3 +9,4 @@ One line per step, newest last. Dates are UTC.
 - 2026-11-13: Instructions 9 to 14 (transfer holder, file claim, respond, confirm, escalate, resolve dispute) with a shared payout path and LiteSVM tests on the Appendix A time boundaries (ADR 0003).
 - 2026-11-14: Instructions 15 to 20 (settle unanswered, close stale, settle stale dispute, declare dormant, claim orphan, release expired); all 20 instructions present, 57 LiteSVM tests (ADR 0004).
 - 2026-11-14: Property tests: seeded random walks check invariants I1 to I4 after every step (4 seeds x 200 steps), liveness from every non-final state, the claim_orphan / release_expired race in both orders, and program attacks; 72 LiteSVM tests (ADR 0005).
+- 2026-11-14: pnpm monorepo with the TypeScript SDK (PDAs, 20 instruction builders, decoders, permissionless schedule, canonical JSON hashes with vectors), config and locales, one test gate script, and a lifecycle script that ran paths A to E on a local validator (ADR 0006).
