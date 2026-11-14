@@ -92,3 +92,18 @@ pub struct ReservePaid {
     pub amount: u64,
     pub claim_status: u8,
 }
+
+#[event]
+pub struct ShopDeclaredDormant {
+    pub shop: Pubkey,
+    pub last_seen: i64,
+    pub dormant_at: i64,
+}
+
+/// Reserve moved from locked back to the shop's free balance after expiry.
+#[event]
+pub struct WarrantyReleased {
+    pub shop: Pubkey,
+    pub warranty: Pubkey,
+    pub amount: u64,
+}

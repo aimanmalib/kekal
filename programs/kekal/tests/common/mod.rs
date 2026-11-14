@@ -19,8 +19,11 @@ use solana_signer::Signer;
 use solana_transaction::versioned::VersionedTransaction;
 
 mod claims;
+mod settle;
 #[allow(unused_imports)]
 pub use claims::*;
+#[allow(unused_imports)]
+pub use settle::*;
 
 pub const T0: i64 = 1_800_000_000;
 pub const DECIMALS: u8 = 6;

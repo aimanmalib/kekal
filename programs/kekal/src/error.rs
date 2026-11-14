@@ -54,4 +54,16 @@ pub enum KekalError {
     NotArbiter,
     #[msg("Account does not belong to this shop or warranty")]
     AccountMismatch,
+    #[msg("The window for this action has not closed yet")]
+    WindowStillOpen,
+    #[msg("Shop has not missed its heartbeat and grace period")]
+    ShopStillActive,
+    #[msg("Shop is not dormant")]
+    ShopNotDormant,
+    #[msg("Warranty expired before the shop went dormant")]
+    ExpiredBeforeDormant,
+    #[msg("Warranty has not expired")]
+    WarrantyNotExpired,
+    #[msg("Reserve is owed to the holder because the shop went dormant before expiry")]
+    OwedToHolder,
 }

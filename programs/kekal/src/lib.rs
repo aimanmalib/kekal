@@ -80,4 +80,28 @@ pub mod kekal {
     pub fn resolve_dispute(ctx: Context<ResolveDispute>, buyer_wins: bool) -> Result<()> {
         instructions::respond::handle_resolve_dispute(ctx, buyer_wins)
     }
+
+    pub fn settle_unanswered(ctx: Context<SettleClaim>) -> Result<()> {
+        instructions::settle::handle_settle_unanswered(ctx)
+    }
+
+    pub fn close_stale(ctx: Context<CloseStale>) -> Result<()> {
+        instructions::settle::handle_close_stale(ctx)
+    }
+
+    pub fn settle_stale_dispute(ctx: Context<SettleClaim>) -> Result<()> {
+        instructions::settle::handle_settle_stale_dispute(ctx)
+    }
+
+    pub fn declare_dormant(ctx: Context<DeclareDormant>) -> Result<()> {
+        instructions::dormant::handle_declare_dormant(ctx)
+    }
+
+    pub fn claim_orphan(ctx: Context<ClaimOrphan>) -> Result<()> {
+        instructions::dormant::handle_claim_orphan(ctx)
+    }
+
+    pub fn release_expired(ctx: Context<ReleaseExpired>) -> Result<()> {
+        instructions::dormant::handle_release_expired(ctx)
+    }
 }
