@@ -11,5 +11,6 @@ Index of the architecture decision records (ADRs) for Kekal; each record explain
 | [0004](decisions/0004-permissionless-settlement.md) | Permissionless settlement and the dormant shop | accepted |
 | [0005](decisions/0005-property-and-attack-tests.md) | Property, liveness and attack tests | accepted |
 | [0006](decisions/0006-sdk-and-monorepo.md) | TypeScript SDK, hashing and the test gate | accepted |
+| [0007](decisions/0007-target-sweep.md) | Sweeping old cargo artifacts from target/ | accepted |
 
 New decisions: add an ADR as `decisions/NNNN-short-title.md` and a line here.

@@ -11,3 +11,4 @@ One line per step, newest last. Dates are UTC.
 - 2026-11-14: Property tests: seeded random walks check invariants I1 to I4 after every step (4 seeds x 200 steps), liveness from every non-final state, the claim_orphan / release_expired race in both orders, and program attacks; 72 LiteSVM tests (ADR 0005).
 - 2026-11-14: pnpm monorepo with the TypeScript SDK (PDAs, 20 instruction builders, decoders, permissionless schedule, canonical JSON hashes with vectors), config and locales, one test gate script, and a lifecycle script that ran paths A to E on a local validator (ADR 0006).
 - 2026-11-14: Decision index `docs/DECISIONS.md` listing ADRs 0000 to 0006 with title and status.
+- 2026-11-15: `scripts/sweep-target.sh` removes cargo artifacts in `target/` unused for `targetSweep.keepDays` days (`config/build.json`, default 3) with cargo-sweep 0.8.0, skips while a build holds the cargo lock; tests run in the test gate (ADR 0007).
