@@ -12,3 +12,4 @@ One line per step, newest last. Dates are UTC.
 - 2026-11-14: pnpm monorepo with the TypeScript SDK (PDAs, 20 instruction builders, decoders, permissionless schedule, canonical JSON hashes with vectors), config and locales, one test gate script, and a lifecycle script that ran paths A to E on a local validator (ADR 0006).
 - 2026-11-14: Decision index `docs/DECISIONS.md` listing ADRs 0000 to 0006 with title and status.
 - 2026-11-15: `scripts/sweep-target.sh` removes cargo artifacts in `target/` unused for `targetSweep.keepDays` days (`config/build.json`, default 3) with cargo-sweep 0.8.0, skips while a build holds the cargo lock; tests run in the test gate (ADR 0007).
+- 2026-11-15: First real sweep of `target/` (6761 MB before and after: no artifact older than 3 days yet; `target/deploy` unchanged, rebuild and clippy fully fresh) and a daily host cron entry for the sweep at 19:40 UTC.
