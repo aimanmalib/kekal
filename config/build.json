@@ -1,0 +1,6 @@
+{
+  "_doc": "Build housekeeping read by scripts/sweep-target.sh. targetSweep.keepDays: cargo artifacts in target/ not used for this many days are removed by cargo-sweep (integer 1-30; 0 = sweep disabled). target/deploy, target/idl and target/types are never touched.",
+  "targetSweep": {
+    "keepDays": 3
+  }
+}

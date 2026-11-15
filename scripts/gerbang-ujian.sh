@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Single test gate: format, lint, program tests, SDK and script tests.
+# Single test gate: format, lint, program tests, SDK and script tests, target sweep tests (needs cargo-sweep).
 #   KEKAL_LIFECYCLE=1  also runs paths A-E on a throwaway local validator (scripts/localnet.sh).
 set -euo pipefail
 # Hooks export GIT_* that point at the real repository; nothing here may inherit them.
@@ -42,6 +42,8 @@ step "typecheck"
 pnpm --silent typecheck
 step "unit tests"
 pnpm --silent test
+step "sweep-target tests"
+bash scripts/test/sweep-target.test.sh
 if [ "${KEKAL_LIFECYCLE:-0}" = 1 ]; then
   step "lifecycle A-E on localnet"
   bash scripts/localnet.sh
