@@ -41,4 +41,9 @@ id. Cargo's own artifact GC is nightly only and the repository pins stable 1.89.
 ## Consequences
 
 - `target/` stays at roughly `keepDays` days of builds; incremental caches are not swept.
+- Files in `deps/` can keep an old atime while their unit is still current: a fresh unit is only checked through its
+  fingerprint, and its `.rlib`/`.rmeta`/`.so` are read again only when something links or recompiles against them.
+  To find stale artifacts, check fingerprint directories (the signal cargo-sweep uses), not `deps/` file atimes.
+  Measured after three scheduled runs: 331 `deps` files (1108 MB) with atime older than 4 days, every one belonging to
+  a fingerprint read within the last 4 days; no fingerprint directory was older than the threshold.
 - Undo: set `keepDays` to `0`, or remove the host crontab line tagged `kekal-target-sweep`.
