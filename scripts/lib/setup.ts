@@ -6,6 +6,7 @@ import {
   ix,
   shopPda,
   warrantyPda,
+  type IssueParams,
   type KekalProgram,
   type ShopWindows,
 } from "@kekal/sdk";
@@ -16,7 +17,7 @@ import {
   getMint,
   mintTo,
 } from "@solana/spl-token";
-import { Keypair, PublicKey, type Connection } from "@solana/web3.js";
+import { Keypair, PublicKey, type Connection, type TransactionInstruction } from "@solana/web3.js";
 import { airdrop, fundIx, roleKey, send } from "./chain";
 import type { ClusterConfig } from "./config";
 
@@ -136,8 +137,30 @@ export interface Issued {
   owner: Keypair;
 }
 
+/**
+ * Instructions that issue one warranty. `heartbeatFirst` puts a heartbeat in the same transaction, so a shop with a very
+ * short heartbeat window (the dying shop of path C) cannot lapse between its last heartbeat and the issue on a slow host.
+ */
+export async function issueInstructions(
+  program: KekalProgram,
+  owner: PublicKey,
+  warrantyId: bigint,
+  params: IssueParams,
+  heartbeatFirst: boolean,
+): Promise<TransactionInstruction[]> {
+  const built = await ix.issueWarranty(program, { owner, warrantyId, params });
+  return heartbeatFirst ? [await ix.heartbeat(program, { owner }), built] : [built];
+}
+
 /** Issues one warranty to a fresh bearer key. Calls on the same shop must not run concurrently. */
-export async function issue(env: Env, owner: Keypair, termSecs: number, label: string, log: Log): Promise<Issued> {
+export async function issue(
+  env: Env,
+  owner: Keypair,
+  termSecs: number,
+  label: string,
+  log: Log,
+  opts: { heartbeatFirst?: boolean } = {},
+): Promise<Issued> {
   const { program } = env;
   const shop = shopPda(program.programId, owner.publicKey);
   const state = await fetchShop(program, shop);
@@ -150,7 +173,7 @@ export async function issue(env: Env, owner: Keypair, termSecs: number, label: s
     termsHash: hashJson({ path: label, termSecs }),
     productHash: hashJson({ path: label, serial: holder.publicKey.toBase58() }),
   };
-  const built = await ix.issueWarranty(program, { owner: owner.publicKey, warrantyId: state.nextWarrantyId, params });
-  log("issue_warranty", await send(env.conn, owner, [built]));
+  const ixs = await issueInstructions(program, owner.publicKey, state.nextWarrantyId, params, opts.heartbeatFirst ?? false);
+  log("issue_warranty", await send(env.conn, owner, ixs));
   return { shop, warranty: warrantyPda(program.programId, shop, state.nextWarrantyId), holder, owner };
 }

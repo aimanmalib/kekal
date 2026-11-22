@@ -50,7 +50,8 @@ async function main() {
   const wB = await issue(env, roles.seller, L.termSecs, "B", logger("B"));
   const wD = await issue(env, roles.seller, L.shortTermSecs, "D", logger("D"));
   const wE = await issue(env, roles.seller, L.termSecs, "E", logger("E"));
-  const wC = await issue(env, dying, L.termSecs, "C", logger("C"));
+  // The dying shop has a heartbeat window of seconds: heartbeat and issue go in one transaction (same clock).
+  const wC = await issue(env, dying, L.termSecs, "C", logger("C"), { heartbeatFirst: true });
 
   await Promise.all([
     pathA(env, wA, logger("A")),
