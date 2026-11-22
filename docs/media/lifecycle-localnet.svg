@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 548" width="560" height="548" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13.5">
+<title>Terminal: bash scripts/localnet.sh</title><rect width="560" height="548" rx="12" fill="#0E1C17"/>
+<rect width="560" height="30" rx="12" fill="#1D3A30"/><rect y="18" width="560" height="12" fill="#1D3A30"/>
+<circle cx="20" cy="15" r="5.5" fill="#E8A23A"/>
+<circle cx="38" cy="15" r="5.5" fill="#9DB5A9"/>
+<circle cx="56" cy="15" r="5.5" fill="#3E5A4E"/>
+<text x="280.0" y="20" fill="#9DB5A9" text-anchor="middle" font-size="12.5">kekal · local validator</text>
+<text x="22" y="46" fill="#E8A23A" xml:space="preserve">$ bash scripts/localnet.sh</text>
+<text x="22" y="66" fill="#F4F1EA" xml:space="preserve">setup init_config          iccJ8fes…ft5x</text>
+<text x="22" y="86" fill="#F4F1EA" xml:space="preserve">setup create_shop          2CgXMXXK…NWGD</text>
+<text x="22" y="106" fill="#F4F1EA" xml:space="preserve">setup deposit              5AHrv5mv…BVLJ</text>
+<text x="22" y="126" fill="#F4F1EA" xml:space="preserve">setup create_shop          3nFojYPB…L5aA</text>
+<text x="22" y="146" fill="#F4F1EA" xml:space="preserve">setup deposit              5vahAExJ…AKKw</text>
+<text x="22" y="166" fill="#F4F1EA" xml:space="preserve">A     issue_warranty       2ckiUFBS…AMBq</text>
+<text x="22" y="186" fill="#F4F1EA" xml:space="preserve">B     issue_warranty       3qbf5VXz…4FyF</text>
+<text x="22" y="206" fill="#F4F1EA" xml:space="preserve">D     issue_warranty       38k38yRN…sKhe</text>
+<text x="22" y="226" fill="#F4F1EA" xml:space="preserve">E     issue_warranty       2gdF78yh…At2x</text>
+<text x="22" y="246" fill="#F4F1EA" xml:space="preserve">C     issue_warranty       3DueK54o…sszr</text>
+<text x="22" y="266" fill="#F4F1EA" xml:space="preserve">B     file_claim           599YGyd6…Wupi</text>
+<text x="22" y="286" fill="#F4F1EA" xml:space="preserve">A     file_claim           4bQEQK68…UvWV</text>
+<text x="22" y="306" fill="#F4F1EA" xml:space="preserve">E     file_claim           3bXs43RN…Sxu6</text>
+<text x="22" y="326" fill="#F4F1EA" xml:space="preserve">A     respond_claim        mkCJAeSG…gzFh</text>
+<text x="22" y="346" fill="#F4F1EA" xml:space="preserve">E     respond_claim        3a51dfQS…z1ex</text>
+<text x="22" y="366" fill="#F4F1EA" xml:space="preserve">A     confirm_resolved     3u3qqam5…ivzz</text>
+<text x="22" y="386" fill="#F4F1EA" xml:space="preserve">E     escalate             mmMLsVM6…4Gtr</text>
+<text x="22" y="406" fill="#F4F1EA" xml:space="preserve">E     resolve_dispute      4wBDoXmq…1oLw</text>
+<text x="22" y="426" fill="#F4F1EA" xml:space="preserve">C     declare_dormant      enh9cLDw…DHjA</text>
+<text x="22" y="446" fill="#F4F1EA" xml:space="preserve">D     release_expired      4qut7Pfu…DYHi</text>
+<text x="22" y="466" fill="#F4F1EA" xml:space="preserve">C     claim_orphan         3VAXn8Uj…d5Ru</text>
+<text x="22" y="486" fill="#F4F1EA" xml:space="preserve">B     settle_unanswered    21Xr1xZW…nXez</text>
+<text x="22" y="506" fill="#8BD3A0" xml:space="preserve">lifecycle localnet: paths A-E passed in 23 s</text>
+</svg>
