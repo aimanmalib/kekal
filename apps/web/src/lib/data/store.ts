@@ -6,7 +6,18 @@ export interface DataStore {
   setConfig(key: string, value: string, now: number): void;
   /** Adds one hit to a fixed window and returns the window's count after the hit. */
   hit(key: string, windowSecs: number, now: number): number;
+  /** Stores a sign-in challenge and drops challenges that expired before `now`. */
+  putNonce(n: SessionNonce, now: number): void;
+  /** Marks the challenge used and returns it, once, if it exists and has not expired; otherwise null. */
+  takeNonce(nonce: string, now: number): SessionNonce | null;
   close(): void;
+}
+
+export interface SessionNonce {
+  nonce: string;
+  pubkey: string;
+  message: string;
+  expiresAt: number;
 }
 
 export type BackendName = "sqlite" | "supabase";

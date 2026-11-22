@@ -42,6 +42,11 @@ export function openSqlite(path: string, migrationsDir: string, now = Math.floor
   const bump = db.prepare(
     "insert into counters (key, window_start, count) values (?, ?, 1) on conflict(key, window_start) do update set count = count + 1 returning count",
   );
+  const dropOld = db.prepare("delete from session_nonces where expires_at < ?");
+  const putN = db.prepare("insert into session_nonces (nonce, pubkey, message, expires_at) values (?, ?, ?, ?)");
+  const takeN = db.prepare(
+    "update session_nonces set used_at = ? where nonce = ? and used_at is null and expires_at >= ? returning nonce, pubkey, message, expires_at",
+  );
   return {
     backend: "sqlite",
     getConfig: (key) => (getCfg.get(key) as { value: string } | undefined)?.value ?? null,
@@ -51,6 +56,14 @@ export function openSqlite(path: string, migrationsDir: string, now = Math.floor
     hit: (key, windowSecs, at) => {
       const start = at - (at % windowSecs);
       return Number((bump.get(key, start) as { count: number | bigint }).count);
+    },
+    putNonce: (n, at) => {
+      dropOld.run(at);
+      putN.run(n.nonce, n.pubkey, n.message, n.expiresAt);
+    },
+    takeNonce: (nonce, at) => {
+      const r = takeN.get(at, nonce, at) as { nonce: string; pubkey: string; message: string; expires_at: number | bigint } | undefined;
+      return r ? { nonce: r.nonce, pubkey: r.pubkey, message: r.message, expiresAt: Number(r.expires_at) } : null;
     },
     close: () => db.close(),
   };

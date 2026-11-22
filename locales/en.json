@@ -36,5 +36,6 @@
   "card.sample.note": "Sample card. The live demo issues a real one to your browser.",
   "stamp.paid": "Paid",
   "footer.network": "Runs on Solana devnet.",
-  "home.title": "A warranty that outlives the shop"
+  "home.title": "A warranty that outlives the shop",
+  "session.signMessage": "{domain} asks you to sign in to Kekal with this wallet.\n\nWallet: {pubkey}\nNonce: {nonce}\nIssued: {issued}\nExpires: {expires}\n\nSigning costs nothing and sends no transaction."
 }

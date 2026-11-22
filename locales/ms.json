@@ -36,5 +36,6 @@
   "card.sample.note": "Kad contoh. Demo langsung mengeluarkan kad sebenar ke pelayar anda.",
   "stamp.paid": "Dibayar",
   "footer.network": "Berjalan di Solana devnet.",
-  "home.title": "Waranti yang kekal walaupun kedai tiada"
+  "home.title": "Waranti yang kekal walaupun kedai tiada",
+  "session.signMessage": "{domain} meminta anda log masuk ke Kekal dengan dompet ini.\n\nDompet: {pubkey}\nNonce: {nonce}\nDikeluarkan: {issued}\nTamat: {expires}\n\nMenandatangani tidak dikenakan bayaran dan tidak menghantar transaksi."
 }
