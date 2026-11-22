@@ -91,6 +91,39 @@
       "maxBatch": 10,
       "retryStatuses": [429, 500, 502, 503, 504]
     },
+    "relay": {
+      "_doc": "POST /api/relay pays the fee for a transaction the holder already signed. Only these Kekal instructions, associated-account creation for an allowed mint, and TransferChecked of an allowed mint out of the signer's own associated account pass. The relayer key may appear only as fee payer and in the account slots named in payerAccounts. Limits are fixed windows.",
+      "keyRole": "relayer",
+      "allowedInstructions": [
+        "transfer_holder", "file_claim", "confirm_resolved", "escalate",
+        "settle_unanswered", "close_stale", "settle_stale_dispute", "declare_dormant", "claim_orphan", "release_expired"
+      ],
+      "payerAccounts": ["payer", "payout.payer"],
+      "maxInstructions": 4,
+      "maxTxBytes": 1232,
+      "perHolderPerHour": 10,
+      "perIpPerHour": 30,
+      "globalPerDay": 2000,
+      "preflightCommitment": "confirmed"
+    },
+    "session": {
+      "_doc": "Seller and arbiter sign-in: nonce, signed message, httpOnly cookie. KEKAL_SESSION_SECRET (32+ chars) signs the cookie; without it the session endpoints answer 503.",
+      "cookie": "kekal_session",
+      "ttlSecs": 43200,
+      "nonceTtlSecs": 300,
+      "noncePerIpPerHour": 30,
+      "minSecretLength": 32
+    },
+    "clientIp": {
+      "_doc": "The peer is X-Real-IP (set by the reverse proxy), else the last X-Forwarded-For entry. The CDN header is trusted only when that peer is inside cdnRanges (Cloudflare published ranges).",
+      "cdnHeader": "cf-connecting-ip",
+      "cdnRanges": [
+        "173.245.48.0/20", "103.21.244.0/22", "103.22.200.0/22", "103.31.4.0/22", "141.101.64.0/18", "108.162.192.0/18",
+        "190.93.240.0/20", "188.114.96.0/20", "197.234.240.0/22", "198.41.128.0/17", "162.158.0.0/15", "104.16.0.0/13",
+        "104.24.0.0/14", "172.64.0.0/13", "131.0.72.0/22",
+        "2400:cb00::/32", "2606:4700::/32", "2803:f800::/32", "2405:b500::/32", "2405:8100::/32", "2a06:98c0::/29", "2c0f:f248::/32"
+      ]
+    },
     "currency": "kUSD",
     "data": { "backend": "sqlite", "sqlitePath": "data/kekal.db", "migrationsDir": "supabase/migrations" }
   }

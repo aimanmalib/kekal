@@ -13,6 +13,10 @@ export interface RuntimeCluster {
   programId: string;
   explorerTx: string;
   tokenDecimals: number;
+  /** Mints the relayer lets through: KEKAL_MINTS (comma list) or the non-null cluster mints. */
+  mints: string[];
+  /** Server key folder: KEKAL_KEYS_DIR or the cluster keysDir ("~" = home). Null = no keys on this cluster. */
+  keysDir: string | null;
 }
 
 /** Comma- or space-separated list; empty entries dropped. */
@@ -36,6 +40,11 @@ export function runtimeCluster(env: Record<string, string | undefined> = process
     programId: env.KEKAL_PROGRAM_ID ?? c.programId ?? idl.address,
     explorerTx: c.explorerTx,
     tokenDecimals: c.tokenDecimals,
+    mints: (() => {
+      const listed = parseUrlList(env.KEKAL_MINTS);
+      return listed.length > 0 ? listed : (Object.values(c.mints) as (string | null)[]).filter((m): m is string => typeof m === "string");
+    })(),
+    keysDir: env.KEKAL_KEYS_DIR ?? c.keysDir,
   };
 }
 
