@@ -13,5 +13,6 @@ Index of the architecture decision records (ADRs) for Kekal; each record explain
 | [0006](decisions/0006-sdk-and-monorepo.md) | TypeScript SDK, hashing and the test gate | accepted |
 | [0007](decisions/0007-target-sweep.md) | Sweeping old cargo artifacts from target/ | accepted |
 | [0008](decisions/0008-web-skeleton.md) | Web app skeleton, RPC proxy and off-chain store | accepted |
+| [0009](decisions/0009-relayer-and-sessions.md) | Fee relayer and wallet sessions | accepted |
 
 New decisions: add an ADR as `decisions/NNNN-short-title.md` and a line here.
