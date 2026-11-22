@@ -1,0 +1,267 @@
+/* Kekal: "certificate and stamp". Tokens first; every colour below goes through them (docs/DESIGN.md). */
+:root {
+  --paper: #faf8f1;
+  --paper-band: #f3eedf;
+  --ink: #143829;
+  --ink-soft: #4a5c52;
+  --rule: #c8c1a9;
+  --copper: #a3521c;
+  --guilloche-a: rgb(20 56 41 / 0.32);
+
+  --font-display: "Newsreader Variable", "Iowan Old Style", Georgia, serif;
+  --font-ui: "Public Sans Variable", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --step--1: 0.875rem;
+  --step-0: 1rem;
+  --step-1: 1.1875rem;
+  --step-2: 1.5rem;
+  --step-3: clamp(2rem, 1.4rem + 3vw, 3.25rem);
+
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2.5rem;
+  --space-5: 4rem;
+
+  --tap: 44px;
+  --measure: 34rem;
+  --card-radius: 6px;
+
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 100%;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+}
+
+:focus-visible {
+  outline: 2px solid var(--copper);
+  outline-offset: 3px;
+}
+
+.page {
+  max-width: 68rem;
+  margin: 0 auto;
+  padding: var(--space-2) var(--space-2) var(--space-4);
+}
+
+.masthead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--rule);
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.lang {
+  display: flex;
+  gap: 2px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.lang button {
+  min-height: var(--tap);
+  padding: 0 0.75rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: none;
+  color: var(--ink-soft);
+  font: inherit;
+  font-size: var(--step--1);
+  cursor: pointer;
+}
+
+.lang button[aria-pressed="true"] {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.home {
+  display: grid;
+  gap: var(--space-4);
+  padding-top: var(--space-4);
+}
+
+.home > * {
+  min-width: 0;
+}
+
+.intro h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--step-3);
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  max-width: 14ch;
+  text-wrap: balance;
+}
+
+.lede {
+  max-width: var(--measure);
+  margin: var(--space-3) 0 0;
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+.rules {
+  max-width: var(--measure);
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--rule);
+}
+
+.rules li {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+/* The warranty card: the one bold object on the page. */
+.card {
+  margin: 0;
+  max-width: 26rem;
+  justify-self: center;
+  width: 100%;
+}
+
+.card > .guilloche,
+.card-body {
+  border: 1px solid var(--ink);
+}
+
+.guilloche {
+  display: block;
+  width: 100%;
+  height: 44px;
+  background: var(--paper-band);
+  border-bottom: 0 !important;
+  border-radius: var(--card-radius) var(--card-radius) 0 0;
+}
+
+.guilloche path {
+  fill: none;
+  stroke: var(--guilloche-a);
+  stroke-width: 0.6;
+  vector-effect: non-scaling-stroke;
+}
+
+.card-body {
+  position: relative;
+  padding: var(--space-3) var(--space-3) var(--space-4);
+  border-radius: 0 0 var(--card-radius) var(--card-radius);
+  background: var(--paper);
+  box-shadow: inset 0 0 0 4px var(--paper), inset 0 0 0 5px var(--rule);
+  overflow: hidden;
+}
+
+.card-title {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  font-style: italic;
+}
+
+.card-fields {
+  margin: 0;
+  display: grid;
+  gap: 0.875rem;
+}
+
+.card-fields dt {
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}
+
+.card-fields dd {
+  margin: 0;
+  font-weight: 500;
+}
+
+.num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--step-1);
+}
+
+.unit {
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}
+
+.stamp {
+  position: absolute;
+  right: var(--space-2);
+  bottom: var(--space-3);
+  display: grid;
+  place-items: center;
+  width: 6.5rem;
+  height: 6.5rem;
+  border: 3px double var(--copper);
+  border-radius: 50%;
+  color: var(--copper);
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  font-weight: 700;
+  transform: rotate(-14deg);
+  opacity: 0.92;
+}
+
+.card figcaption {
+  margin-top: var(--space-1);
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}
+
+.foot {
+  margin-top: var(--space-5);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--rule);
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}
+
+@media (min-width: 56rem) {
+  .home {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    align-items: start;
+    padding-top: var(--space-5);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

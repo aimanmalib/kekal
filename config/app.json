@@ -75,5 +75,23 @@
         "timeoutSecs": 900
       }
     }
+  },
+  "web": {
+    "_doc": "Web app values. /api/rpc forwards only allowedMethods (never sendTransaction: signed transactions go through the relayer); programScopedMethods must name the Kekal program. DATA_BACKEND picks the store; KEKAL_SQLITE_PATH and KEKAL_MIGRATIONS_DIR override the paths below.",
+    "locales": { "supported": ["en", "ms"], "fallback": "en", "cookie": "kekal_lang", "cookieMaxAgeDays": 365 },
+    "rpc": {
+      "allowedMethods": [
+        "getAccountInfo", "getMultipleAccounts", "getProgramAccounts", "getLatestBlockhash", "getSignatureStatuses",
+        "getSignaturesForAddress", "getTransaction", "getBalance", "getTokenAccountBalance",
+        "getMinimumBalanceForRentExemption", "getSlot"
+      ],
+      "programScopedMethods": ["getProgramAccounts"],
+      "timeoutMs": 8000,
+      "maxBodyBytes": 16384,
+      "maxBatch": 10,
+      "retryStatuses": [429, 500, 502, 503, 504]
+    },
+    "currency": "kUSD",
+    "data": { "backend": "sqlite", "sqlitePath": "data/kekal.db", "migrationsDir": "supabase/migrations" }
   }
 }

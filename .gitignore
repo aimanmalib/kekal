@@ -27,3 +27,4 @@ test-results/
 *.sqlite
 *.sqlite3
 .autopilot/
+*.tsbuildinfo
