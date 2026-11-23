@@ -1,7 +1,7 @@
 // UI text lives only in locales/*.json. This module picks a language and looks keys up.
 import en from "../../../../locales/en.json";
 import ms from "../../../../locales/ms.json";
-import { webConfig } from "./config";
+import { webConfig } from "./web-config";
 
 export const dictionaries = { en, ms } as const;
 export type Lang = keyof typeof dictionaries;
@@ -32,4 +32,9 @@ export type Translate = (key: MessageKey) => string;
 export function translator(lang: Lang): Translate {
   const dict: Record<string, string> = dictionaries[lang];
   return (key) => dict[key] ?? en[key];
+}
+
+/** Fills `{name}` placeholders in a translated string. Unknown placeholders stay as written. */
+export function fill(text: string, vars: Record<string, string | number>): string {
+  return text.replace(/\{(\w+)\}/g, (m, k: string) => (k in vars ? String(vars[k]) : m));
 }

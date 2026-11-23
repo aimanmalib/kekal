@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { LangSwitch } from "@/components/LangSwitch";
+import { SiteFrame } from "@/components/SiteFrame";
 import { WarrantyCard } from "@/components/WarrantyCard";
 import { sampleReserve, webConfig } from "@/lib/config";
 import { translator, type MessageKey } from "@/lib/i18n";
@@ -17,17 +17,7 @@ export default async function Home() {
   const lang = await requestLang();
   const t = translator(lang);
   return (
-    <div className="page">
-      <header className="masthead">
-        <span className="wordmark">{t("app.name")}</span>
-        <LangSwitch
-          current={lang}
-          label={t("lang.label")}
-          cookie={webConfig.locales.cookie}
-          maxAgeDays={webConfig.locales.cookieMaxAgeDays}
-          options={webConfig.locales.supported.map((v) => ({ value: v, label: t(`lang.${v}` as MessageKey) }))}
-        />
-      </header>
+    <SiteFrame lang={lang} t={t}>
       <main className="home">
         <section className="intro">
           <h1>{t("home.title")}</h1>
@@ -38,9 +28,17 @@ export default async function Home() {
             ))}
           </ul>
         </section>
-        <WarrantyCard t={t} reserve={sampleReserve()} currency={webConfig.currency} />
+        <WarrantyCard
+          t={t}
+          product={t("card.sample.product")}
+          reserve={sampleReserve()}
+          currency={webConfig.currency}
+          expires={t("card.sample.expires")}
+          status={t("status.claim.paidOrphan")}
+          stamp={t("stamp.paid")}
+          note={t("card.sample.note")}
+        />
       </main>
-      <footer className="foot">{t("footer.network")}</footer>
-    </div>
+    </SiteFrame>
   );
 }

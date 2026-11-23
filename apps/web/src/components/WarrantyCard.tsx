@@ -3,12 +3,20 @@ import { Guilloche } from "./Guilloche";
 
 interface Props {
   t: Translate;
+  product: string;
   reserve: string;
   currency: string;
+  /** Approximate local figure, already labelled (e.g. "about RM 110"). */
+  estimate?: string;
+  expires: string;
+  status: string;
+  /** Shown only when money has moved. */
+  stamp?: string | null;
+  note?: string | null;
 }
 
-/** The sample card on the home page. Pages that show a real warranty pass real values (P2d). */
-export function WarrantyCard({ t, reserve, currency }: Props) {
+/** The warranty card: the sample on the home page and the real card on /w/[pda]. */
+export function WarrantyCard({ t, product, reserve, currency, estimate, expires, status, stamp, note }: Props) {
   return (
     <figure className="card">
       <Guilloche width={360} height={44} lines={9} waves={6} />
@@ -17,28 +25,31 @@ export function WarrantyCard({ t, reserve, currency }: Props) {
         <dl className="card-fields">
           <div>
             <dt>{t("card.product")}</dt>
-            <dd>{t("card.sample.product")}</dd>
+            <dd>{product}</dd>
           </div>
           <div>
             <dt>{t("card.reserve")}</dt>
             <dd className="num">
               {reserve} <span className="unit">{currency}</span>
+              {estimate ? <span className="estimate">{estimate}</span> : null}
             </dd>
           </div>
           <div>
             <dt>{t("card.expires")}</dt>
-            <dd>{t("card.sample.expires")}</dd>
+            <dd>{expires}</dd>
           </div>
           <div>
             <dt>{t("card.status")}</dt>
-            <dd>{t("status.claim.paidOrphan")}</dd>
+            <dd>{status}</dd>
           </div>
         </dl>
-        <span className="stamp" aria-hidden="true">
-          {t("stamp.paid")}
-        </span>
+        {stamp ? (
+          <span className="stamp" aria-hidden="true">
+            {stamp}
+          </span>
+        ) : null}
       </div>
-      <figcaption>{t("card.sample.note")}</figcaption>
+      {note ? <figcaption>{note}</figcaption> : null}
     </figure>
   );
 }

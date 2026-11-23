@@ -3,9 +3,7 @@ import app from "../../../../config/app.json";
 
 export { parseUrlList, runtimeCluster, type ClusterName, type RuntimeCluster } from "@kekal/server";
 
-export type WebConfig = typeof app.web;
-
-export const webConfig: WebConfig = app.web;
+export { webConfig, type WebConfig } from "./web-config";
 
 /** Reserve of the sample card on the home page: the lifecycle reserve of the default cluster, in token units. */
 export function sampleReserve(): string {

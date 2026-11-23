@@ -1,0 +1,289 @@
+/* /w/[pda] and /semak. Tokens only (globals.css); see docs/DESIGN.md. */
+a {
+  color: var(--ink);
+  text-underline-offset: 0.18em;
+}
+
+.estimate {
+  display: block;
+  margin-top: 0.125rem;
+  font-family: var(--font-ui);
+  font-size: var(--step--1);
+  font-weight: 400;
+  color: var(--ink-soft);
+}
+
+.warranty,
+.warranty-missing,
+.check-page {
+  display: grid;
+  gap: var(--space-4);
+  padding-top: var(--space-4);
+}
+
+.warranty > *,
+.check-page > * {
+  min-width: 0;
+}
+
+.warranty h1,
+.warranty-missing h1,
+.check-page h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--step-3);
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.warranty h2,
+.panel h2 {
+  margin: 0 0 var(--space-1);
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  font-weight: 500;
+}
+
+.warranty-missing,
+.check-page {
+  max-width: var(--measure);
+  gap: var(--space-2);
+}
+
+.note,
+.next,
+.countdown {
+  max-width: var(--measure);
+  margin: var(--space-2) 0 0;
+}
+
+.note {
+  color: var(--ink-soft);
+}
+
+.next {
+  padding-left: var(--space-2);
+  border-left: 3px solid var(--copper);
+}
+
+.countdown {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--copper);
+}
+
+.panel {
+  max-width: var(--measure);
+  margin-top: var(--space-2);
+}
+
+.panel-block {
+  margin-top: var(--space-3);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--rule);
+}
+
+.panel-block p {
+  margin: 0 0 var(--space-2);
+}
+
+.button,
+.button-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--tap);
+  margin-top: var(--space-1);
+  padding: 0 1.25rem;
+  border: 1px solid var(--ink);
+  border-radius: var(--card-radius);
+  background: var(--ink);
+  color: var(--paper);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  max-width: 100%;
+}
+
+.button + .button {
+  margin-left: var(--space-1);
+}
+
+.button-quiet,
+.button-link {
+  background: none;
+  color: var(--ink);
+}
+
+.button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.warn,
+.ok {
+  max-width: var(--measure);
+  margin: var(--space-2) 0 0;
+  padding: 0.75rem var(--space-2);
+  border: 1px solid var(--copper);
+  border-radius: var(--card-radius);
+}
+
+.warn {
+  color: var(--copper);
+}
+
+.ok {
+  border-color: var(--ink);
+}
+
+.form {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: start;
+}
+
+.form label {
+  display: grid;
+  gap: 0.25rem;
+  width: 100%;
+}
+
+.form label > span {
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}
+
+.form input,
+.form select,
+.form textarea,
+.saved-card input {
+  width: 100%;
+  min-height: var(--tap);
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--ink-soft);
+  border-radius: var(--card-radius);
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: max(16px, var(--step-0));
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.promise {
+  max-width: var(--measure);
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  line-height: 1.55;
+}
+
+.check {
+  max-width: var(--measure);
+  margin: var(--space-2) 0 0;
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}
+
+.check-bad {
+  color: var(--copper);
+}
+
+.timeline {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--rule);
+  max-width: 42rem;
+}
+
+.timeline li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.125rem var(--space-2);
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.timeline .when {
+  grid-column: 1 / -1;
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}
+
+.timeline .what {
+  min-width: 0;
+}
+
+.timeline a {
+  font-size: var(--step--1);
+  white-space: nowrap;
+}
+
+.tech {
+  max-width: 42rem;
+  border-top: 1px solid var(--rule);
+  padding-top: var(--space-2);
+}
+
+.tech summary {
+  min-height: var(--tap);
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.tech dl {
+  display: grid;
+  gap: 0.75rem;
+  margin: var(--space-2) 0 0;
+}
+
+.tech dt {
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}
+
+.tech dd {
+  margin: 0;
+  font-size: var(--step--1);
+}
+
+@media (min-width: 56rem) {
+  .warranty {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    align-items: start;
+    padding-top: var(--space-5);
+  }
+
+  .warranty-terms,
+  .warranty-timeline,
+  .tech {
+    grid-column: 1 / -1;
+  }
+}
+
+@keyframes stamp-land {
+  from {
+    transform: rotate(-30deg) scale(1.6);
+    opacity: 0;
+  }
+  to {
+    transform: rotate(-14deg) scale(1);
+    opacity: 0.92;
+  }
+}
+
+.warranty .stamp {
+  animation: stamp-land 360ms ease-out both;
+}
