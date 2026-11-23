@@ -42,6 +42,10 @@ clamp(2, 3.25) rem. Serif reading text gets 1.55 line height; lines stay under 3
 - Body: a double frame (ink border plus inset rule), the title in italic serif, fields as a definition list, the
   reserve in mono.
 - Outcome: a round copper stamp, slightly rotated, with the paid status word. It appears only when money has moved.
+- Printed card (`/kedai`): the same band, frame and fields on an A6 page per language, with the QR code centred; the
+  PNG and PDF read the colour tokens from the page at download time, so they never drift from the CSS.
+- Boards (`/kedai`, `/timbang`): sections separated by hairlines, figures as label over a mono number in a hairline
+  grid, the newly issued card in the double frame. No cards-in-cards, no tinted panels.
 
 ## Layout
 
