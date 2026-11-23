@@ -6,7 +6,8 @@ import { openSqlite } from "../src/lib/data/sqlite";
 import type { DataStore } from "../src/lib/data/store";
 import { verifyEd25519 } from "../src/lib/ed25519";
 import { relay, type RelayDeps } from "../src/lib/relay/service";
-import { b64, build, holder, policy, program, relayer, shop, warranty } from "./relay-fixtures";
+import { getAssociatedTokenAddressSync, createAssociatedTokenAccountIdempotentInstruction, createTransferCheckedInstruction } from "@solana/spl-token";
+import { b64, build, holder, mint, policy, program, relayer, shop, warranty, withCaller } from "./relay-fixtures";
 
 const MIGRATIONS = resolve(__dirname, "../../../supabase/migrations");
 const stores: DataStore[] = [];
@@ -21,7 +22,7 @@ function deps(over: Partial<RelayDeps> = {}) {
   const d: RelayDeps = {
     store,
     policy: policy(),
-    limits: { perHolderPerHour: 10, perIpPerHour: 30, globalPerDay: 1000 },
+    limits: { perHolderPerHour: 10, perIpPerHour: 30, globalPerDay: 1000, accountCreatesPerDay: 100 },
     relayer,
     send: async (tx) => {
       sent.push(tx);
@@ -34,7 +35,16 @@ function deps(over: Partial<RelayDeps> = {}) {
 }
 const holderTx = async (kp = holder) =>
   b64(build([await ix.transferHolder(program, { holder: kp.publicKey, warranty, newHolder: Keypair.generate().publicKey })], [kp]));
-const openTx = async () => b64(build([await ix.declareDormant(program, { shop })], []));
+const caller = Keypair.generate();
+const openTx = async () => b64(build([withCaller(await ix.declareDormant(program, { shop }), caller)], [caller]));
+/** Holder sends to a fresh address and the relayer pays for that address's token account. */
+const sendNewTx = () => {
+  const owner = Keypair.generate().publicKey;
+  const ata = getAssociatedTokenAddressSync(mint, owner, true);
+  const create = createAssociatedTokenAccountIdempotentInstruction(relayer.publicKey, ata, owner, mint);
+  const send = createTransferCheckedInstruction(getAssociatedTokenAddressSync(mint, holder.publicKey, true), mint, ata, holder.publicKey, 1n, 6);
+  return b64(build([create, send], [holder]));
+};
 
 describe("relay service", () => {
   it("signs as fee payer and sends; the holder signature is kept", async () => {
@@ -46,7 +56,7 @@ describe("relay service", () => {
     expect(verifyEd25519(holder.publicKey.toBytes(), msg, tx.signatures[1]!)).toBe(true);
   });
   it("a refused transaction never reaches the network and spends no quota", async () => {
-    const { d, sent } = deps({ limits: { perHolderPerHour: 10, perIpPerHour: 1, globalPerDay: 1000 } });
+    const { d, sent } = deps({ limits: { perHolderPerHour: 10, perIpPerHour: 1, globalPerDay: 1000, accountCreatesPerDay: 100 } });
     const bad = await relay({ tx: b64(build([await ix.declareDormant(program, { shop })], [], { payer: holder.publicKey })) }, "ip", d);
     expect(bad).toMatchObject({ ok: false, status: 400, error: "fee_payer" });
     expect(await relay({ tx: await openTx() }, "ip", d)).toMatchObject({ ok: true });
@@ -71,10 +81,18 @@ describe("relay service", () => {
     expect(await relay({ tx: await openTx() }, "9.9.9.8", d)).toMatchObject({ ok: true });
   });
   it("global daily cap from config", async () => {
-    const { d } = deps({ limits: { perHolderPerHour: 10, perIpPerHour: 30, globalPerDay: 2 } });
+    const { d } = deps({ limits: { perHolderPerHour: 10, perIpPerHour: 30, globalPerDay: 2, accountCreatesPerDay: 100 } });
     expect(await relay({ tx: await openTx() }, "a", d)).toMatchObject({ ok: true });
     expect(await relay({ tx: await openTx() }, "b", d)).toMatchObject({ ok: true });
     expect(await relay({ tx: await openTx() }, "c", d)).toMatchObject({ status: 429, error: "rate_global" });
+  });
+  it("daily cap on associated accounts the relayer pays rent for", async () => {
+    const { d, sent } = deps({ limits: { perHolderPerHour: 10, perIpPerHour: 30, globalPerDay: 1000, accountCreatesPerDay: 2 } });
+    expect(await relay({ tx: sendNewTx() }, "a", d)).toMatchObject({ ok: true });
+    expect(await relay({ tx: sendNewTx() }, "b", d)).toMatchObject({ ok: true });
+    expect(await relay({ tx: sendNewTx() }, "c", d)).toMatchObject({ status: 429, error: "rate_accounts" });
+    expect(await relay({ tx: await openTx() }, "d", d)).toMatchObject({ ok: true });
+    expect(sent).toHaveLength(3);
   });
   it("RPC failure is reported, not thrown", async () => {
     const { d } = deps({ send: async () => Promise.reject(new Error("Blockhash not found")) });

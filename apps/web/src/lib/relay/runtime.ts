@@ -14,6 +14,7 @@ export function relayPolicy(cluster: RuntimeCluster, relayer: PublicKey): RelayP
     allowedInstructions: c.allowedInstructions,
     payerAccounts: c.payerAccounts,
     maxInstructions: c.maxInstructions,
+    maxAccountCreates: c.maxAccountCreates,
     maxTxBytes: c.maxTxBytes,
   };
 }

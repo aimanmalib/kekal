@@ -24,6 +24,7 @@ export function policy(over: Partial<RelayPolicy> = {}): RelayPolicy {
     ],
     payerAccounts: ["payer", "payout.payer"],
     maxInstructions: 4,
+    maxAccountCreates: 1,
     maxTxBytes: 1232,
     ...over,
   };
@@ -39,6 +40,12 @@ export function build(
   const tx = new VersionedTransaction(message);
   if (signers.length) tx.sign(signers);
   return tx;
+}
+
+/** Names `kp` as an extra read-only signer, the way a caller co-signs a permissionless instruction (Anchor ignores it). */
+export function withCaller(i: TransactionInstruction, kp: Keypair): TransactionInstruction {
+  i.keys.push({ pubkey: kp.publicKey, isSigner: true, isWritable: false });
+  return i;
 }
 
 export const b64 = (tx: VersionedTransaction) => Buffer.from(tx.serialize()).toString("base64");

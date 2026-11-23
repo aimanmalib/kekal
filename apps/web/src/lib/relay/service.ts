@@ -7,9 +7,11 @@ export interface RelayLimits {
   perHolderPerHour: number;
   perIpPerHour: number;
   globalPerDay: number;
+  /** Associated accounts the relayer pays rent for, all callers, per day. */
+  accountCreatesPerDay: number;
 }
 
-export type RelayError = RelayRefusal | "bad_request" | "rate_ip" | "rate_holder" | "rate_global" | "send_failed";
+export type RelayError = RelayRefusal | "bad_request" | "rate_ip" | "rate_holder" | "rate_global" | "rate_accounts" | "send_failed";
 
 export type RelayResult = { ok: true; signature: string } | { ok: false; status: number; error: RelayError; detail?: string };
 
@@ -33,12 +35,16 @@ export function overLimit(
   ip: string,
   holders: string[],
   now: number,
-): "rate_ip" | "rate_holder" | "rate_global" | null {
+  accountCreates = 0,
+): "rate_ip" | "rate_holder" | "rate_global" | "rate_accounts" | null {
   if (store.hit(`relay:ip:${ip}`, HOUR, now) > limits.perIpPerHour) return "rate_ip";
   let holderOver = false;
   for (const h of holders) if (store.hit(`relay:holder:${h}`, HOUR, now) > limits.perHolderPerHour) holderOver = true;
   if (holderOver) return "rate_holder";
   if (store.hit("relay:global", DAY, now) > limits.globalPerDay) return "rate_global";
+  let accountsOver = false;
+  for (let i = 0; i < accountCreates; i++) if (store.hit("relay:accounts", DAY, now) > limits.accountCreatesPerDay) accountsOver = true;
+  if (accountsOver) return "rate_accounts";
   return null;
 }
 
@@ -47,7 +53,7 @@ export async function relay(body: unknown, ip: string, deps: RelayDeps): Promise
   if (typeof tx64 !== "string") return { ok: false, status: 400, error: "bad_request" };
   const verdict = checkRelayTx(tx64, deps.policy);
   if (!verdict.ok) return { ok: false, status: 400, error: verdict.error };
-  const limited = overLimit(deps.store, deps.limits, ip, verdict.signers, deps.now);
+  const limited = overLimit(deps.store, deps.limits, ip, verdict.signers, deps.now, verdict.accountCreates);
   if (limited) return { ok: false, status: 429, error: limited };
   verdict.tx.sign([deps.relayer]);
   try {

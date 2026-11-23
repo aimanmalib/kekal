@@ -92,7 +92,7 @@
       "retryStatuses": [429, 500, 502, 503, 504]
     },
     "relay": {
-      "_doc": "POST /api/relay pays the fee for a transaction the holder already signed. Only these Kekal instructions, associated-account creation for an allowed mint, and TransferChecked of an allowed mint out of the signer's own associated account pass. The relayer key may appear only as fee payer and in the account slots named in payerAccounts. Limits are fixed windows.",
+      "_doc": "POST /api/relay pays the fee for a transaction the holder already signed. At least one key other than the relayer must sign. Only these Kekal instructions, TransferChecked of a non-zero amount of an allowed mint out of the signer's own associated account, and creation of the associated account that transfer pays into (at most maxAccountCreates per transaction, accountCreatesPerDay overall) pass. The relayer key may appear only as fee payer and in the account slots named in payerAccounts. Limits are fixed windows.",
       "keyRole": "relayer",
       "allowedInstructions": [
         "transfer_holder", "file_claim", "confirm_resolved", "escalate",
@@ -100,10 +100,12 @@
       ],
       "payerAccounts": ["payer", "payout.payer"],
       "maxInstructions": 4,
+      "maxAccountCreates": 1,
       "maxTxBytes": 1232,
       "perHolderPerHour": 10,
       "perIpPerHour": 30,
       "globalPerDay": 2000,
+      "accountCreatesPerDay": 100,
       "preflightCommitment": "confirmed"
     },
     "session": {
