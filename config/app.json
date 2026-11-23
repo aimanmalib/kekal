@@ -124,6 +124,16 @@
         "2400:cb00::/32", "2606:4700::/32", "2803:f800::/32", "2405:b500::/32", "2405:8100::/32", "2a06:98c0::/29", "2c0f:f248::/32"
       ]
     },
+    "site": {
+      "_doc": "Public address and link previews. KEKAL_SITE_URL overrides url. robots.txt lets every crawler read pages but not /api/; previewBots get their own group so chat and social link previews keep working if the default group is ever narrowed. The OG card is apps/web/src/app/opengraph-image.png, drawn from brand/og-card.html by brand/render-og.mjs.",
+      "url": "https://kekal.sasateguh.com",
+      "disallow": ["/api/"],
+      "previewBots": [
+        "Twitterbot", "facebookexternalhit", "Facebot", "LinkedInBot", "Slackbot-LinkExpanding", "Discordbot",
+        "TelegramBot", "WhatsApp", "Applebot"
+      ],
+      "ogImage": { "width": 1200, "height": 630, "maxBytes": 307200, "altMaxChars": 300 }
+    },
     "currency": "kUSD",
     "data": { "backend": "sqlite", "sqlitePath": "data/kekal.db", "migrationsDir": "supabase/migrations" }
   }
