@@ -48,3 +48,12 @@ export function relayRuntime(): { cluster: RuntimeCluster; relayer: Keypair } {
   cached = { cluster, relayer: loadKeypair(cluster.keysDir, webConfig.relay.keyRole) };
   return cached;
 }
+
+/** The relayer's public address for pages that build transactions in the browser, or null when its key is not loaded. */
+export function relayerAddress(): string | null {
+  try {
+    return relayRuntime().relayer.publicKey.toBase58();
+  } catch {
+    return null;
+  }
+}

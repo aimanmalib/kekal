@@ -3,12 +3,12 @@ import { SiteFrame } from "@/components/SiteFrame";
 import { HolderPanel, type PanelSettings } from "@/components/warranty/HolderPanel";
 import { WarrantyDetails, WarrantyMissing } from "@/components/warranty/WarrantyDetails";
 import { runtimeCluster, webConfig } from "@/lib/config";
-import { dataStore } from "@/lib/data";
 import { translator } from "@/lib/i18n";
 import { localeMetadata } from "@/lib/page-metadata";
-import { relayRuntime } from "@/lib/relay/runtime";
+import { relayerAddress } from "@/lib/relay/runtime";
 import { requestLang } from "@/lib/request-lang";
 import { readWarranty } from "@/lib/warranty/read";
+import { termsStore } from "@/lib/warranty/terms-store";
 
 export const dynamic = "force-dynamic";
 
@@ -16,22 +16,6 @@ export async function generateMetadata(): Promise<Metadata> {
   const t = translator(await requestLang());
   // A warranty page is for its holder: keep it out of search results.
   return { ...(await localeMetadata()), title: `${t("card.title")} · ${t("app.name")}`, robots: { index: false, follow: false } };
-}
-
-function relayerAddress(): string | null {
-  try {
-    return relayRuntime().relayer.publicKey.toBase58();
-  } catch {
-    return null;
-  }
-}
-
-function termsStore() {
-  try {
-    return dataStore();
-  } catch {
-    return { getWarrantyTerms: () => null };
-  }
 }
 
 export default async function WarrantyPage({ params }: { params: Promise<{ pda: string }> }) {

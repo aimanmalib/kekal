@@ -6,6 +6,7 @@ import {
   hashJson,
   parseKekalEvents,
   readOnlyProgram,
+  ShopStatus,
   sha256Bytes,
   toHex,
   type ClaimAccount,
@@ -83,6 +84,17 @@ async function readTimeline(conn: Connection, program: KekalProgram, pda: Public
   return entries;
 }
 
+/**
+ * Marking a shop silent touches the shop, not its warranties, so it is missing from a warranty's own history. For a
+ * silent shop that transaction is looked up among the shop's recent ones and merged in, newest first.
+ */
+export function withShopSilence(timeline: TimelineEntry[], shopEntries: TimelineEntry[]): TimelineEntry[] {
+  const known = new Set(timeline.map((e) => e.signature));
+  const extra = shopEntries.filter((e) => !e.failed && e.events.includes("ShopDeclaredDormant") && !known.has(e.signature));
+  if (extra.length === 0) return timeline;
+  return [...timeline, ...extra].sort((a, b) => (b.blockTime ?? Number.MAX_SAFE_INTEGER) - (a.blockTime ?? Number.MAX_SAFE_INTEGER));
+}
+
 /** Unix time of the latest confirmed block, or null. Programs check deadlines against this clock, not ours. */
 async function chainTime(conn: Connection): Promise<number | null> {
   try {
@@ -124,6 +136,7 @@ export async function readWarranty(raw: string, deps: ReadDeps): Promise<ReadRes
     ]);
     if (!shopInfo || !config) return { ok: false, reason: "not_found" };
     const shop = decodeAccount<ShopAccount>(program, "shop", shopInfo.data);
+    const shopEntries = shop.status === ShopStatus.Dormant ? await readTimeline(conn, program, warranty.shop, cluster) : [];
     const claim = claimInfo && claimKey ? decodeAccount<ClaimAccount>(program, "claim", claimInfo.data) : null;
     const json = deps.store.getWarrantyTerms(pda.toBase58());
     const view = buildView({
@@ -135,7 +148,7 @@ export async function readWarranty(raw: string, deps: ReadDeps): Promise<ReadRes
       claim: claim && claimKey ? { ...claim, address: claimKey.toBase58() } : null,
       limits: config.limits,
       terms: { json, matches: json === null ? null : termsMatch(json, warranty.termsHash) },
-      timeline,
+      timeline: withShopSilence(timeline, shopEntries),
       clockSkew: chainNow === null ? 0 : chainNow - Math.floor(Date.now() / 1000),
     });
     return { ok: true, view };
