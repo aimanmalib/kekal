@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { webConfig } from "@/lib/config";
-import type { Lang, MessageKey, Translate } from "@/lib/i18n";
+import { runtimeCluster, webConfig } from "@/lib/config";
+import { fill, type Lang, type MessageKey, type Translate } from "@/lib/i18n";
 import { LangSwitch } from "./LangSwitch";
 
 /** Masthead, page body and footer shared by every page. */
@@ -21,7 +21,7 @@ export function SiteFrame({ lang, t, children }: { lang: Lang; t: Translate; chi
         />
       </header>
       {children}
-      <footer className="foot">{t("footer.network")}</footer>
+      <footer className="foot">{fill(t("footer.network"), { network: t(`cluster.${runtimeCluster().name}` as MessageKey) })}</footer>
     </div>
   );
 }

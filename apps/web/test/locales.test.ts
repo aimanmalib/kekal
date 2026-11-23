@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import en from "../../../locales/en.json";
 import ms from "../../../locales/ms.json";
+import app from "../../../config/app.json";
 import { pickLang, translator } from "../src/lib/i18n";
 
 describe("locales", () => {
@@ -9,6 +10,11 @@ describe("locales", () => {
   });
   it("no empty strings", () => {
     for (const dict of [en, ms]) for (const [k, v] of Object.entries(dict)) expect(v.trim(), k).not.toBe("");
+  });
+  it("every configured cluster has a name for the footer", () => {
+    for (const name of Object.keys(app.clusters)) expect(Object.keys(en), name).toContain(`cluster.${name}`);
+    expect(en["footer.network"]).toContain("{network}");
+    expect(ms["footer.network"]).toContain("{network}");
   });
 });
 
