@@ -19,5 +19,6 @@ Index of the architecture decision records (ADRs) for Kekal; each record explain
 | [0012](decisions/0012-warranty-page.md) | Warranty page and read-only check | accepted |
 | [0013](decisions/0013-demo-and-examples.md) | Guided demo and finished examples | accepted |
 | [0014](decisions/0014-shop-and-arbiter-boards.md) | Shop and arbiter boards | accepted |
+| [0015](decisions/0015-browser-tests.md) | Browser end-to-end tests | accepted |
 
 New decisions: add an ADR as `decisions/NNNN-short-title.md` and a line here.

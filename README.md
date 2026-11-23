@@ -68,10 +68,10 @@ chain:
 | D | Warranty ends with no claim, anyone releases it | reserve back to the shop |
 | E | Shop rejects, buyer escalates, the arbiter rules for the buyer | reserve paid to the buyer |
 
-![Terminal output of scripts/localnet.sh: paths A to E pass on a local validator](docs/media/lifecycle-localnet.svg)
+The same paths B and C also run in a browser on the web app's `/demo` page, with no wallet. This capture is
+WebKit emulating an iPhone 13 at the end of path B, taken by the browser tests below against a local validator:
 
-This capture is the real output of one run from a clean `git archive` of this repository; only the transaction signatures
-are shortened and a Node notice about optional native bindings is left out.
+![The /demo page on an iPhone-sized screen after path B: three steps (warranty issued, claim filed, reserve paid), each with a link to its public record, and the warranty card stamped Paid](docs/media/demo-silent-paid-iphone.png)
 
 ## Run it yourself
 
@@ -98,6 +98,7 @@ with status 0; the counts are in the next section. The first `anchor build` comp
 | SDK tests (PDAs, instruction builders, decoders, hashing vectors) | `packages/sdk/test/` | 51 | pass |
 | Script tests (cluster config, locales, how warranties are issued) | `scripts/test/` | 12 | pass |
 | Lifecycle paths A to E on a local validator | `scripts/lifecycle.ts` | 5 | pass |
+| Browser tests (Playwright: Chromium desktop and WebKit iPhone 13) | `e2e/tests/` | 5 per browser | pass |
 
 The program tests set the clock directly, so every deadline is checked on both sides of its edge: answering at the last
 second of the window passes, one second later fails, and settling for silence fails at that same last second and passes one
@@ -108,6 +109,13 @@ stranger tries (claim, transfer, escalation, withdrawal) fails and changes nothi
 state's exit is refused one second early and accepted on time. The attack tests try another shop's vault, a fake mint, a
 warranty paired with the wrong shop, a second payout by another route, a missing signature, a former holder, extreme
 windows and amounts, and a deposit in the wrong mint.
+
+The browser tests start their own local validator, sample warranties and test wallets, serve the built web app and then
+drive it: path B and path C on `/demo` until the reserve is paid; on `/kedai` a seller with an injected test wallet opens a
+shop, deposits, checks in and issues a card (the PDF and both PNG cards are downloaded and checked), the buyer activates it
+on a phone and claims, the shop rejects, the buyer escalates and the arbiter pays the buyer on `/timbang`; and every page in
+English and Bahasa Melayu at 390 and 320 px wide must not scroll sideways. Run them with `bash scripts/e2e.sh` after
+`anchor build`; the port, widths and pages are in [`config/e2e.json`](config/e2e.json).
 
 ## Instructions
 
