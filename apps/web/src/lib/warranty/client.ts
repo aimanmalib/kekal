@@ -46,7 +46,7 @@ export class ActionError extends Error {
   }
 }
 
-async function rpc<T>(method: string, params: unknown[]): Promise<T> {
+export async function rpc<T>(method: string, params: unknown[]): Promise<T> {
   let res: Response;
   try {
     res = await fetch("/api/rpc", {
@@ -86,14 +86,19 @@ export async function sendViaRelay(
   }
   const body = (await res.json().catch(() => ({}))) as { signature?: string; error?: string };
   if (!res.ok || !body.signature) throw new ActionError(body.error ?? "send_failed");
+  return waitConfirmed(body.signature, opts);
+}
+
+/** Polls the signature until it is confirmed; a failed transaction or the timeout throws. */
+export async function waitConfirmed(signature: string, opts: { pollMs: number; timeoutMs: number }): Promise<string> {
   const deadline = Date.now() + opts.timeoutMs;
   while (Date.now() < deadline) {
-    const st = await rpc<{ value: ({ err: unknown; confirmationStatus?: string } | null)[] }>("getSignatureStatuses", [[body.signature]]).catch(
+    const st = await rpc<{ value: ({ err: unknown; confirmationStatus?: string } | null)[] }>("getSignatureStatuses", [[signature]]).catch(
       () => null,
     );
     const s = st?.value[0];
     if (s?.err) throw new ActionError("failed_on_chain");
-    if (s && (s.confirmationStatus === "confirmed" || s.confirmationStatus === "finalized")) return body.signature;
+    if (s && (s.confirmationStatus === "confirmed" || s.confirmationStatus === "finalized")) return signature;
     await new Promise((r) => setTimeout(r, opts.pollMs));
   }
   throw new ActionError("not_confirmed");

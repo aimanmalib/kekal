@@ -18,12 +18,18 @@
     "@kekal/sdk": "workspace:*",
     "@kekal/server": "workspace:*",
     "@solana/spl-token": "0.4.15",
+    "@solana/wallet-standard-features": "1.5.0",
     "@solana/web3.js": "1.99.0",
+    "@wallet-standard/app": "1.1.1",
+    "@wallet-standard/base": "1.1.1",
     "next": "16.4.6",
+    "pdf-lib": "1.17.1",
+    "qrcode": "1.5.4",
     "react": "19.3.1",
     "react-dom": "19.3.1"
   },
   "devDependencies": {
+    "@types/qrcode": "1.5.6",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "vitest": "5.1.0"

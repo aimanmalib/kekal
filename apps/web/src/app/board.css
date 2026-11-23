@@ -1,0 +1,215 @@
+/* /kedai, /timbang and the facts block of the home page. Tokens only (globals.css); see docs/DESIGN.md. */
+.board-page {
+  display: grid;
+  gap: var(--space-4);
+  padding-top: var(--space-4);
+}
+
+.board-page > *,
+.board > *,
+.board-section > * {
+  min-width: 0;
+}
+
+.board-page h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--step-3);
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  max-width: 16ch;
+  text-wrap: balance;
+}
+
+.board {
+  display: grid;
+  gap: var(--space-3);
+  max-width: 44rem;
+}
+
+.board-who {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: var(--step--1);
+}
+
+.board-who .mono {
+  color: var(--ink);
+}
+
+.board-section {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--rule);
+}
+
+.board-section h2,
+.issued h3 {
+  margin: 0 0 var(--space-1);
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  font-weight: 500;
+}
+
+.board-section > p {
+  max-width: var(--measure);
+  margin: 0 0 var(--space-2);
+}
+
+/* Figures: label over a mono number, separated by hairlines like fields on a certificate. */
+.figures {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  gap: 0;
+  margin: 0 0 var(--space-3);
+  border-top: 1px solid var(--rule);
+}
+
+.figures > div {
+  min-width: 0;
+  padding: 0.75rem 1rem 0.75rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.figures dt {
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}
+
+.figures dd {
+  margin: 0.25rem 0 0;
+  font-size: var(--step-1);
+  overflow-wrap: anywhere;
+}
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  max-width: 100%;
+}
+
+.button-row .button,
+.button-row .button + .button {
+  margin: 0;
+}
+
+.form-pair {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.form-pair > * {
+  min-width: 0;
+}
+
+.board-funds {
+  max-width: 24rem;
+}
+
+.wallet-picker {
+  max-width: var(--measure);
+}
+
+.wallet-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wallet-list .button {
+  gap: var(--space-1);
+  margin: 0;
+}
+
+.claim-list,
+.card-list,
+.home-links {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.claim-list > li + li,
+.card-list > li + li {
+  margin-top: var(--space-2);
+}
+
+.card-list > li {
+  overflow-wrap: anywhere;
+}
+
+/* The card just issued: QR on paper inside the double certificate frame. */
+.issued {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: start;
+  margin-bottom: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--ink);
+  border-radius: var(--card-radius);
+  box-shadow: inset 0 0 0 4px var(--paper), inset 0 0 0 5px var(--rule);
+  max-width: 100%;
+}
+
+.issued > * {
+  max-width: 100%;
+}
+
+.issued-qr {
+  width: min(14rem, 100%);
+  height: auto;
+}
+
+.qr-paper {
+  fill: var(--paper);
+}
+
+.qr-ink {
+  fill: var(--ink);
+}
+
+.issued .saved-card {
+  display: grid;
+  gap: 0.25rem;
+  width: 100%;
+}
+
+.home-facts {
+  margin-top: var(--space-3);
+  max-width: var(--measure);
+}
+
+.home-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin: 0 0 var(--space-3);
+}
+
+.home-cta .button,
+.home-cta .button-link {
+  margin: 0;
+}
+
+.home-facts .note .mono {
+  font-size: var(--step--1);
+}
+
+.home-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.home-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+}

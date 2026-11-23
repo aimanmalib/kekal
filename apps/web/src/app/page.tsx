@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import { SiteFrame } from "@/components/SiteFrame";
+import { HomeFacts } from "@/components/HomeFacts";
 import { WarrantyCard } from "@/components/WarrantyCard";
-import { sampleReserve, webConfig } from "@/lib/config";
+import { clusterSettings } from "@kekal/server";
+import { runtimeCluster, sampleReserve, webConfig } from "@/lib/config";
 import { translator, type MessageKey } from "@/lib/i18n";
 import { localeMetadata } from "@/lib/page-metadata";
 import { requestLang } from "@/lib/request-lang";
+import { readProgramStats } from "@/lib/shop/read";
 
 const rules: MessageKey[] = ["home.rule.silent", "home.rule.gone", "home.rule.expired"];
 
@@ -16,6 +19,11 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function Home() {
   const lang = await requestLang();
   const t = translator(lang);
+  const cluster = runtimeCluster();
+  const stats = await Promise.race([
+    readProgramStats(Math.floor(Date.now() / 1000), { cluster }),
+    new Promise<null>((resolve) => setTimeout(() => resolve(null), webConfig.home.statsTimeoutMs)),
+  ]).catch(() => null);
   return (
     <SiteFrame lang={lang} t={t}>
       <main className="home">
@@ -27,6 +35,17 @@ export default async function Home() {
               <li key={k}>{t(k)}</li>
             ))}
           </ul>
+          <HomeFacts
+            t={t}
+            stats={stats}
+            decimals={cluster.tokenDecimals}
+            currency={webConfig.currency}
+            programId={cluster.programId}
+            explorer={clusterSettings(cluster.name).explorerAddress.replace("{address}", cluster.programId)}
+            network={t(`cluster.${cluster.name}` as MessageKey)}
+            repoUrl={webConfig.home.repoUrl}
+            videoUrl={webConfig.home.videoUrl}
+          />
         </section>
         <WarrantyCard
           t={t}
