@@ -24,8 +24,11 @@ with only the address needs a read-only view (`/semak`).
   install-and-service promise, in English and Malay) and the demo routes record them.
 - **Card key.** The key stays in the URL fragment (`#k=<base58 seed>`), which browsers never send to the server. First
   activation generates a new seed in the browser, sends `transfer_holder` signed by the printed key through the
-  relayer, keeps the new seed in `localStorage` and shows the new card link once; the fragment is then removed from the
-  address bar. A printed key that no longer holds the warranty shows a "take the card back to the shop" warning.
+  relayer and shows the new card link once; the fragment is then removed from the address bar. The new seed is written
+  to `localStorage` as pending (`<storagePrefix><address>.pending`) before the transaction is sent, and becomes the saved
+  key when the chain shows it as holder: right after confirmation, after re-reading the holder when the send reported an
+  error or no confirmation (`activationRecheck`), or on any later visit. A timeout, a closed tab or a locked phone during
+  activation therefore cannot leave the warranty held by a key nobody has. A printed key that no longer holds the warranty shows a "take the card back to the shop" warning.
 - **Actions.** Buttons mirror the program's checks (pure `holderActions`), and every transaction is built in the
   browser, signed by the holder key and paid by the relayer. Steps anyone may send (15 to 20) appear once due; the
   visitor's holder key, or a throwaway key, co-signs as an extra read-only account so the relayer's "never sign alone"

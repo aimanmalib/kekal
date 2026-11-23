@@ -51,6 +51,8 @@ export default async function WarrantyPage({ params }: { params: Promise<{ pda: 
   const settings: PanelSettings = {
     keyFragment: w.keyFragment,
     storagePrefix: w.storagePrefix,
+    pendingKeysMax: w.pendingKeysMax,
+    activationRecheck: w.activationRecheck,
     confirmPollMs: w.confirmPollMs,
     confirmTimeoutMs: w.confirmTimeoutMs,
     claimMaxChars: w.claimMaxChars,

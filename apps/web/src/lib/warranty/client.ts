@@ -1,6 +1,6 @@
 // Browser side of /w/[pda]: the card key, transaction building and the relayer round trip.
 // The card key lives in the URL fragment and in this browser's storage; it is never sent to the server.
-import { base58 as bs58, readOnlyProgram, type KekalProgram } from "@kekal/sdk";
+import { accountFieldOffset, base58 as bs58, readOnlyProgram, type KekalProgram } from "@kekal/sdk";
 import { Connection, Keypair, PublicKey, TransactionMessage, VersionedTransaction, type TransactionInstruction } from "@solana/web3.js";
 
 /** The 32-byte seed in `#<param>=<base58>`, or null when absent or malformed. */
@@ -99,6 +99,17 @@ export async function sendViaRelay(
   throw new ActionError("not_confirmed");
 }
 
+/** The current card holder as the chain sees it (confirmed): only the 32 holder bytes are fetched. Network trouble throws. */
+export async function chainHolder(pda: string, programId: string): Promise<string> {
+  const offset = accountFieldOffset("Warranty", "holder");
+  const r = await rpc<{ value: { owner: string; data: [string, string] } | null }>("getAccountInfo", [
+    pda,
+    { encoding: "base64", commitment: "confirmed", dataSlice: { offset, length: 32 } },
+  ]);
+  if (!r.value || r.value.owner !== programId) throw new ActionError("network");
+  return new PublicKey(fromBase64(r.value.data[0])).toBase58();
+}
+
 /** Base-unit balance of an associated token account, or 0 when it does not exist yet. Network trouble throws. */
 export async function tokenBalance(account: string): Promise<bigint> {
   try {
@@ -114,4 +125,8 @@ export function toBase64(bytes: Uint8Array): string {
   let s = "";
   for (const b of bytes) s += String.fromCharCode(b);
   return btoa(s);
+}
+
+export function fromBase64(text: string): Uint8Array {
+  return Uint8Array.from(atob(text), (c) => c.charCodeAt(0));
 }

@@ -6,7 +6,8 @@ import { Keypair, PublicKey, type TransactionInstruction } from "@solana/web3.js
 import type { PermissionlessAction } from "@kekal/sdk";
 import { fill, translator, type Lang, type MessageKey } from "@/lib/i18n";
 import { activateIxs, fileClaimIxs, holderClaimIxs, holderTokenAccount, evidenceHash, settleIxs, sendIxs } from "@/lib/warranty/actions";
-import { ActionError, cardLink, clientProgram, encodeSeed, keypairFromSeed, newSeed, seedFromFragment, sendViaRelay, tokenBalance } from "@/lib/warranty/client";
+import { activateCard, resolveKey } from "@/lib/warranty/card-store";
+import { ActionError, cardLink, chainHolder, clientProgram, keypairFromSeed, newSeed, seedFromFragment, sendViaRelay, tokenBalance } from "@/lib/warranty/client";
 import { clock, formatUnits } from "@/lib/warranty/format";
 import { holderActions, keyState, type WarrantyView } from "@/lib/warranty/view";
 import { ClaimForm, SendForm } from "./HolderForms";
@@ -14,6 +15,8 @@ import { ClaimForm, SendForm } from "./HolderForms";
 export interface PanelSettings {
   keyFragment: string;
   storagePrefix: string;
+  pendingKeysMax: number;
+  activationRecheck: { tries: number; waitMs: number };
   confirmPollMs: number;
   confirmTimeoutMs: number;
   claimMaxChars: number;
@@ -31,6 +34,7 @@ interface Props {
   settings: PanelSettings;
 }
 
+const MAY_HAVE_LANDED = new Set(["network", "not_confirmed"]);
 const ERRORS = new Set(["send_failed", "rate_ip", "rate_holder", "rate_global", "network", "failed_on_chain", "not_confirmed", "relayer_unavailable"]);
 
 export function HolderPanel({ view: v, lang, relayer, settings: s }: Props) {
@@ -48,17 +52,29 @@ export function HolderPanel({ view: v, lang, relayer, settings: s }: Props) {
   const [balance, setBalance] = useState<bigint | null>(null);
   const storageKey = s.storagePrefix + v.pda;
 
+  // Card key from the link. Saved key from this browser, after promoting a pending activation key the chain now shows
+  // as holder (an activation whose confirmation was lost); a promoted key's card link is shown, as it never was.
   useEffect(() => {
     const seed = seedFromFragment(window.location.hash, s.keyFragment);
     if (seed) setCard(keypairFromSeed(seed));
-    const saved = window.localStorage.getItem(storageKey);
-    const savedSeed = saved ? seedFromFragment(`${s.keyFragment}=${saved}`, s.keyFragment) : null;
-    if (savedSeed) setStored(keypairFromSeed(savedSeed));
     const tick = () => setNow(Math.floor(Date.now() / 1000) + v.clockSkew);
     tick();
     const id = window.setInterval(tick, 1000);
     return () => window.clearInterval(id);
-  }, [s.keyFragment, storageKey, v.clockSkew]);
+  }, [s.keyFragment, v.clockSkew]);
+
+  const holder = v.warranty.holder;
+  useEffect(() => {
+    const r = resolveKey(window.localStorage, storageKey, holder);
+    const savedSeed = r.seed ? seedFromFragment(`${s.keyFragment}=${r.seed}`, s.keyFragment) : null;
+    setStored(savedSeed ? keypairFromSeed(savedSeed) : null);
+    if (r.promoted && savedSeed) showCardLink(savedSeed);
+  }, [holder, storageKey, s.keyFragment]);
+
+  function showCardLink(seed: Uint8Array) {
+    setFresh(cardLink(window.location.origin, v.pda, s.keyFragment, seed));
+    window.history.replaceState(null, "", `/w/${v.pda}`);
+  }
 
   const state = keyState(v.warranty.holder, stored?.publicKey.toBase58() ?? null, card?.publicKey.toBase58() ?? null);
   const holderKey = state === "holder" ? stored : state === "card-unactivated" ? card : null;
@@ -97,16 +113,39 @@ export function HolderPanel({ view: v, lang, relayer, settings: s }: Props) {
   const program = () => clientProgram(v.programId);
   const relayerKey = () => new PublicKey(relayer!);
 
+  // The new key is stored as pending before sending (see card-store), so a lost confirmation cannot lose the card.
   function activate() {
-    if (!card) return;
+    if (!card || !relayer) return;
     const seed = newSeed();
     const next = keypairFromSeed(seed);
-    void run(() => activateIxs(program(), v, card.publicKey, next.publicKey), [card], () => {
-      window.localStorage.setItem(storageKey, encodeSeed(seed));
-      setStored(next);
-      setFresh(cardLink(window.location.origin, v.pda, s.keyFragment, seed));
-      window.history.replaceState(null, "", `/w/${v.pda}`);
-    });
+    setBusy(true);
+    setError(null);
+    setDone(null);
+    activateCard(seed, {
+      storage: window.localStorage,
+      storageKey,
+      maxPending: s.pendingKeysMax,
+      send: async () =>
+        sendViaRelay(await activateIxs(program(), v, card.publicKey, next.publicKey), relayer, [card], {
+          pollMs: s.confirmPollMs,
+          timeoutMs: s.confirmTimeoutMs,
+        }),
+      chainHolder: () => chainHolder(v.pda, v.programId),
+      recheck: s.activationRecheck,
+    })
+      .then((r) => {
+        const kept = seedFromFragment(`${s.keyFragment}=${r.seed}`, s.keyFragment)!;
+        setStored(keypairFromSeed(kept));
+        showCardLink(kept);
+        if (r.kind === "confirmed") setDone(r.signature);
+        router.refresh();
+      })
+      .catch((e: unknown) => {
+        const code = e instanceof ActionError ? e.code : "generic";
+        // The send may still land: the new key is kept as pending and taken up on the next visit.
+        setError(MAY_HAVE_LANDED.has(code) ? "activation_pending" : ERRORS.has(code) ? code : "generic");
+      })
+      .finally(() => setBusy(false));
   }
 
   const due = v.next && now !== null && now >= v.next.dueAt ? v.next.action : null;

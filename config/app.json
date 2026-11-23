@@ -185,9 +185,11 @@
       "ogImage": { "width": 1200, "height": 630, "maxBytes": 307200, "altMaxChars": 300 }
     },
     "warrantyPage": {
-      "_doc": "/w/[pda] and /semak. The card key travels in the URL fragment (#<keyFragment>=<base58 seed>) and never reaches the server; after activation the new key stays in this browser under storagePrefix + warranty address. The timeline lists the latest timelineLimit transactions of the warranty; decoded events are cached per signature in memory (eventCacheSize). issueTypes are the claim categories offered to the buyer (labels: claim.issue.<type> in locales).",
+      "_doc": "/w/[pda] and /semak. The card key travels in the URL fragment (#<keyFragment>=<base58 seed>) and never reaches the server; after activation the new key stays in this browser under storagePrefix + warranty address; it is written there as pending (suffix .pending, at most pendingKeysMax keys) before the activation is sent and promoted once the chain shows it as holder. After a failed or unconfirmed activation send the holder is read activationRecheck.tries times, waitMs apart, before the page says the result is not known yet. The timeline lists the latest timelineLimit transactions of the warranty; decoded events are cached per signature in memory (eventCacheSize). issueTypes are the claim categories offered to the buyer (labels: claim.issue.<type> in locales).",
       "keyFragment": "k",
       "storagePrefix": "kekal.card.",
+      "pendingKeysMax": 4,
+      "activationRecheck": { "tries": 6, "waitMs": 2500 },
       "timelineLimit": 12,
       "eventCacheSize": 1000,
       "confirmPollMs": 1500,
