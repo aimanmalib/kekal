@@ -1,0 +1,25 @@
+{
+  "name": "@kekal/keeper",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/main.ts",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run --reporter=dot"
+  },
+  "dependencies": {
+    "@kekal/sdk": "workspace:*",
+    "@kekal/server": "workspace:*",
+    "@solana/web3.js": "1.99.0"
+  },
+  "devDependencies": {
+    "tsx": "4.23.15",
+    "vitest": "5.1.0"
+  },
+  "exports": {
+    "./pass": "./src/pass.ts",
+    "./reader": "./src/reader.ts"
+  }
+}
