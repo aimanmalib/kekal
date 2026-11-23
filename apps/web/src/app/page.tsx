@@ -1,10 +1,17 @@
+import type { Metadata } from "next";
 import { LangSwitch } from "@/components/LangSwitch";
 import { WarrantyCard } from "@/components/WarrantyCard";
 import { sampleReserve, webConfig } from "@/lib/config";
 import { translator, type MessageKey } from "@/lib/i18n";
+import { localeMetadata } from "@/lib/page-metadata";
 import { requestLang } from "@/lib/request-lang";
 
 const rules: MessageKey[] = ["home.rule.silent", "home.rule.gone", "home.rule.expired"];
+
+// Listing the card here keeps its locale alt text; see src/lib/page-metadata.ts.
+export async function generateMetadata(): Promise<Metadata> {
+  return localeMetadata();
+}
 
 export default async function Home() {
   const lang = await requestLang();
