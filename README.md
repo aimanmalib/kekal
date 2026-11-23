@@ -188,7 +188,8 @@ live warranty, the buyer holds a QR bearer key with no wallet and no fees, and e
 
 I write software for small businesses in Malaysia. Rust and Solana are new to me. The design, code, tests and this README
 were produced with AI coding agents (Claude Code) that I run on my own server, and checked by separate AI review sessions.
-I am responsible for this project.
+I am responsible for this project. [AI_USAGE.md](AI_USAGE.md) lists the tools, what the AI produced, what I decided,
+how the work was checked and the limits of that review.
 
 ## License
 
