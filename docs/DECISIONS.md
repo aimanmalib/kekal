@@ -15,5 +15,6 @@ Index of the architecture decision records (ADRs) for Kekal; each record explain
 | [0008](decisions/0008-web-skeleton.md) | Web app skeleton, RPC proxy and off-chain store | accepted |
 | [0009](decisions/0009-relayer-and-sessions.md) | Fee relayer and wallet sessions | accepted |
 | [0010](decisions/0010-link-previews-and-robots.md) | Link previews and robots.txt | accepted |
+| [0011](decisions/0011-keeper-and-demo-api.md) | Keeper, no-wallet demo API and demo seeding | accepted |
 
 New decisions: add an ADR as `decisions/NNNN-short-title.md` and a line here.

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Single test gate: format, lint, program tests, SDK, script and web tests, web build, target sweep tests (needs cargo-sweep).
-#   KEKAL_LIFECYCLE=1  also runs paths A-E on a throwaway local validator (scripts/localnet.sh).
+#   KEKAL_LIFECYCLE=1  also runs paths A-E, then the demo steps + keeper check, on throwaway local validators
+#                      (scripts/localnet.sh).
 set -euo pipefail
 # Hooks export GIT_* that point at the real repository; nothing here may inherit them.
 while read -r v; do unset "$v"; done < <(env | sed -n 's/^\(GIT_[A-Z_]*\)=.*/\1/p')
@@ -49,5 +50,7 @@ bash scripts/test/sweep-target.test.sh
 if [ "${KEKAL_LIFECYCLE:-0}" = 1 ]; then
   step "lifecycle A-E on localnet"
   bash scripts/localnet.sh
+  step "demo steps + keeper on localnet"
+  LOCALNET_SCRIPT=demo-check.ts bash scripts/localnet.sh
 fi
 printf '\ngerbang-ujian: OK\n'

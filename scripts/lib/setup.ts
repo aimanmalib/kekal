@@ -5,6 +5,7 @@ import {
   hashJson,
   ix,
   shopPda,
+  ShopStatus,
   warrantyPda,
   type IssueParams,
   type KekalProgram,
@@ -98,22 +99,36 @@ export async function mintTokens(env: Env, owner: PublicKey, amount: bigint): Pr
   return ata;
 }
 
-/** Creates the shop (if missing) for `owner` and tops its free balance up to the deposit amount. */
-export async function ensureShop(env: Env, owner: Keypair, windows: ShopWindows, log: Log): Promise<PublicKey> {
+export interface ShopOptions {
+  /** Free balance to top up to; defaults to the lifecycle deposit. */
+  depositAmount?: string;
+  profileName?: string;
+}
+
+/**
+ * Creates the shop (if missing) for `owner` and tops its free balance up to the deposit amount. An existing active
+ * shop gets a heartbeat first, so a short heartbeat window (the shared demo shop) cannot lapse during set-up.
+ */
+export async function ensureShop(env: Env, owner: Keypair, windows: ShopWindows, log: Log, opts: ShopOptions = {}): Promise<PublicKey> {
   const { program, conn } = env;
   const shop = shopPda(program.programId, owner.publicKey);
-  if (!(await fetchShop(program, shop))) {
+  const existing = await fetchShop(program, shop);
+  if (!existing) {
     const createIx = await ix.createShop(program, {
       owner: owner.publicKey,
       mint: env.mint,
       windows,
       arbiter: env.roles.arbiter.publicKey,
-      profileHash: hashJson({ name: "Lifecycle test shop", owner: owner.publicKey.toBase58() }),
+      profileHash: hashJson({ name: opts.profileName ?? "Lifecycle test shop", owner: owner.publicKey.toBase58() }),
     });
     log("create_shop", await send(conn, owner, [createIx]));
+  } else if (existing.status === ShopStatus.Active) {
+    log("heartbeat", await send(conn, owner, [await ix.heartbeat(program, { owner: owner.publicKey })]));
+  } else {
+    throw new Error(`shop ${shop.toBase58()} is dormant; a dormant shop never reopens, configure a new owner key`);
   }
   const state = await fetchShop(program, shop);
-  const target = BigInt(env.c.lifecycle.depositAmount);
+  const target = BigInt(opts.depositAmount ?? env.c.lifecycle.depositAmount);
   if (state && state.freeBalance < target) {
     const amount = target - state.freeBalance;
     const ownerToken = await mintTokens(env, owner.publicKey, amount);

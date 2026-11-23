@@ -7,10 +7,14 @@
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
     "test": "vitest run --reporter=dot",
-    "lifecycle": "tsx lifecycle.ts"
+    "lifecycle": "tsx lifecycle.ts",
+    "seed-demo": "tsx seed-demo.ts",
+    "demo-check": "tsx demo-check.ts"
   },
   "dependencies": {
+    "@kekal/keeper": "workspace:*",
     "@kekal/sdk": "workspace:*",
+    "@kekal/server": "workspace:*",
     "@solana/spl-token": "0.4.15",
     "@solana/web3.js": "1.99.0"
   },

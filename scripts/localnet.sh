@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Starts a throwaway local validator with the built program, runs scripts/lifecycle.ts, stops it.
+# Starts a throwaway local validator with the built program, runs scripts/lifecycle.ts (or LOCALNET_SCRIPT, e.g.
+# demo-check.ts), stops it.
 # Needs `anchor build` first (target/deploy/kekal.so). Ports come from config/app.json (localnet).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -32,4 +33,4 @@ for _ in $(seq 1 90); do
 done
 solana cluster-version --url "$URL" >/dev/null 2>&1 || { echo "localnet: validator did not start" >&2; tail -n 20 "$LOG" >&2; exit 1; }
 
-pnpm --silent --filter @kekal/scripts exec tsx lifecycle.ts --cluster localnet "$@"
+pnpm --silent --filter @kekal/scripts exec tsx "${LOCALNET_SCRIPT:-lifecycle.ts}" --cluster localnet "$@"

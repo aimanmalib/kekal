@@ -19,6 +19,20 @@ export interface LifecycleSettings {
   timeoutSecs: number;
 }
 
+export interface DemoShopConfig {
+  role: string;
+  windows: ShopWindows;
+  depositAmount: string;
+}
+
+export interface DemoSettings {
+  reserve: string;
+  termSecs: number;
+  sharedShop: DemoShopConfig & { sellerFloat: string };
+  dyingShop: { windows: ShopWindows; sol: number };
+  showcaseShop: DemoShopConfig & { warranties: number; sol: number };
+}
+
 export interface ClusterConfig {
   name: string;
   rpcUrls: string[];
@@ -29,10 +43,12 @@ export interface ClusterConfig {
   tokenDecimals: number;
   limits: ConfigLimits;
   lifecycle: LifecycleSettings;
+  demo: DemoSettings;
 }
 
 interface AppConfig {
   defaultCluster: string;
+  web: { demo: { dyingShopsPerDay: number } };
   clusters: Record<string, Omit<ClusterConfig, "name">>;
 }
 

@@ -43,6 +43,28 @@ describe("config/app.json", () => {
       expect(BigInt(c.lifecycle.reserve) * 4n).toBeLessThanOrEqual(BigInt(c.lifecycle.depositAmount));
     });
 
+    it(`${name}: demo shop windows fit the limits; the shared shop matches the lifecycle shop (same owner key)`, () => {
+      const d = c.demo;
+      const fits = (w: typeof d.sharedShop.windows) => {
+        expect(w.responseSecs).toBeGreaterThanOrEqual(l.minResponseSecs);
+        expect(w.responseSecs).toBeLessThanOrEqual(l.maxResponseSecs);
+        expect(w.repairSecs).toBeGreaterThanOrEqual(l.minRepairSecs);
+        expect(w.repairSecs).toBeLessThanOrEqual(l.maxRepairSecs);
+        expect(w.disputeSecs).toBeGreaterThanOrEqual(l.minDisputeSecs);
+        expect(w.disputeSecs).toBeLessThanOrEqual(l.maxDisputeSecs);
+        expect(w.heartbeatSecs).toBeGreaterThanOrEqual(l.minHeartbeatSecs);
+        expect(w.heartbeatSecs).toBeLessThanOrEqual(l.maxHeartbeatSecs);
+        expect(w.graceSecs).toBeLessThanOrEqual(l.maxGraceSecs);
+      };
+      [d.sharedShop.windows, d.dyingShop.windows, d.showcaseShop.windows].forEach(fits);
+      expect(d.termSecs).toBeGreaterThanOrEqual(l.minTermSecs);
+      expect(d.termSecs).toBeLessThanOrEqual(l.maxTermSecs);
+      if (d.sharedShop.role === "demo-seller") expect(c.lifecycle.shopWindows).toEqual(d.sharedShop.windows);
+      // the float must cover at least one day of dying shops
+      expect(BigInt(d.sharedShop.sellerFloat)).toBeGreaterThanOrEqual(BigInt(d.reserve) * BigInt(app.web.demo.dyingShopsPerDay));
+      expect(BigInt(d.reserve) * BigInt(d.showcaseShop.warranties)).toBeLessThanOrEqual(BigInt(d.showcaseShop.depositAmount));
+    });
+
     it(`${name}: explorer template has a signature slot`, () => {
       expect(explorerUrl(c, "SIG")).toContain("SIG");
     });
