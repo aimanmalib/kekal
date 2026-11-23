@@ -125,7 +125,7 @@
       ]
     },
     "site": {
-      "_doc": "Public address and link previews. KEKAL_SITE_URL overrides url. robots.txt lets every crawler read pages but not /api/; previewBots get their own group so chat and social link previews keep working if the default group is ever narrowed. The OG card is apps/web/src/app/opengraph-image.png, drawn from brand/og-card.html by brand/render-og.mjs.",
+      "_doc": "Public address and link previews. KEKAL_SITE_URL overrides url. robots.txt lets every crawler read pages but not /api/; previewBots get their own group so chat and social link previews keep working if the default group is ever narrowed. The OG card is apps/web/src/app/opengraph-image.png, drawn by brand/render-og.mjs; its alt text is meta.ogAlt in the locale files.",
       "url": "https://kekal.sasateguh.com",
       "disallow": ["/api/"],
       "previewBots": [

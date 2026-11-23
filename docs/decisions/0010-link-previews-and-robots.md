@@ -11,13 +11,15 @@ image the link unfurls as a bare URL. The site also needs a `robots.txt` that ke
 ## Decision
 
 - **One static image, `apps/web/src/app/opengraph-image.png` (1200 × 630)**, picked up by the Next.js file
-  convention, with its alt text in `opengraph-image.alt.txt`. It is drawn by `brand/render-og.mjs` from the real
+  convention. Its alt text is `meta.ogAlt` in each locale file, never a `.alt.txt` beside the image (that file would
+  be English-only UI text outside the locales). It is drawn by `brand/render-og.mjs` from the real
   stylesheet tokens, the self-hosted fonts, the warranty card markup and the English locale text, so it cannot drift
   from the design brief. The script fails if the content overflows the canvas or the file is larger than
   `web.site.ogImage.maxBytes` (300 KB). The image is committed; the build does not render it.
 - **Metadata from `apps/web/src/lib/site.ts`**: `metadataBase` from `web.site.url` (overridden by `KEKAL_SITE_URL`),
   Open Graph title, description, site name and locale (`en_US` or `ms_MY`, the other as alternate) from the locale
-  files, and a `summary_large_image` Twitter card. No canonical URL is set in the root layout, because it would point
+  files, the card listed in `openGraph.images` and `twitter.images` with its configured size and the locale alt
+  text, and a `summary_large_image` Twitter card. No canonical URL is set in the root layout, because it would point
   every page at the home page.
 - **`robots.txt`**: every crawler may read pages but not `/api/`. The link-preview bots listed in
   `web.site.previewBots` get their own group with the same rules, so previews keep working if the default group is
@@ -25,6 +27,11 @@ image the link unfurls as a bare URL. The site also needs a `robots.txt` that ke
 
 ## Consequences
 
-- Changing the headline or card text means running `node brand/render-og.mjs` and committing the new PNG; a unit test
-  checks its size, byte limit and alt text length.
+- Changing the headline or card text means running `node brand/render-og.mjs`, committing the new PNG and updating
+  `meta.ogAlt` in both locales; a unit test checks its size, byte limit and alt text length.
+- Next.js attaches the file-convention image to the leaf page segment and replaces `openGraph.images` there unless the
+  page itself lists images. Until the home page reuses the layout metadata, the rendered `og:image` is the file
+  convention entry without alt text; `twitter:image:alt` already carries the locale alt text.
+- The robots test checks a fixed list of the bots the docs promise (WhatsApp, TelegramBot, Twitterbot, LinkedInBot,
+  facebookexternalhit), so removing one from config fails the test.
 - Only English text is in the image; the Malay page still gets Malay title and description tags.

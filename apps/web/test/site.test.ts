@@ -20,8 +20,13 @@ describe("siteUrl", () => {
 describe("robots", () => {
   const r = robotsFile({});
   const rules = Array.isArray(r.rules) ? r.rules : [r.rules];
-  it("names every preview bot in its own group, ahead of the default group", () => {
-    expect(rules[0]?.userAgent).toEqual(app.web.site.previewBots);
+  // The bots the docs promise previews for. A fixed list, so dropping one from config turns this red.
+  const promised = ["WhatsApp", "TelegramBot", "Twitterbot", "LinkedInBot", "facebookexternalhit"];
+  it("names the promised preview bots in their own group, ahead of the default group", () => {
+    const agents = rules[0]?.userAgent;
+    expect(Array.isArray(agents)).toBe(true);
+    expect(agents).toEqual(expect.arrayContaining(promised));
+    expect(agents).not.toContain("*");
     expect(rules.at(-1)?.userAgent).toBe("*");
   });
   it("lets every group read pages but not the API", () => {
@@ -42,6 +47,16 @@ describe("link preview metadata", () => {
     expect(m.openGraph).toMatchObject({ title: t("meta.title"), description: t("meta.description"), locale: "ms_MY" });
     expect(m.twitter).toMatchObject({ card: "summary_large_image" });
   });
+  it("lists the card with its size and the locale alt text, on Open Graph and Twitter", () => {
+    for (const lang of ["ms", "en"] as const) {
+      const t = translator(lang);
+      const m = pageMetadata(t, lang, {});
+      const card = { url: "/opengraph-image.png", width: og.width, height: og.height, alt: t("meta.ogAlt") };
+      expect(m.openGraph?.images).toEqual([card]);
+      expect((m.twitter as { images?: unknown })?.images).toEqual([card]);
+    }
+    expect(translator("ms")("meta.ogAlt")).not.toBe(translator("en")("meta.ogAlt"));
+  });
 });
 
 describe("opengraph-image.png", () => {
@@ -54,9 +69,14 @@ describe("opengraph-image.png", () => {
   it("stays under the byte limit", () => {
     expect(png.length).toBeLessThanOrEqual(og.maxBytes);
   });
-  it("has alt text of a readable length", () => {
-    const alt = asset("opengraph-image.alt.txt").toString("utf8").trim();
-    expect(alt.length).toBeGreaterThan(20);
-    expect(alt.length).toBeLessThanOrEqual(og.altMaxChars);
+  it("has alt text of a readable length in every locale", () => {
+    for (const lang of ["ms", "en"] as const) {
+      const alt = translator(lang)("meta.ogAlt");
+      expect(alt.length).toBeGreaterThan(20);
+      expect(alt.length).toBeLessThanOrEqual(og.altMaxChars);
+    }
+  });
+  it("has no .alt.txt beside it, so the locale alt text is the only one", () => {
+    expect(() => asset("opengraph-image.alt.txt")).toThrow();
   });
 });

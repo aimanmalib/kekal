@@ -27,10 +27,19 @@ export function robotsFile(env: Record<string, string | undefined> = process.env
 
 const ogLocale: Record<Lang, string> = { en: "en_US", ms: "ms_MY" };
 
-/** Title, description and the Open Graph / Twitter fields. The image itself is app/opengraph-image.png. */
+/** Path of the committed card (app/opengraph-image.png, served by the Next.js file convention). */
+export const ogImagePath = "/opengraph-image.png";
+
+/**
+ * Title, description and the Open Graph / Twitter fields. The card is listed here with its locale alt text, so the
+ * file convention (which only takes alt from a .alt.txt file) does not replace it.
+ */
 export function pageMetadata(t: Translate, lang: Lang, env: Record<string, string | undefined> = process.env): Metadata {
   const title = t("meta.title");
   const description = t("meta.description");
+  const images = [
+    { url: ogImagePath, width: siteConfig.ogImage.width, height: siteConfig.ogImage.height, alt: t("meta.ogAlt") },
+  ];
   return {
     metadataBase: siteUrl(env),
     title,
@@ -44,7 +53,8 @@ export function pageMetadata(t: Translate, lang: Lang, env: Record<string, strin
       alternateLocale: Object.entries(ogLocale)
         .filter(([l]) => l !== lang)
         .map(([, v]) => v),
+      images,
     },
-    twitter: { card: "summary_large_image", title, description },
+    twitter: { card: "summary_large_image", title, description, images },
   };
 }

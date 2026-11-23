@@ -22,6 +22,7 @@
   "lang.ms": "Bahasa Melayu",
   "meta.title": "Kekal: waranti yang kekal walaupun kedai tiada",
   "meta.description": "Kekal memegang wang waranti kedai di Solana. Jika kedai tidak menjawab tuntutan, pembeli dibayar. Jika kedai senyap, semua pemegang dibayar.",
+  "meta.ogAlt": "Kekal: waranti yang kekal walaupun kedai tiada. Tiga peraturan di sebelah contoh kad waranti dengan rizab 25.00 kUSD dan cap tembaga bertanda Paid kerana kedai senyap.",
   "home.lede": "Janji kedai untuk memasang dan menyelenggara barang yang dijual, disokong wang yang kedai tidak boleh tarik balik selagi waranti anda berjalan.",
   "home.rule.silent": "Kedai diam terhadap tuntutan anda: anda dibayar.",
   "home.rule.gone": "Kedai senyap terus: semua pemegang dibayar.",
