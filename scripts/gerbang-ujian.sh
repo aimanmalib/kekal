@@ -3,18 +3,10 @@
 #   KEKAL_LIFECYCLE=1  also runs paths A-E, then the demo steps + keeper check, on throwaway local validators
 #                      (scripts/localnet.sh).
 set -euo pipefail
-# Hooks export GIT_* that point at the real repository; nothing here may inherit them.
-while read -r v; do unset "$v"; done < <(env | sed -n 's/^\(GIT_[A-Z_]*\)=.*/\1/p')
-
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
-for d in "$HOME/.cargo/bin" "$HOME/.avm/bin" "$HOME/.local/share/solana/install/active_release/bin"; do
-  [ -d "$d" ] && PATH="$d:$PATH"
-done
-NODE22="$(ls -d "$HOME"/.nvm/versions/node/v22.*/bin 2>/dev/null | sort -V | tail -n 1 || true)"
-[ -n "$NODE22" ] && PATH="$NODE22:$PATH"
-export PATH
-node -e 'process.exit(+process.versions.node.split(".")[0] >= 22 ? 0 : 1)' || { echo "gerbang: Node >= 22 required" >&2; exit 1; }
+# shellcheck source=lib/toolchain.sh
+. scripts/lib/toolchain.sh
 
 step() { printf '\n== %s\n' "$*"; }
 

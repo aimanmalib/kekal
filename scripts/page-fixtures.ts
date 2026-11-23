@@ -3,9 +3,9 @@
  *   pnpm --filter @kekal/scripts exec tsx page-fixtures.ts --cluster localnet --dir <empty folder>
  * Seeds the demo shops, issues warranties from the shared demo shop to fresh card keys and writes:
  *   <dir>/keys/{relayer,demo-seller,arbiter}.json  throwaway localnet keys (KEKAL_KEYS_DIR for the web app)
- *   <dir>/keys/test-wallet.json                     a browser test wallet for /kedai: SOL for fees + kUSD to deposit
+ *   <dir>/keys/test-wallet[-N].json                 browser test wallets for /kedai (--wallets n, default 1): SOL + kUSD
  *   <dir>/kekal.db                                  terms text of each warranty (KEKAL_SQLITE_PATH)
- *   <dir>/fixtures.json                             mint, warranty addresses and card links (#k=<seed>)
+ *   <dir>/fixtures.json                             mint, wallet addresses, warranty addresses and card links (#k=<seed>)
  * Card seeds are localnet throwaways; never point this at devnet.
  */
 import { base58, readOnlyProgram } from "@kekal/sdk";
@@ -34,12 +34,19 @@ async function main() {
   const env: Env = { c, conn, program, roles, mint, mintAuthority: roles.admin };
   await seedDemo(env, roles.seller, Keypair.generate(), () => undefined);
 
-  const wallet = Keypair.generate();
-  await airdrop(conn, wallet.publicKey, c.lifecycle.airdropSol);
-  await mintTokens(env, wallet.publicKey, BigInt(c.lifecycle.mintAmount));
+  const walletCount = Number(args.wallets ?? "1");
+  const wallets: Keypair[] = [];
+  for (let i = 0; i < walletCount; i++) {
+    const wallet = Keypair.generate();
+    await airdrop(conn, wallet.publicKey, c.lifecycle.airdropSol);
+    await mintTokens(env, wallet.publicKey, BigInt(c.lifecycle.mintAmount));
+    wallets.push(wallet);
+  }
 
   mkdirSync(join(dir, "keys"), { recursive: true });
-  for (const [name, kp] of [["relayer", roles.feePayer], ["demo-seller", roles.seller], ["arbiter", roles.arbiter], ["test-wallet", wallet]] as const) {
+  const keyFiles: [string, Keypair][] = [["relayer", roles.feePayer], ["demo-seller", roles.seller], ["arbiter", roles.arbiter]];
+  wallets.forEach((w, i) => keyFiles.push([i === 0 ? "test-wallet" : `test-wallet-${i}`, w]));
+  for (const [name, kp] of keyFiles) {
     const file = join(dir, "keys", `${name}.json`);
     writeFileSync(file, JSON.stringify(Array.from(kp.secretKey)));
     chmodSync(file, 0o600);
@@ -56,7 +63,7 @@ async function main() {
     cards.push({ warranty: issued.warranty.toBase58(), fragment: `#k=${base58.encode(seed)}` });
   }
   store.close();
-  writeFileSync(join(dir, "fixtures.json"), JSON.stringify({ mint: mint.toBase58(), programId: program.programId.toBase58(), wallet: wallet.publicKey.toBase58(), cards }, null, 2));
+  writeFileSync(join(dir, "fixtures.json"), JSON.stringify({ mint: mint.toBase58(), programId: program.programId.toBase58(), wallet: wallets[0]?.publicKey.toBase58() ?? null, wallets: wallets.map((w) => w.publicKey.toBase58()), cards }, null, 2));
   console.log(`page-fixtures: ${cards.length} warranties, mint ${mint.toBase58()}`);
 }
 

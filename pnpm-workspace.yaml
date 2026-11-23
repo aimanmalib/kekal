@@ -2,6 +2,7 @@ packages:
   - packages/*
   - apps/*
   - scripts
+  - e2e
 minimumReleaseAgeExclude:
   - '@eslint/config-array@0.23.6'
   - eslint@10.15.0

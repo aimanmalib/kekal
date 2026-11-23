@@ -1,0 +1,42 @@
+{
+  "_doc": "Browser end-to-end tests (e2e/, run by scripts/e2e.sh): the port the built web app listens on, the timeouts a slow shared host needs, the widths and pages checked for horizontal overflow, and the devices each Playwright project emulates. Each project's lang is the language its /kedai and arbiter run uses.",
+  "port": 3311,
+  "healthTimeoutSecs": 180,
+  "testTimeoutSecs": 600,
+  "actionTimeoutSecs": 120,
+  "overflowWidths": [
+    390,
+    320
+  ],
+  "overflowPages": [
+    "/",
+    "/demo",
+    "/contoh",
+    "/kedai",
+    "/timbang",
+    "/semak"
+  ],
+  "projects": [
+    {
+      "name": "chromium",
+      "browser": "chromium",
+      "device": "Desktop Chrome",
+      "wallet": 0,
+      "lang": "en"
+    },
+    {
+      "name": "webkit-iphone13",
+      "browser": "webkit",
+      "device": "iPhone 13",
+      "wallet": 1,
+      "lang": "ms"
+    }
+  ],
+  "seller": {
+    "deposit": "100",
+    "product": "Water heater, installed",
+    "serial": "WH-0042"
+  },
+  "claimText": "The pipe joint leaks after installation.",
+  "rejectNote": "The leak is in the unit, not in our pipe work."
+}

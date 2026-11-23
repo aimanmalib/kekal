@@ -4,7 +4,7 @@
   "clusters": {
     "localnet": {
       "rpcUrls": ["http://127.0.0.1:18899"],
-      "validator": { "rpcPort": 18899, "faucetPort": 19900, "gossipPort": 18000, "dynamicPortRange": "18001-18040" },
+      "validator": { "rpcPort": 18899, "faucetPort": 19900, "gossipPort": 18000, "dynamicPortRange": "18001-18040", "readySlot": 50 },
       "explorerTx": "https://explorer.solana.com/tx/{sig}?cluster=custom&customUrl=http%3A%2F%2F127.0.0.1%3A18899",
       "explorerAddress": "https://explorer.solana.com/address/{address}?cluster=custom&customUrl=http%3A%2F%2F127.0.0.1%3A18899",
       "programId": null,
