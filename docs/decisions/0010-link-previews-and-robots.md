@@ -33,8 +33,10 @@ image the link unfurls as a bare URL. The site also needs a `robots.txt` that ke
   page itself lists images. So the root layout (`src/app/layout.tsx`) and every page, starting with the home page
   (`src/app/page.tsx`), export `generateMetadata` from one shared function (`src/lib/page-metadata.ts`), and each page renders exactly one `og:image` with the locale `og:image:alt`. A unit
   test fails if a page under `src/app` stops exporting metadata while the card file exists.
-- Rejected: moving the card to `public/`. It would drop the content-hashed URL Next.js gives the file (a CDN can keep
-  serving an old `.png` for hours after the card changes) and touch more files (render script, config, tests).
+- Rejected: moving the card to `public/`. It touches more files (render script, config, tests) for the same tag.
+- Because the page lists the image itself, `og:image` is the plain `/opengraph-image.png`, not the content-hashed URL
+  Next.js would generate; the route answers `Cache-Control: public, max-age=0, must-revalidate`. Preview services
+  that cache by URL can show an old card for a while after it changes; a version query on `ogImagePath` fixes that.
   Rollback: remove the export from a page; the card still shows, only without alt text.
 - The robots test checks a fixed list of the bots the docs promise (WhatsApp, TelegramBot, Twitterbot, LinkedInBot,
   facebookexternalhit), so removing one from config fails the test.
