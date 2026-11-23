@@ -6,6 +6,7 @@
       "rpcUrls": ["http://127.0.0.1:18899"],
       "validator": { "rpcPort": 18899, "faucetPort": 19900, "gossipPort": 18000, "dynamicPortRange": "18001-18040" },
       "explorerTx": "https://explorer.solana.com/tx/{sig}?cluster=custom&customUrl=http%3A%2F%2F127.0.0.1%3A18899",
+      "explorerAddress": "https://explorer.solana.com/address/{address}?cluster=custom&customUrl=http%3A%2F%2F127.0.0.1%3A18899",
       "programId": null,
       "keysDir": null,
       "mints": { "kusd": null, "usdc": null },
@@ -50,6 +51,7 @@
     "devnet": {
       "rpcUrls": ["https://api.devnet.solana.com"],
       "explorerTx": "https://explorer.solana.com/tx/{sig}?cluster=devnet",
+      "explorerAddress": "https://explorer.solana.com/address/{address}?cluster=devnet",
       "programId": null,
       "keysDir": "~/.config/kekal/keys",
       "mints": { "kusd": null, "usdc": null },
@@ -212,6 +214,42 @@
     "examples": {
       "_doc": "/contoh renders config/examples.json: the report written by `pnpm lifecycle --cluster <name> --out ../config/examples.json` (paths A to E, every transaction). It is shown only when its cluster is the one the site runs on; otherwise the page says the examples are not recorded yet. paths sets the order.",
       "paths": ["B", "C", "A", "E", "D"]
+    },
+    "submit": {
+      "_doc": "POST /api/submit broadcasts a transaction a seller or arbiter wallet already signed and pays for itself (the server adds no signature). Only these Kekal instructions, idempotent associated-account creation and compute-budget instructions pass; the relayer key may not appear at all. Fixed window per caller IP.",
+      "allowedInstructions": [
+        "create_shop", "update_shop_profile", "deposit", "withdraw", "issue_warranty", "heartbeat", "respond_claim", "resolve_dispute"
+      ],
+      "maxInstructions": 4,
+      "maxTxBytes": 1232,
+      "perIpPerHour": 60,
+      "preflightCommitment": "confirmed"
+    },
+    "terms": {
+      "_doc": "POST /api/terms keeps the terms text of a warranty a seller issued from /kedai. Accepted only when its SHA-256 equals the warranty's on-chain terms_hash, so no sign-in is needed; the first write wins.",
+      "maxBytes": 4096,
+      "perIpPerHour": 60
+    },
+    "shopBoard": {
+      "_doc": "/kedai and /timbang. windows = the claim windows a new shop starts with (fixed at creation, checked on chain against the cluster limits). termMonths are the warranty lengths offered (secsPerMonth each); reserve is the starting reserve per card in whole units. The boards re-read the chain every pollMs. card = the A6 PDF page in points and the PNG card in pixels.",
+      "windows": { "responseSecs": 604800, "repairSecs": 1814400, "disputeSecs": 1209600, "heartbeatSecs": 2592000, "graceSecs": 1209600 },
+      "termMonths": [6, 12, 24],
+      "defaultTermMonths": 12,
+      "secsPerMonth": 2592000,
+      "reserve": "25",
+      "productMaxChars": 80,
+      "serialMaxChars": 40,
+      "promiseMaxChars": 600,
+      "reasonMaxChars": 300,
+      "pollMs": 15000,
+      "card": { "pdfWidth": 297.64, "pdfHeight": 419.53, "pngWidth": 900, "pngHeight": 1272, "qrMargin": 2 }
+    },
+    "home": {
+      "_doc": "Home page. repoUrl / videoUrl null = link not shown (set when the repository is public and the video exists). The live numbers are reused for statsCacheSecs between visitors; a read slower than statsTimeoutMs leaves them out of that page view.",
+      "repoUrl": null,
+      "videoUrl": null,
+      "statsCacheSecs": 60,
+      "statsTimeoutMs": 3000
     },
     "currency": "kUSD",
     "data": { "backend": "sqlite", "sqlitePath": "data/kekal.db", "migrationsDir": "supabase/migrations" }
