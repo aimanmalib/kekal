@@ -203,6 +203,16 @@
       "code": "MYR",
       "perUnit": 4.4
     },
+    "demoPage": {
+      "_doc": "/demo: the browser makes a throwaway card key, asks /api/demo/session (the shop goes silent) or /api/demo/dying-shop (the shop closes) for a warranty to it, keeps the warranty address under storageKey and the key under warrantyPage.storagePrefix (so /w/[pda] knows it), and reads /api/warranty/[pda] every pollMs while a deadline runs. claimIssue is the issue type the claim form starts on.",
+      "storageKey": "kekal.demo",
+      "pollMs": 5000,
+      "claimIssue": "not_working"
+    },
+    "examples": {
+      "_doc": "/contoh renders config/examples.json: the report written by `pnpm lifecycle --cluster <name> --out ../config/examples.json` (paths A to E, every transaction). It is shown only when its cluster is the one the site runs on; otherwise the page says the examples are not recorded yet. paths sets the order.",
+      "paths": ["B", "C", "A", "E", "D"]
+    },
     "currency": "kUSD",
     "data": { "backend": "sqlite", "sqlitePath": "data/kekal.db", "migrationsDir": "supabase/migrations" }
   }

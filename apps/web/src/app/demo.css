@@ -1,0 +1,105 @@
+/* /demo and /contoh. Tokens only (globals.css); see docs/DESIGN.md. */
+.demo {
+  display: grid;
+  gap: var(--space-4);
+  padding-top: var(--space-4);
+}
+
+.demo > *,
+.scene > *,
+.examples > * {
+  min-width: 0;
+}
+
+.demo h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--step-3);
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  max-width: 18ch;
+  text-wrap: balance;
+}
+
+.scene,
+.example {
+  display: grid;
+  gap: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--rule);
+}
+
+.scene h2,
+.example h2 {
+  margin: 0 0 var(--space-1);
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  font-weight: 500;
+}
+
+.scene-text > p,
+.example > p {
+  max-width: var(--measure);
+  margin: 0 0 var(--space-2);
+}
+
+.steps {
+  max-width: var(--measure);
+  margin: var(--space-2) 0;
+  padding-left: 1.5rem;
+}
+
+.steps li {
+  margin-bottom: var(--space-2);
+  overflow-wrap: anywhere;
+}
+
+.steps li::marker {
+  font-family: var(--font-mono);
+  color: var(--copper);
+}
+
+.steps strong {
+  font-weight: 600;
+}
+
+.scene-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.scene-links > * {
+  max-width: 100%;
+}
+
+.link-button {
+  min-height: var(--tap);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink-soft);
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  cursor: pointer;
+}
+
+.examples {
+  display: grid;
+  gap: var(--space-4);
+}
+
+@media (min-width: 56rem) {
+  .scene {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 24rem);
+    align-items: start;
+    column-gap: var(--space-5);
+  }
+}
+
+.example {
+  gap: var(--space-1);
+}
