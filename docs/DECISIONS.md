@@ -17,5 +17,6 @@ Index of the architecture decision records (ADRs) for Kekal; each record explain
 | [0010](decisions/0010-link-previews-and-robots.md) | Link previews and robots.txt | accepted |
 | [0011](decisions/0011-keeper-and-demo-api.md) | Keeper, no-wallet demo API and demo seeding | accepted |
 | [0012](decisions/0012-warranty-page.md) | Warranty page and read-only check | accepted |
+| [0013](decisions/0013-demo-and-examples.md) | Guided demo and finished examples | accepted |
 
 New decisions: add an ADR as `decisions/NNNN-short-title.md` and a line here.
