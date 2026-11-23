@@ -10,7 +10,19 @@ export interface DataStore {
   putNonce(n: SessionNonce, now: number): void;
   /** Marks the challenge used and returns it, once, if it exists and has not expired; otherwise null. */
   takeNonce(nonce: string, now: number): SessionNonce | null;
+  /** Records a warranty a demo route issued. Replays of the same warranty are ignored. */
+  putDemoSession(s: DemoSession): void;
+  getDemoSession(warranty: string): DemoSession | null;
   close(): void;
+}
+
+/** A warranty issued by /api/demo/session ("shared") or /api/demo/dying-shop ("dying"). No visitor data is kept. */
+export interface DemoSession {
+  warranty: string;
+  holder: string;
+  shop: string;
+  kind: "shared" | "dying";
+  createdAt: number;
 }
 
 export interface SessionNonce {

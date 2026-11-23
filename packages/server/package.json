@@ -1,0 +1,24 @@
+{
+  "name": "@kekal/server",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run --reporter=dot"
+  },
+  "dependencies": {
+    "@kekal/sdk": "workspace:*",
+    "@solana/spl-token": "0.4.15",
+    "@solana/web3.js": "1.99.0"
+  },
+  "devDependencies": {
+    "vitest": "5.1.0"
+  }
+}

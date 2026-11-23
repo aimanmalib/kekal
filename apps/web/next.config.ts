@@ -8,7 +8,7 @@ const config: NextConfig = {
   output: "standalone",
   // The monorepo root, so standalone output traces workspace packages and config/.
   outputFileTracingRoot: resolve(here, "../.."),
-  transpilePackages: ["@kekal/sdk"],
+  transpilePackages: ["@kekal/sdk", "@kekal/server"],
   poweredByHeader: false,
   reactStrictMode: true,
 };

@@ -1,6 +1,6 @@
 // POST /api/relay behind the route: policy, rate limits, relayer signature, send. Network and keys are injected.
 import type { Keypair, VersionedTransaction } from "@solana/web3.js";
-import type { DataStore } from "../data/store";
+import type { DataStore } from "@kekal/server";
 import { checkRelayTx, type RelayPolicy, type RelayRefusal } from "./policy";
 
 export interface RelayLimits {

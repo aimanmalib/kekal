@@ -2,7 +2,7 @@
 // The cookie is `<pubkey>.<expires>.<hmac>`; it proves which key signed in, not what that key may do.
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import { PublicKey } from "@solana/web3.js";
-import type { DataStore } from "./data/store";
+import type { DataStore } from "@kekal/server";
 import { verifyEd25519 } from "./ed25519";
 import { translator, type Lang } from "./i18n";
 

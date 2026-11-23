@@ -1,8 +1,7 @@
 // Builds the relay dependencies from config/app.json + env. Kept apart from the pure policy so tests need no keys.
 import { PublicKey, type Keypair, type VersionedTransaction } from "@solana/web3.js";
 import { runtimeCluster, webConfig, type RuntimeCluster } from "../config";
-import { loadKeypair } from "../keys";
-import { forwardWithFailover, type FailoverOptions } from "../rpc-proxy";
+import { forwardWithFailover, loadKeypair, type FailoverOptions } from "@kekal/server";
 import type { RelayPolicy } from "./policy";
 
 export function relayPolicy(cluster: RuntimeCluster, relayer: PublicKey): RelayPolicy {

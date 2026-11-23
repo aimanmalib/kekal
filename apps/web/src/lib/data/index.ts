@@ -1,19 +1,8 @@
-import { existsSync } from "node:fs";
-import { dirname, isAbsolute, join, resolve } from "node:path";
+import { isAbsolute, join } from "node:path";
 import { webConfig } from "../config";
-import { openSqlite } from "./sqlite";
-import { backendName, type DataStore } from "./store";
+import { backendName, findUp, openSqlite, type DataStore } from "@kekal/server";
 
-/** Walks up from `start` to the first folder that holds `rel` (the repo root in dev, the app root in the image). */
-export function findUp(rel: string, start: string): string | null {
-  let dir = resolve(start);
-  for (;;) {
-    if (existsSync(join(dir, rel))) return join(dir, rel);
-    const up = dirname(dir);
-    if (up === dir) return null;
-    dir = up;
-  }
-}
+export { findUp };
 
 let store: DataStore | undefined;
 

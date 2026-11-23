@@ -1,7 +1,18 @@
-import { mkdirSync, readdirSync, readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { existsSync, mkdirSync, readdirSync, readFileSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
 import { DatabaseSync } from "node:sqlite";
-import type { DataStore } from "./store";
+import type { DemoSession, DataStore } from "./store";
+
+/** Walks up from `start` to the first folder that holds `rel` (the repo root in dev, the app root in the image). */
+export function findUp(rel: string, start: string): string | null {
+  let dir = resolve(start);
+  for (;;) {
+    if (existsSync(join(dir, rel))) return join(dir, rel);
+    const up = dirname(dir);
+    if (up === dir) return null;
+    dir = up;
+  }
+}
 
 /** Applies supabase/migrations/*.sql in name order, each once, recorded in schema_migrations. Returns names applied now. */
 export function migrate(db: DatabaseSync, migrationsDir: string, now: number): string[] {
@@ -47,6 +58,10 @@ export function openSqlite(path: string, migrationsDir: string, now = Math.floor
   const takeN = db.prepare(
     "update session_nonces set used_at = ? where nonce = ? and used_at is null and expires_at >= ? returning nonce, pubkey, message, expires_at",
   );
+  const putDemo = db.prepare(
+    "insert into demo_sessions (warranty, holder, shop, kind, created_at) values (?, ?, ?, ?, ?) on conflict(warranty) do nothing",
+  );
+  const getDemo = db.prepare("select warranty, holder, shop, kind, created_at from demo_sessions where warranty = ?");
   return {
     backend: "sqlite",
     getConfig: (key) => (getCfg.get(key) as { value: string } | undefined)?.value ?? null,
@@ -64,6 +79,15 @@ export function openSqlite(path: string, migrationsDir: string, now = Math.floor
     takeNonce: (nonce, at) => {
       const r = takeN.get(at, nonce, at) as { nonce: string; pubkey: string; message: string; expires_at: number | bigint } | undefined;
       return r ? { nonce: r.nonce, pubkey: r.pubkey, message: r.message, expiresAt: Number(r.expires_at) } : null;
+    },
+    putDemoSession: (d) => {
+      putDemo.run(d.warranty, d.holder, d.shop, d.kind, d.createdAt);
+    },
+    getDemoSession: (warranty) => {
+      const r = getDemo.get(warranty) as
+        | { warranty: string; holder: string; shop: string; kind: DemoSession["kind"]; created_at: number | bigint }
+        | undefined;
+      return r ? { warranty: r.warranty, holder: r.holder, shop: r.shop, kind: r.kind, createdAt: Number(r.created_at) } : null;
     },
     close: () => db.close(),
   };

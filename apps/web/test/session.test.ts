@@ -1,8 +1,8 @@
 import { resolve } from "node:path";
 import { Keypair } from "@solana/web3.js";
 import { afterEach, describe, expect, it } from "vitest";
-import { openSqlite } from "../src/lib/data/sqlite";
-import type { DataStore } from "../src/lib/data/store";
+import { openSqlite } from "@kekal/server";
+import type { DataStore } from "@kekal/server";
 import { completeSignIn, issueNonce, readSession, sessionSecret, sessionToken } from "../src/lib/session";
 import { signBytes } from "./relay-fixtures";
 

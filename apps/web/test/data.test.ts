@@ -4,8 +4,8 @@ import { join, resolve } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { afterEach, describe, expect, it } from "vitest";
 import { findUp } from "../src/lib/data";
-import { migrate, openSqlite } from "../src/lib/data/sqlite";
-import { backendName } from "../src/lib/data/store";
+import { migrate, openSqlite } from "@kekal/server";
+import { backendName } from "@kekal/server";
 
 const MIGRATIONS = resolve(__dirname, "../../../supabase/migrations");
 const tmp: string[] = [];
