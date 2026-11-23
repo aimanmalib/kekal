@@ -11,9 +11,11 @@ async function settleUntilPaid(page: Page, scene: Locator, lang: Lang, buttons: 
   const deadline = Date.now() + e2e.testTimeoutSecs * 1000;
   while (!(await paid.isVisible())) {
     if (Date.now() > deadline) throw new Error("scene did not reach the payout");
+    // The scene re-renders as the chain moves (the button may vanish between a check and a click), so look only for an
+    // enabled button right now and try one short click; the loop comes back for anything missed.
     for (const key of buttons) {
-      const button = scene.getByRole("button", { name: text(lang, key) });
-      if ((await button.isVisible()) && (await button.isEnabled())) await button.click();
+      const button = scene.getByRole("button", { name: text(lang, key), disabled: false });
+      if ((await button.count()) > 0) await button.first().click({ timeout: 5000 }).catch(() => undefined);
     }
     await page.waitForTimeout(1000);
   }
