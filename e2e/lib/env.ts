@@ -74,5 +74,5 @@ export const secretKey = (name: string): Uint8Array => Uint8Array.from(readJson<
 
 export const walletKeyName = (index: number): string => (index === 0 ? "test-wallet" : `test-wallet-${index}`);
 
-/** Where screenshots go: the evidence folder when one is given, else the test's own output folder. */
-export const shotDir = (): string | null => process.env.AUTOPILOT_BUKTI_DIR || process.env.E2E_SHOTS || null;
+/** Where screenshots go: E2E_SHOTS when given, else the test's own output folder. */
+export const shotDir = (): string | null => process.env.E2E_SHOTS || null;
