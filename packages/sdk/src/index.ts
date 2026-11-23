@@ -5,3 +5,4 @@ export * from "./program";
 export * from "./accounts";
 export * from "./instructions";
 export * from "./layout";
+export * from "./events";

@@ -15,7 +15,7 @@ function setup(over: Partial<DemoOps> = {}) {
   const store = openSqlite(":memory:", MIGRATIONS);
   stores.push(store);
   const calls: string[] = [];
-  const issued = (): Issued => ({ shop: Keypair.generate().publicKey, warranty: Keypair.generate().publicKey, signatures: ["s1"] });
+  const issued = (): Issued => ({ shop: Keypair.generate().publicKey, warranty: Keypair.generate().publicKey, signatures: ["s1"], termsJson: '{"v":1}' });
   const ops: DemoOps = {
     issue: async () => (calls.push("issue"), issued()),
     dyingShop: async () => (calls.push("dying"), { ...issued(), signatures: ["s1", "s2"] }),
@@ -37,6 +37,7 @@ describe("demo session", () => {
     if (!r.ok) return;
     expect(r.body).toMatchObject({ holder: h, signatures: [{ signature: "s1", explorer: "https://x/tx/s1" }] });
     expect(store.getDemoSession(r.body.warranty as string)).toMatchObject({ holder: h, kind: "shared", createdAt: 1_000_000 });
+    expect(store.getWarrantyTerms(r.body.warranty as string)).toBe('{"v":1}');
   });
 
   it("rejects a missing, malformed or off-curve holder before touching the chain", async () => {

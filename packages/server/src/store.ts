@@ -13,6 +13,9 @@ export interface DataStore {
   /** Records a warranty a demo route issued. Replays of the same warranty are ignored. */
   putDemoSession(s: DemoSession): void;
   getDemoSession(warranty: string): DemoSession | null;
+  /** Keeps the terms text whose hash a warranty carries. The first write wins: terms never change after issue. */
+  putWarrantyTerms(pda: string, termsJson: string, now: number): void;
+  getWarrantyTerms(pda: string): string | null;
   close(): void;
 }
 

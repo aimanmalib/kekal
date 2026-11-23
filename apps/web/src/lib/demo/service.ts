@@ -97,6 +97,7 @@ async function issueWith(body: unknown, ip: string, deps: DemoDeps, kind: "share
     kind,
     createdAt: deps.now,
   });
+  deps.store.putWarrantyTerms(issued.warranty.toBase58(), issued.termsJson, deps.now);
   return { ok: true, body: issuedBody(deps, issued, holder) };
 }
 

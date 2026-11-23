@@ -62,6 +62,8 @@ export function openSqlite(path: string, migrationsDir: string, now = Math.floor
     "insert into demo_sessions (warranty, holder, shop, kind, created_at) values (?, ?, ?, ?, ?) on conflict(warranty) do nothing",
   );
   const getDemo = db.prepare("select warranty, holder, shop, kind, created_at from demo_sessions where warranty = ?");
+  const putTerms = db.prepare("insert into warranty_meta (pda, terms_json, created_at) values (?, ?, ?) on conflict(pda) do nothing");
+  const getTerms = db.prepare("select terms_json from warranty_meta where pda = ?");
   return {
     backend: "sqlite",
     getConfig: (key) => (getCfg.get(key) as { value: string } | undefined)?.value ?? null,
@@ -89,6 +91,10 @@ export function openSqlite(path: string, migrationsDir: string, now = Math.floor
         | undefined;
       return r ? { warranty: r.warranty, holder: r.holder, shop: r.shop, kind: r.kind, createdAt: Number(r.created_at) } : null;
     },
+    putWarrantyTerms: (pda, termsJson, at) => {
+      putTerms.run(pda, termsJson, at);
+    },
+    getWarrantyTerms: (pda) => (getTerms.get(pda) as { terms_json: string } | undefined)?.terms_json ?? null,
     close: () => db.close(),
   };
 }

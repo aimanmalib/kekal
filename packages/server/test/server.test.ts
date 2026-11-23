@@ -1,6 +1,7 @@
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { failoverConnection, openSqlite, programErrorName, runtimeCluster, SendError } from "../src";
+import { canonicalJson } from "@kekal/sdk";
+import { demoTermsJson, failoverConnection, openSqlite, programErrorName, runtimeCluster, SendError } from "../src";
 
 const MIGRATIONS = resolve(__dirname, "../../../supabase/migrations");
 
@@ -14,6 +15,27 @@ describe("demo sessions in the store", () => {
     expect(s.getDemoSession("W2")).toBeNull();
     expect(() => s.putDemoSession({ ...row, warranty: "W3", kind: "other" as never })).toThrow(/CHECK/);
     s.close();
+  });
+});
+
+describe("warranty terms in the store", () => {
+  it("keeps the first terms text for a warranty and ignores later writes", () => {
+    const s = openSqlite(":memory:", MIGRATIONS);
+    s.putWarrantyTerms("W1", '{"a":1}', 10);
+    s.putWarrantyTerms("W1", '{"a":2}', 20);
+    expect(s.getWarrantyTerms("W1")).toBe('{"a":1}');
+    expect(s.getWarrantyTerms("W2")).toBeNull();
+    s.close();
+  });
+});
+
+describe("demo terms", () => {
+  it("are canonical JSON of the config terms plus kind, reserve and term, without the doc string", () => {
+    const json = demoTermsJson({ settings: { reserve: "7", termSecs: 9 } as never }, "shared");
+    const parsed = JSON.parse(json) as Record<string, unknown>;
+    expect(parsed).toMatchObject({ v: 1, kind: "shared", reserve: "7", termSecs: 9 });
+    expect(parsed).not.toHaveProperty("_doc");
+    expect(json).toBe(canonicalJson(parsed));
   });
 });
 

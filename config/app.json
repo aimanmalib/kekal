@@ -92,6 +92,15 @@
       }
     }
   },
+  "demoTerms": {
+    "_doc": "Terms text of every demo warranty. Hashed (canonical JSON, with kind, reserve and termSecs added) into terms_hash and stored off chain so /w/[pda] can show the text and prove it matches.",
+    "v": 1,
+    "product": { "en": "Air conditioner, 1.5 hp, installed", "ms": "Penyaman udara, 1.5 hp, dipasang" },
+    "promise": {
+      "en": "The shop installed this unit and will fix any fault in its installation work free of charge while this card is valid. It answers each claim within its response window; if it stays silent, the reserve is paid to the card holder. The manufacturer's own warranty is separate and unchanged.",
+      "ms": "Kedai memasang unit ini dan akan membaiki sebarang kerosakan pada kerja pemasangannya tanpa caj selagi kad ini sah. Kedai menjawab setiap tuntutan dalam tempoh jawapannya; jika kedai diam, rizab dibayar kepada pemegang kad. Waranti pengeluar adalah berasingan dan tidak berubah."
+    }
+  },
   "keeper": {
     "_doc": "apps/keeper: every intervalSecs it heartbeats the shops of heartbeatRoles (at most once per heartbeatEverySecs), declares lapsed shops dormant first, then sends each due permissionless instruction (15 to 20) with feePayerRole paying, at most maxActionsPerPass per pass. A failed send is logged and retried next pass. It writes lastRunKey to the data store for /api/health.",
     "intervalSecs": 20,
@@ -103,7 +112,10 @@
   },
   "web": {
     "_doc": "Web app values. /api/rpc forwards only allowedMethods (never sendTransaction: signed transactions go through the relayer); programScopedMethods must name the Kekal program. DATA_BACKEND picks the store; KEKAL_SQLITE_PATH and KEKAL_MIGRATIONS_DIR override the paths below.",
-    "locales": { "supported": ["en", "ms"], "fallback": "en", "cookie": "kekal_lang", "cookieMaxAgeDays": 365 },
+    "locales": {
+      "supported": ["en", "ms"], "fallback": "en", "cookie": "kekal_lang", "cookieMaxAgeDays": 365,
+      "intl": { "en": "en-GB", "ms": "ms-MY" }
+    },
     "rpc": {
       "allowedMethods": [
         "getAccountInfo", "getMultipleAccounts", "getProgramAccounts", "getLatestBlockhash", "getSignatureStatuses",
@@ -171,6 +183,23 @@
         "TelegramBot", "WhatsApp", "Applebot"
       ],
       "ogImage": { "width": 1200, "height": 630, "maxBytes": 307200, "altMaxChars": 300 }
+    },
+    "warrantyPage": {
+      "_doc": "/w/[pda] and /semak. The card key travels in the URL fragment (#<keyFragment>=<base58 seed>) and never reaches the server; after activation the new key stays in this browser under storagePrefix + warranty address. The timeline lists the latest timelineLimit transactions of the warranty; decoded events are cached per signature in memory (eventCacheSize). issueTypes are the claim categories offered to the buyer (labels: claim.issue.<type> in locales).",
+      "keyFragment": "k",
+      "storagePrefix": "kekal.card.",
+      "timelineLimit": 12,
+      "eventCacheSize": 1000,
+      "confirmPollMs": 1500,
+      "confirmTimeoutMs": 45000,
+      "claimMaxChars": 500,
+      "countdownMaxSecs": 3600,
+      "issueTypes": ["not_working", "leak", "noise", "install", "other"]
+    },
+    "estimate": {
+      "_doc": "Approximate ringgit shown beside kUSD amounts, always labelled as an estimate. A fixed rate, not a live price.",
+      "code": "MYR",
+      "perUnit": 4.4
     },
     "currency": "kUSD",
     "data": { "backend": "sqlite", "sqlitePath": "data/kekal.db", "migrationsDir": "supabase/migrations" }
