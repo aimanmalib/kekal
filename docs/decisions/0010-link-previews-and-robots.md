@@ -30,8 +30,8 @@ image the link unfurls as a bare URL. The site also needs a `robots.txt` that ke
 - Changing the headline or card text means running `node brand/render-og.mjs`, committing the new PNG and updating
   `meta.ogAlt` in both locales; a unit test checks its size, byte limit and alt text length.
 - Next.js attaches the file-convention image to the leaf page segment and replaces `openGraph.images` there unless the
-  page itself lists images. So the layout and every page export `generateMetadata` from one shared function
-  (`src/lib/page-metadata.ts`), and each page renders exactly one `og:image` with the locale `og:image:alt`. A unit
+  page itself lists images. So the root layout (`src/app/layout.tsx`) and every page, starting with the home page
+  (`src/app/page.tsx`), export `generateMetadata` from one shared function (`src/lib/page-metadata.ts`), and each page renders exactly one `og:image` with the locale `og:image:alt`. A unit
   test fails if a page under `src/app` stops exporting metadata while the card file exists.
 - Rejected: moving the card to `public/`. It would drop the content-hashed URL Next.js gives the file (a CDN can keep
   serving an old `.png` for hours after the card changes) and touch more files (render script, config, tests).
