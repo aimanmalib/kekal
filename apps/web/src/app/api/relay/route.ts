@@ -2,6 +2,7 @@ import { webConfig } from "@/lib/config";
 import { clientIp } from "@/lib/client-ip";
 import { dataStore } from "@/lib/data";
 import { relayPolicy, relayRuntime, rpcSender } from "@/lib/relay/runtime";
+import { programGate } from "@/lib/program-gate";
 import { relay } from "@/lib/relay/service";
 
 export const dynamic = "force-dynamic";
@@ -9,6 +10,8 @@ export const dynamic = "force-dynamic";
 const noStore = { "cache-control": "no-store" };
 
 export async function POST(req: Request): Promise<Response> {
+  const gate = programGate();
+  if (gate) return gate;
   let runtime;
   try {
     runtime = relayRuntime();

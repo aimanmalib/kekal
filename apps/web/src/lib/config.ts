@@ -1,7 +1,7 @@
 // Values come from config/app.json (repo root) and env; nothing here is a hard-coded setting.
 import app from "../../../../config/app.json";
 
-export { parseUrlList, runtimeCluster, type ClusterName, type RuntimeCluster } from "@kekal/server";
+export { parseFlag, parseUrlList, runtimeCluster, type ClusterName, type RuntimeCluster } from "@kekal/server";
 
 export { webConfig, type WebConfig } from "./web-config";
 

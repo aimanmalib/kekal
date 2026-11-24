@@ -2,6 +2,7 @@
 import { clientIp } from "../client-ip";
 import { webConfig } from "../config";
 import { dataStore } from "../data";
+import { programGate } from "../program-gate";
 import { demoExplorer, demoRuntime } from "./runtime";
 import type { DemoDeps, DemoResult } from "./service";
 
@@ -11,6 +12,8 @@ export async function demoRoute(
   req: Request,
   handler: (body: unknown, ip: string, deps: DemoDeps) => Promise<DemoResult>,
 ): Promise<Response> {
+  const gate = programGate();
+  if (gate) return gate;
   let runtime;
   try {
     runtime = demoRuntime();

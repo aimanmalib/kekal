@@ -4,6 +4,8 @@ export interface Health {
   ok: boolean;
   cluster: string;
   programId: string;
+  /** "not_deployed" while the program is not on this cluster (config `deployed: false`). */
+  program: "deployed" | "not_deployed";
   dataBackend: string | null;
   keeperLastRun: number | null;
   /** Optional integrations that are live in this deployment. */
@@ -19,7 +21,13 @@ export function buildHealth(
   cluster: RuntimeCluster,
   store: { backend: string; getConfig(key: string): string | null } | Error,
 ): Health {
-  const base = { cluster: cluster.name, programId: cluster.programId, features: [], relayerFunded: null };
+  const base = {
+    cluster: cluster.name,
+    programId: cluster.programId,
+    program: cluster.deployed ? ("deployed" as const) : ("not_deployed" as const),
+    features: [],
+    relayerFunded: null,
+  };
   if (store instanceof Error) {
     return { ok: false, ...base, dataBackend: null, keeperLastRun: null, error: "data store unavailable" };
   }

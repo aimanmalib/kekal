@@ -9,7 +9,8 @@ interface Props {
   stats: ProgramStats | null;
   decimals: number;
   currency: string;
-  programId: string;
+  /** Null while the program is not on the cluster: the address line is left out rather than linking to nothing. */
+  programId: string | null;
   explorer: string;
   network: string;
   repoUrl: string | null;
@@ -50,12 +51,14 @@ export function HomeFacts({ t, stats, decimals, currency, programId, explorer, n
           </div>
         </dl>
       ) : null}
-      <p className="note">
-        {fill(t("home.program"), { network })}{" "}
-        <a className="mono" href={explorer} target="_blank" rel="noopener noreferrer">
-          {programId}
-        </a>
-      </p>
+      {programId ? (
+        <p className="note">
+          {fill(t("home.program"), { network })}{" "}
+          <a className="mono" href={explorer} target="_blank" rel="noopener noreferrer">
+            {programId}
+          </a>
+        </p>
+      ) : null}
       <ul className="home-links">
         <li>
           <Link href="/kedai">{t("home.link.kedai")}</Link>

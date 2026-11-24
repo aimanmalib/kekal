@@ -20,7 +20,8 @@ export default async function Home() {
   const lang = await requestLang();
   const t = translator(lang);
   const cluster = runtimeCluster();
-  const stats = await Promise.race([
+  // Nothing to read while the program is not on the cluster: skip the RPC call rather than wait for its timeout.
+  const stats = !cluster.deployed ? null : await Promise.race([
     readProgramStats(Math.floor(Date.now() / 1000), { cluster }),
     new Promise<null>((resolve) => setTimeout(() => resolve(null), webConfig.home.statsTimeoutMs)),
   ]).catch(() => null);
@@ -40,7 +41,7 @@ export default async function Home() {
             stats={stats}
             decimals={cluster.tokenDecimals}
             currency={webConfig.currency}
-            programId={cluster.programId}
+            programId={cluster.deployed ? cluster.programId : null}
             explorer={clusterSettings(cluster.name).explorerAddress.replace("{address}", cluster.programId)}
             network={t(`cluster.${cluster.name}` as MessageKey)}
             repoUrl={webConfig.home.repoUrl}

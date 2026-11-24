@@ -34,7 +34,7 @@ interface Props {
 
 const KNOWN_ERRORS = new Set([
   "rate_ip", "rate_holder", "rate_global", "network", "failed_on_chain", "not_confirmed", "relayer_unavailable", "send_failed",
-  "demo_unavailable", "demo_shop_missing",
+  "demo_unavailable", "demo_shop_missing", "program_not_deployed",
 ]);
 
 const errorKey = (code: string): MessageKey => (KNOWN_ERRORS.has(code) ? `error.${code}` : "error.generic") as MessageKey;

@@ -6,6 +6,8 @@ import { LangSwitch } from "./LangSwitch";
 
 /** Masthead, page body and footer shared by every page. */
 export function SiteFrame({ lang, t, children }: { lang: Lang; t: Translate; children: ReactNode }) {
+  const cluster = runtimeCluster();
+  const network = t(`cluster.${cluster.name}` as MessageKey);
   return (
     <div className="page">
       <header className="masthead">
@@ -20,8 +22,13 @@ export function SiteFrame({ lang, t, children }: { lang: Lang; t: Translate; chi
           options={webConfig.locales.supported.map((v) => ({ value: v, label: t(`lang.${v}` as MessageKey) }))}
         />
       </header>
+      {cluster.deployed ? null : (
+        <p className="program-notice" role="status">
+          {fill(t("notice.notDeployed"), { network })}
+        </p>
+      )}
       {children}
-      <footer className="foot">{fill(t("footer.network"), { network: t(`cluster.${runtimeCluster().name}` as MessageKey) })}</footer>
+      <footer className="foot">{fill(t("footer.network"), { network })}</footer>
     </div>
   );
 }

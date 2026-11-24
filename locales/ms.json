@@ -290,5 +290,9 @@
   "timbang.escalated": "Dieskalasi {when}.",
   "timbang.stale": "Pembeli boleh dibayar tanpa keputusan mulai {when}.",
   "timbang.buyerWins": "Bayar pembeli",
-  "timbang.shopWins": "Menangkan kedai"
+  "timbang.shopWins": "Menangkan kedai",
+  "notice.notDeployed": "Program belum berada di {network}. Sehingga itu, tiada apa boleh dihantar dan demo langsung ditutup; contoh siap menunjukkan setiap laluan.",
+  "demo.closed.notDeployed.title": "Demo langsung dibuka apabila program berada di {network}",
+  "demo.closed.notDeployed.body": "Ia akan mengeluarkan kad sebenar kepada anda di rangkaian ujian dan membayarnya apabila kedai senyap. Sehingga itu, contoh siap menunjukkan setiap laluan langkah demi langkah.",
+  "error.program_not_deployed": "Program belum berada di rangkaian, jadi ini tidak boleh dihantar. Contoh siap masih menunjukkan setiap laluan."
 }

@@ -13,6 +13,8 @@ export interface RuntimeCluster {
   name: string;
   rpcUrls: string[];
   programId: string;
+  /** False until the program is on this cluster: KEKAL_PROGRAM_DEPLOYED ("true"/"false") or the cluster `deployed`. */
+  deployed: boolean;
   explorerTx: string;
   tokenDecimals: number;
   /** Mints the relayer lets through: KEKAL_MINTS (comma list) or the non-null cluster mints. */
@@ -28,6 +30,15 @@ export function parseUrlList(raw: string | undefined): string[] {
     .split(/[\s,]+/)
     .map((s) => s.trim())
     .filter((s) => s.length > 0);
+}
+
+/** "true"/"1" or "false"/"0" (any case); unset = the fallback; anything else is an error, not a silent default. */
+export function parseFlag(raw: string | undefined, fallback: boolean): boolean {
+  if (raw === undefined || raw.trim() === "") return fallback;
+  const v = raw.trim().toLowerCase();
+  if (v === "true" || v === "1") return true;
+  if (v === "false" || v === "0") return false;
+  throw new Error(`expected true or false, got "${raw}"`);
 }
 
 export function clusterSettings(name: string): ClusterSettings {
@@ -48,6 +59,7 @@ export function runtimeCluster(env: Record<string, string | undefined> = process
     name,
     rpcUrls,
     programId: env.KEKAL_PROGRAM_ID ?? c.programId ?? idl.address,
+    deployed: parseFlag(env.KEKAL_PROGRAM_DEPLOYED, c.deployed),
     explorerTx: c.explorerTx,
     tokenDecimals: c.tokenDecimals,
     mints: listed.length > 0 ? listed : configured,

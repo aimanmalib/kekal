@@ -3,6 +3,7 @@ import { runtimeCluster, webConfig } from "@/lib/config";
 import { clientIp } from "@/lib/client-ip";
 import { dataStore } from "@/lib/data";
 import { relayerAddress, rpcSender } from "@/lib/relay/runtime";
+import { programGate } from "@/lib/program-gate";
 import { submit } from "@/lib/submit/service";
 
 export const dynamic = "force-dynamic";
@@ -11,6 +12,8 @@ const noStore = { "cache-control": "no-store" };
 
 /** POST {tx: base64} -> {signature}. The transaction is signed and paid for by the caller's own wallet. */
 export async function POST(req: Request): Promise<Response> {
+  const gate = programGate();
+  if (gate) return gate;
   const declared = Number(req.headers.get("content-length") ?? "0");
   if (declared > webConfig.rpc.maxBodyBytes) return Response.json({ error: "too_large" }, { status: 413, headers: noStore });
   let body: unknown;

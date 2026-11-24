@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteFrame } from "@/components/SiteFrame";
+import { DemoClosed } from "@/components/demo/DemoClosed";
 import { DemoScene, type DemoSettings } from "@/components/demo/DemoScene";
-import { webConfig } from "@/lib/config";
+import { runtimeCluster, webConfig } from "@/lib/config";
 import { SCENES } from "@/lib/demo/scene";
-import { translator } from "@/lib/i18n";
+import { translator, type MessageKey } from "@/lib/i18n";
 import { localeMetadata } from "@/lib/page-metadata";
 import { relayerAddress } from "@/lib/relay/runtime";
 import { requestLang } from "@/lib/request-lang";
@@ -32,6 +33,19 @@ export default async function DemoPage() {
     confirmTimeoutMs: w.confirmTimeoutMs,
     currency: webConfig.currency,
   };
+  const cluster = runtimeCluster();
+  if (!cluster.deployed) {
+    return (
+      <SiteFrame lang={lang} t={t}>
+        <main className="demo">
+          <section className="demo-head">
+            <h1>{t("demo.title")}</h1>
+          </section>
+          <DemoClosed t={t} network={t(`cluster.${cluster.name}` as MessageKey)} />
+        </main>
+      </SiteFrame>
+    );
+  }
   const relayer = relayerAddress();
   return (
     <SiteFrame lang={lang} t={t}>

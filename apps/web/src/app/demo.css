@@ -23,7 +23,8 @@
 }
 
 .scene,
-.example {
+.example,
+.demo-closed {
   display: grid;
   gap: var(--space-3);
   padding-top: var(--space-3);
@@ -31,7 +32,8 @@
 }
 
 .scene h2,
-.example h2 {
+.example h2,
+.demo-closed h2 {
   margin: 0 0 var(--space-1);
   font-family: var(--font-display);
   font-size: var(--step-2);
@@ -39,7 +41,8 @@
 }
 
 .scene-text > p,
-.example > p {
+.example > p,
+.demo-closed > p {
   max-width: var(--measure);
   margin: 0 0 var(--space-2);
 }

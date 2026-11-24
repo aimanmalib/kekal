@@ -1,5 +1,5 @@
 {
-  "_doc": "Runtime values read by the SDK scripts, web app and keeper. programId null = the address in the SDK IDL. Mint null = created on demand (localnet) or set after the devnet deploy.",
+  "_doc": "Runtime values read by the SDK scripts, web app and keeper. programId null = the address in the SDK IDL. deployed false = the program is not on that cluster yet: the site says so, /demo shows its not-available state and /api/health reports program not_deployed. Mint null = created on demand (localnet) or set after the devnet deploy.",
   "defaultCluster": "devnet",
   "clusters": {
     "localnet": {
@@ -8,6 +8,7 @@
       "explorerTx": "https://explorer.solana.com/tx/{sig}?cluster=custom&customUrl=http%3A%2F%2F127.0.0.1%3A18899",
       "explorerAddress": "https://explorer.solana.com/address/{address}?cluster=custom&customUrl=http%3A%2F%2F127.0.0.1%3A18899",
       "programId": null,
+      "deployed": true,
       "keysDir": null,
       "mints": { "kusd": null, "usdc": null },
       "tokenDecimals": 6,
@@ -53,6 +54,7 @@
       "explorerTx": "https://explorer.solana.com/tx/{sig}?cluster=devnet",
       "explorerAddress": "https://explorer.solana.com/address/{address}?cluster=devnet",
       "programId": null,
+      "deployed": false,
       "keysDir": "~/.config/kekal/keys",
       "mints": { "kusd": null, "usdc": null },
       "tokenDecimals": 6,

@@ -290,5 +290,9 @@
   "timbang.escalated": "Escalated {when}.",
   "timbang.stale": "The buyer can be paid without a ruling from {when}.",
   "timbang.buyerWins": "Pay the buyer",
-  "timbang.shopWins": "Side with the shop"
+  "timbang.shopWins": "Side with the shop",
+  "notice.notDeployed": "The program is not on {network} yet. Until it is, nothing can be sent and the live demo is closed; the finished examples show every path.",
+  "demo.closed.notDeployed.title": "The live demo opens when the program is on {network}",
+  "demo.closed.notDeployed.body": "It will issue you a real card on the test network and pay it out when the shop goes quiet. Until then, the finished examples walk through every path one step at a time.",
+  "error.program_not_deployed": "The program is not on the network yet, so this cannot be sent. The finished examples still show every path."
 }
