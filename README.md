@@ -97,9 +97,10 @@ with status 0; the counts are in the next section. The first `anchor build` comp
 |-------|-------|-------|--------|
 | Program tests (LiteSVM, fixed clock, no sleeps) | `programs/kekal/tests/` | 72 | pass |
 | SDK tests (PDAs, instruction builders, decoders, hashing vectors) | `packages/sdk/test/` | 55 | pass |
-| Web app tests (RPC proxy, fee relayer, sessions, demo, warranty page, shop board, cards, locales) | `apps/web/test/` | 200 | pass |
+| Web app tests (RPC proxy, fee relayer, sessions, demo, warranty page, shop board, cards, locales, program status) | `apps/web/test/` | 213 | pass |
 | Script tests (cluster config, locales, how warranties are issued) | `scripts/test/` | 14 | pass |
 | Keeper tests (heartbeats, dormant shops, due settling steps) | `apps/keeper/test/` | 9 | pass |
+| Deploy script tests (uptime alerts, proxy route template) | `scripts/test/deploy.test.sh` | 6 | pass |
 | Server package tests (store, keys, RPC failover) | `packages/server/test/` | 6 | pass |
 | Lifecycle paths A to E on a local validator | `scripts/lifecycle.ts` | 5 | pass |
 | Browser tests (Playwright: Chromium desktop and WebKit iPhone 13) | `e2e/tests/` | 5 per browser | pass |
