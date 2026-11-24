@@ -1,6 +1,6 @@
 # AI usage
 
-How AI was used to build Kekal, what a person decided, and how the work was checked. The short version is in the README
+How AI was used to build Kekal, what the author did, and how the work was checked. The short version is in the README
 under [AI disclosure](README.md#ai-disclosure).
 
 ## Tools
@@ -11,7 +11,10 @@ under [AI disclosure](README.md#ai-disclosure).
 
 ## What the AI produced
 
-Working from the author's brief, the agent wrote nearly everything in the repository:
+- **Idea and rules:** the product idea, the three rules and the limits. An AI planning session proposed them from the
+  author's own work and wrote the plan.
+
+From that plan the agent wrote nearly everything in the repository:
 
 - **Design:** the account and instruction layout, the claim and settlement windows, and the architecture decision records
   in [`docs/decisions/`](docs/decisions/).
@@ -26,9 +29,12 @@ Working from the author's brief, the agent wrote nearly everything in the reposi
 
 ## What the author did
 
-- Had the idea: a warranty that is still honoured after the shop that sold it has closed.
-- Set the product rules and the limits: who may claim, what happens when a shop goes quiet, devnet only.
-- Chose what to build next, accepted or rejected the results, and decided what goes into the entry.
+- The starting point is his own work: he writes the software for a small solar shop, and its quotations carry a
+  warranty certificate.
+- Decided to enter this hackathon and applied himself.
+- Runs and pays for the agents on his own server. His standing instruction lets them plan and build without asking him
+  at each step.
+- Submits the entry himself.
 - Is responsible for the project, its code and every claim made about it.
 
 ## How the work was checked

@@ -49,9 +49,10 @@ back to the free balance.
 ## Status
 
 - **Program:** 20 instructions, built with Anchor 1.2.2. All five paths below pass on a local validator. It is not on devnet
-  yet: deploying needs about 4.1 devnet SOL (2.02 SOL stays locked as rent), and the deploy wallet holds none today. The
+  yet: the deploy needs about 4.1 devnet SOL (2.02 SOL stays locked as rent) and the deploy wallet holds none today. The
   program address and an explorer link will replace this line once the deploy is done.
-- **Web demo** (no wallet, buyer card, shop dashboard, in English and Bahasa Melayu): not built yet.
+- **Web app:** built and tested on a local validator: the no-wallet demo, the buyer's warranty page, the shop board and
+  the arbiter board, in English and Bahasa Melayu. It is not hosted yet.
 - **Video:** not recorded yet.
 
 ## Try it
@@ -95,8 +96,11 @@ with status 0; the counts are in the next section. The first `anchor build` comp
 | Suite | Where | Count | Result |
 |-------|-------|-------|--------|
 | Program tests (LiteSVM, fixed clock, no sleeps) | `programs/kekal/tests/` | 72 | pass |
-| SDK tests (PDAs, instruction builders, decoders, hashing vectors) | `packages/sdk/test/` | 51 | pass |
-| Script tests (cluster config, locales, how warranties are issued) | `scripts/test/` | 12 | pass |
+| SDK tests (PDAs, instruction builders, decoders, hashing vectors) | `packages/sdk/test/` | 55 | pass |
+| Web app tests (RPC proxy, fee relayer, sessions, demo, warranty page, shop board, cards, locales) | `apps/web/test/` | 200 | pass |
+| Script tests (cluster config, locales, how warranties are issued) | `scripts/test/` | 14 | pass |
+| Keeper tests (heartbeats, dormant shops, due settling steps) | `apps/keeper/test/` | 9 | pass |
+| Server package tests (store, keys, RPC failover) | `packages/server/test/` | 6 | pass |
 | Lifecycle paths A to E on a local validator | `scripts/lifecycle.ts` | 5 | pass |
 | Browser tests (Playwright: Chromium desktop and WebKit iPhone 13) | `e2e/tests/` | 5 per browser | pass |
 
@@ -158,7 +162,13 @@ record.
 | 14 Nov | Property, liveness and attack tests (72 program tests in total) | `6a3b2ec`, `86e94c9` |
 | 14 Nov | pnpm workspace, TypeScript SDK, lifecycle script for paths A to E | `6877e23` to `76c1afb` |
 | 15–18 Nov | Build housekeeping (sweeping old cargo artifacts) | `07519bb` to `aa4c03e` |
-| 22 Nov | Lifecycle fix (heartbeat and issue in one transaction for the dying shop), this README, diagram and capture | commits of 22 Nov |
+| 22 Nov | Lifecycle fix (heartbeat and issue in one transaction for the dying shop), this README, diagram and capture | `6489873`, `93d7659` |
+| 22 Nov | Web app skeleton (Next.js, locales, RPC proxy, store), fee relayer and wallet sessions | `90303be` to `b535cc7` |
+| 23 Nov | AI_USAGE.md and link previews | `ce77658` to `3155278` |
+| 23 Nov | Server package, keeper, no-wallet demo API and `seed-demo` | `d409976` to `cacb6d2` |
+| 23 Nov | Warranty page `/w`, read-only `/semak`, guided `/demo` and `/contoh` | `1bdd3ce` to `0b308b3` |
+| 23 Nov | Shop board `/kedai`, arbiter board `/timbang`, printed cards | `a5852d7` to `ee75e0e` |
+| 23 Nov | Browser end-to-end tests (Chromium and WebKit iPhone 13) and the `/demo` capture above | `b9519a1` to `bd33c97` |
 
 Work done during the event will be added to this table with its commits.
 
@@ -196,7 +206,7 @@ live warranty, the buyer holds a QR bearer key with no wallet and no fees, and e
 
 I write software for small businesses in Malaysia. Rust and Solana are new to me. The design, code, tests and this README
 were produced with AI coding agents (Claude Code) that I run on my own server, and checked by separate AI review sessions.
-I am responsible for this project. [AI_USAGE.md](AI_USAGE.md) lists the tools, what the AI produced, what I decided,
+I am responsible for this project. [AI_USAGE.md](AI_USAGE.md) lists the tools, what the AI produced, what I did,
 how the work was checked and the limits of that review.
 
 ## License
@@ -211,5 +221,6 @@ Program itu, bukan kedai, yang memegang wang tersebut dan menguatkuasakan tiga p
 2. Kedai berhenti menghantar degupan: kedai ditanda dorman dan setiap waranti yang masih hidup boleh dibayar.
 3. Waranti tamat tanpa tuntutan terbuka: rizab pulang kepada kedai.
 Pembeli hanya memegang kad QR; tiada dompet, tiada yuran. Tuntutan yang ditolak boleh dibawa kepada penimbang tara bernama.
-Keadaan kini: program dan ujiannya siap dan lulus di validator tempatan; belum dipasang di devnet. Hanya untuk devnet.
+Keadaan kini: program, aplikasi web dan ujiannya siap dan lulus di validator tempatan; program belum dipasang di devnet dan
+laman belum dihoskan. Hanya untuk devnet.
 Butiran penuh, arahan menjalankan dan had projek ada dalam bahagian bahasa Inggeris di atas. Lesen MIT.
