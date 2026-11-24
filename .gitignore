@@ -28,3 +28,4 @@ test-results/
 *.sqlite3
 .autopilot/
 *.tsbuildinfo
+deploy/.uptime-state

@@ -1,0 +1,59 @@
+# Kekal on one host behind its reverse proxy. No port is published: the proxy reaches kekal-web on the shared network.
+# Run through deploy/deploy.sh, which sources deploy/hos.env (host values, not tracked) first.
+# Service and container names carry the project prefix: on a shared network a service name is a host-wide alias.
+name: kekal
+services:
+  kekal-web:
+    image: kekal:${KEKAL_TAG:-latest}
+    container_name: kekal-web
+    restart: unless-stopped
+    env_file:
+      - path: ${KEKAL_ENV_FILE:-/dev/null}
+        required: false
+    environment:
+      KEKAL_CLUSTER: ${KEKAL_CLUSTER:-devnet}
+      KEKAL_KEYS_DIR: /app/keys
+    volumes:
+      - kekal-data:/app/data
+      - ${KEKAL_KEYS_HOST:?set KEKAL_KEYS_HOST in deploy/hos.env}:/app/keys:ro
+    read_only: true
+    tmpfs: [/tmp, /app/apps/web/.next/cache]
+    cpus: 1
+    mem_limit: 512m
+    networks: [proxy]
+
+  # The keeper only has work once the program is on the cluster: the `devnet` profile keeps it off until then,
+  # so it does not restart in a loop against a program that is not there (`deploy.sh` enables the profile when
+  # KEKAL_KEEPER=1 in hos.env).
+  kekal-keeper:
+    image: kekal:${KEKAL_TAG:-latest}
+    container_name: kekal-keeper
+    profiles: [devnet]
+    restart: unless-stopped
+    command: ["node", "keeper/keeper.mjs"]
+    env_file:
+      - path: ${KEKAL_ENV_FILE:-/dev/null}
+        required: false
+    environment:
+      KEKAL_CLUSTER: ${KEKAL_CLUSTER:-devnet}
+      KEKAL_KEYS_DIR: /app/keys
+    volumes:
+      - kekal-data:/app/data
+      - ${KEKAL_KEYS_HOST:?set KEKAL_KEYS_HOST in deploy/hos.env}:/app/keys:ro
+    read_only: true
+    tmpfs: [/tmp]
+    healthcheck:
+      disable: true
+    cpus: 0.25
+    mem_limit: 128m
+    networks: [proxy]
+
+volumes:
+  kekal-data:
+    name: kekal-data
+    external: true
+
+networks:
+  proxy:
+    name: ${KEKAL_NETWORK:?set KEKAL_NETWORK in deploy/hos.env}
+    external: true

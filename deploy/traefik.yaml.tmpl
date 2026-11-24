@@ -1,0 +1,59 @@
+# Route for the public host name to the kekal-web container. deploy/deploy.sh fills the @…@ values from
+# deploy/hos.env and copies the result into the proxy's dynamic configuration folder.
+# Every page and API answer goes out uncached with `no-transform`, so a CDN in front neither caches, rewrites nor
+# recompresses it; the `compress` middleware here compresses it instead (floor lowered so small pages are included).
+# Next.js build assets under /_next/static are content-hashed: a separate router keeps their own immutable caching. The security
+# headers apply to every response. The CSP allows only this origin plus the Solana RPC hosts in @CONNECT_SRC@
+# (the browser reads the chain through /api/rpc, so the list is normally just 'self'). Next.js inlines its
+# bootstrap scripts, hence 'unsafe-inline' for scripts; there is no third-party script on the site.
+http:
+  routers:
+    kekal:
+      entryPoints: [https]
+      rule: Host(`@DOMAIN@`)
+      service: kekal-svc
+      middlewares: [kekal-compress, kekal-headers, kekal-nocache]
+      tls:
+        certResolver: @CERT_RESOLVER@
+      priority: 100
+    kekal-static:
+      entryPoints: [https]
+      rule: Host(`@DOMAIN@`) && PathPrefix(`/_next/static/`)
+      service: kekal-svc
+      middlewares: [kekal-compress, kekal-headers]
+      tls:
+        certResolver: @CERT_RESOLVER@
+      priority: 110
+    kekal-http:
+      entryPoints: [http]
+      rule: Host(`@DOMAIN@`)
+      service: kekal-svc
+      middlewares: [kekal-https]
+      priority: 100
+  middlewares:
+    kekal-compress:
+      compress:
+        minResponseBodyBytes: 256
+        excludedContentTypes: [image/png, image/jpeg, image/webp, image/avif, font/woff2, application/pdf]
+    kekal-headers:
+      headers:
+        stsSeconds: 31536000
+        contentTypeNosniff: true
+        referrerPolicy: strict-origin-when-cross-origin
+        frameDeny: true
+        contentSecurityPolicy: "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' @CONNECT_SRC@; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
+        customResponseHeaders:
+          Permissions-Policy: "camera=(), microphone=(), geolocation=()"
+    kekal-nocache:
+      headers:
+        customResponseHeaders:
+          Cache-Control: "private, no-cache, no-store, max-age=0, must-revalidate, no-transform"
+    kekal-https:
+      redirectScheme:
+        scheme: https
+        permanent: true
+  services:
+    kekal-svc:
+      loadBalancer:
+        servers:
+          - url: http://kekal-web:3000

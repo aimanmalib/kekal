@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Single test gate: format, lint, program tests, SDK, script and web tests, web build, target sweep tests (needs cargo-sweep).
+# Single test gate: format, lint, program tests, SDK, script and web tests, web build, target sweep tests (needs cargo-sweep),
+# deploy script tests (needs python3 for a local static server).
 #   KEKAL_LIFECYCLE=1  also runs paths A-E, then the demo steps + keeper check, on throwaway local validators
 #                      (scripts/localnet.sh).
 set -euo pipefail
@@ -39,6 +40,8 @@ step "web build (next build, standalone)"
 ( cd apps/web && NEXT_TELEMETRY_DISABLED=1 pnpm --silent build >/dev/null )
 step "sweep-target tests"
 bash scripts/test/sweep-target.test.sh
+step "deploy script tests"
+bash scripts/test/deploy.test.sh
 if [ "${KEKAL_LIFECYCLE:-0}" = 1 ]; then
   step "lifecycle A-E on localnet"
   bash scripts/localnet.sh
