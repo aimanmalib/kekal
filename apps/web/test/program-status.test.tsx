@@ -6,6 +6,7 @@ import app from "../../../config/app.json";
 import en from "../../../locales/en.json";
 import ms from "../../../locales/ms.json";
 import { DemoClosed } from "../src/components/demo/DemoClosed";
+import { HomeFacts } from "../src/components/HomeFacts";
 import { SiteFrame } from "../src/components/SiteFrame";
 import { parseFlag, runtimeCluster } from "../src/lib/config";
 import { buildHealth } from "../src/lib/health";
@@ -77,6 +78,44 @@ describe("site notice and /demo state", () => {
     }
   });
   it("no notice once the program is deployed", () => expect(frame("true")).not.toContain("program-notice"));
+  it("the footer does not claim the site runs on the network while the program is missing", () => {
+    for (const [lang, dict] of [["en", en], ["ms", ms]] as const) {
+      const network = dict["cluster.devnet"];
+      const pending = frame("false", lang);
+      expect(pending).not.toContain(fill(dict["footer.network"], { network }));
+      expect(pending).toContain(fill(dict["footer.networkPending"], { network }));
+      expect(frame("true", lang)).toContain(fill(dict["footer.network"], { network }));
+    }
+  });
+  const home = (programId: string | null) =>
+    renderToStaticMarkup(
+      <HomeFacts
+        t={translator("en")}
+        stats={null}
+        decimals={6}
+        currency="USDC"
+        programId={programId}
+        explorer="https://explorer.example/x"
+        network={en["cluster.devnet"]}
+        repoUrl={null}
+        videoUrl={null}
+      />,
+    );
+  it("the home page offers the finished examples, not the closed demo, while the program is missing", () => {
+    const html = home(null);
+    expect(html).not.toContain(en["home.cta"]);
+    expect(html).not.toContain('href="/demo"');
+    expect(html).toMatch(/<a class="button" href="\/contoh">/);
+  });
+  it("the sample card note does not point at the closed demo while the program is missing", () => {
+    expect(en["card.sample.notePending"]).not.toMatch(/demo/i);
+    expect(ms["card.sample.notePending"]).not.toMatch(/demo/i);
+  });
+  it("the home page leads with the live demo once deployed", () => {
+    const html = home("Prog1111111111111111111111111111111111111111");
+    expect(html).toContain(en["home.cta"]);
+    expect(html).toMatch(/<a class="button" href="\/demo">/);
+  });
   it("/demo closed state names the network and links to the finished examples", () => {
     const html = renderToStaticMarkup(<DemoClosed t={translator("en")} network={en["cluster.devnet"]} />);
     expect(html).toContain(fill(en["demo.closed.notDeployed.title"], { network: en["cluster.devnet"] }));

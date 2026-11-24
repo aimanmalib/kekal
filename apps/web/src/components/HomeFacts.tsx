@@ -9,7 +9,8 @@ interface Props {
   stats: ProgramStats | null;
   decimals: number;
   currency: string;
-  /** Null while the program is not on the cluster: the address line is left out rather than linking to nothing. */
+  /** Null while the program is not on the cluster: the address line is left out rather than linking to nothing,
+   * the closed demo is not offered, and the finished examples become the main call to action. */
   programId: string | null;
   explorer: string;
   network: string;
@@ -22,10 +23,12 @@ export function HomeFacts({ t, stats, decimals, currency, programId, explorer, n
   return (
     <section className="home-facts">
       <p className="home-cta">
-        <Link href="/demo" className="button">
-          {t("home.cta")}
-        </Link>
-        <Link href="/contoh" className="button button-link">
+        {programId ? (
+          <Link href="/demo" className="button">
+            {t("home.cta")}
+          </Link>
+        ) : null}
+        <Link href="/contoh" className={programId ? "button button-link" : "button"}>
           {t("home.examples")}
         </Link>
       </p>

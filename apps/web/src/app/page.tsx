@@ -56,7 +56,7 @@ export default async function Home() {
           expires={t("card.sample.expires")}
           status={t("status.claim.paidOrphan")}
           stamp={t("stamp.paid")}
-          note={t("card.sample.note")}
+          note={t(cluster.deployed ? "card.sample.note" : "card.sample.notePending")}
         />
       </main>
     </SiteFrame>

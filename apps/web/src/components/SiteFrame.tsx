@@ -28,7 +28,7 @@ export function SiteFrame({ lang, t, children }: { lang: Lang; t: Translate; chi
         </p>
       )}
       {children}
-      <footer className="foot">{fill(t("footer.network"), { network })}</footer>
+      <footer className="foot">{fill(t(cluster.deployed ? "footer.network" : "footer.networkPending"), { network })}</footer>
     </div>
   );
 }
