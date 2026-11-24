@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Tests deploy/uptime.sh against a local static server (python3 http.server), plus `bash -n` on every deploy script.
+# Tests deploy/uptime.sh and deploy/smoke.sh against a local static server (python3 http.server), plus `bash -n` on every deploy script.
 # Needs curl and python3 with PyYAML. Prints "deploy tests: OK" when every case passes.
 #   UPTIME_SCRIPT=FILE  test another copy of the script (used to prove the tests fail when it checks nothing)
 set -euo pipefail
@@ -7,6 +7,7 @@ while read -r v; do unset "$v"; done < <(env | sed -n 's/^\(GIT_[A-Z_]*\)=.*/\1/
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 UPTIME="${UPTIME_SCRIPT:-$ROOT/deploy/uptime.sh}"
+SMOKE="${SMOKE_SCRIPT:-$ROOT/deploy/smoke.sh}"   # SMOKE_SCRIPT=FILE: same idea for deploy/smoke.sh
 T="$(mktemp -d)"
 SRV=""
 cleanup() { [ -n "$SRV" ] && kill "$SRV" 2>/dev/null; rm -rf "$T"; }
@@ -80,5 +81,35 @@ run $((DAY + 1800)); run $((DAY + 2100))
 [ "$(alerts warn)" = 2 ] || fail "a new outage with a different cause did not alert"
 grep -q '/api/health=404' "$T/sent" || fail "missing health page not reported"
 pass "missing health page alerts"
+
+# deploy/smoke.sh with a stand-in `docker` (logs its calls) and the static server playing the container.
+mkdir -p "$T/bin"
+printf '#!/bin/sh\necho "$*" >> "%s"\n[ "$1" = inspect ] && echo 127.0.0.1\nexit 0\n' "$T/docker.log" >"$T/bin/docker"
+chmod +x "$T/bin/docker"
+for p in $(python3 -c 'import json,sys; print(" ".join(json.load(open(sys.argv[1]))["smoke"]["paths"]))' "$ROOT/config/deploy.json"); do
+  [ "$p" = / ] || echo x >"$T/www${p}"
+done
+smoke() { : >"$T/docker.log"; PATH="$T/bin:$PATH" SMOKE_HOST=127.0.0.1 SMOKE_PORT="$PORT" SMOKE_TIMEOUT=2 bash "$SMOKE" kekal:test >/dev/null 2>&1; }
+cleaned() { grep -q '^rm -fv kekal-smoke-' "$T/docker.log" && grep -q '^volume rm kekal-smoke-' "$T/docker.log"; }
+
+health '{"ok":true,"program":"not_deployed"}'
+smoke || fail "smoke rejected a healthy image"
+grep -q -- '--read-only' "$T/docker.log" || fail "smoke container is not read-only"
+grep -q -- '--network bridge' "$T/docker.log" || fail "smoke container is not on the default bridge"
+! grep -q -- 'coolify\|proxy' "$T/docker.log" || fail "smoke container joined a shared network"
+cleaned || fail "smoke left its container or volume behind"
+pass "smoke: healthy image passes, isolated, cleaned up"
+
+health '{"ok":false,"error":"data store unavailable"}'
+! smoke || fail "smoke passed 200 with ok:false"
+cleaned || fail "smoke did not clean up after a failure"
+pass "smoke: 200 with ok:false fails"
+
+health '{"ok":true}'
+rm "$T/www/demo"
+! smoke || fail "smoke passed with a page answering 404"
+rm "$T/www/api/health"
+! smoke || fail "smoke passed with no health page"
+pass "smoke: missing page or health fails"
 
 echo "deploy tests: OK"

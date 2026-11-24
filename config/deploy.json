@@ -1,0 +1,8 @@
+{
+  "_doc": "Read by deploy/smoke.sh. Before deploy/deploy.sh touches the live container it starts the new image alone (bridge network, read-only, a throwaway data volume, an empty key folder) and waits up to timeoutSecs for /api/health to answer 200 with ok:true, then needs HTTP 200 from every path in paths. port = the port the image listens on.",
+  "smoke": {
+    "port": 3000,
+    "timeoutSecs": 90,
+    "paths": ["/", "/demo", "/contoh", "/kedai", "/semak", "/timbang"]
+  }
+}

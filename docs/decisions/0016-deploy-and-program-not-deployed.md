@@ -27,6 +27,9 @@ not raw RPC errors, and the deploy has to be repeatable and reversible on a sing
 - **Proxy route** (`deploy/traefik.yaml.tmpl`): compression at the proxy, pages and API answers sent uncached with
   `no-transform` so a CDN in front does not rewrite them, content-hashed `/_next/static` assets keep their own caching,
   and a CSP that allows only this origin (the browser reads the chain through `/api/rpc`).
+- **`deploy/smoke.sh`** runs every new image alone before the live container is replaced: default bridge network,
+  read-only root, a throwaway data volume and an empty key folder. It needs `/api/health` 200 with `"ok":true` and 200
+  from the pages listed in `config/deploy.json`; a failure removes the image and leaves the live site untouched.
 - **`deploy/uptime.sh`** checks `/` and `/api/health` (including `"ok":true`) every few minutes and alerts once after
   two failures in a row.
 
@@ -34,4 +37,4 @@ not raw RPC errors, and the deploy has to be repeatable and reversible on a sing
 
 Turning the program on after the devnet deploy is a config change (`deployed: true`, program ID, mint) plus enabling
 the keeper profile. Rollback is `deploy/deploy.sh --rollback`. The shell tests in `scripts/test/deploy.test.sh` cover
-the uptime alerts and the proxy route template.
+the uptime alerts, the smoke test and the proxy route template.

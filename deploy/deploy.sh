@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Deploy Kekal (web app, and the keeper once the program is on the cluster) behind the host's reverse proxy.
-#   deploy/deploy.sh               build HEAD from a clean `git archive`, run it, install the route, verify
-#   deploy/deploy.sh --build       build the image only and print its tag (nothing running is touched)
+#   deploy/deploy.sh               build HEAD from a clean `git archive`, smoke-test it (deploy/smoke.sh), run it,
+#                                  install the route, verify
+#   deploy/deploy.sh --build       build the image, smoke-test it alone and print its tag (nothing live is touched)
 #   deploy/deploy.sh --rollback    run the previous image again (held by the stopped `kekal-undo` container)
 #   deploy/deploy.sh --status      containers, tags, rollback image and the public health code
 #
@@ -39,6 +40,10 @@ build_image() {  # prints the new tag on the last line
   git -C .. archive HEAD | tar -x -C "$ctx"   # clean tree: untracked and ignored files never reach the image
   $BUILD_CMD -t "kekal:$tag" "$ctx" >&2 || { rm -rf "$ctx"; exit 1; }
   rm -rf "$ctx"
+  # A new image that cannot start or report healthy stops here, before the live container is replaced.
+  bash ./smoke.sh "kekal:$tag" >&2 || {
+    docker rmi "kekal:$tag" >/dev/null 2>&1 || true
+    echo "kekal:$tag failed its smoke test and was removed: nothing live was changed" >&2; exit 1; }
   echo "$tag"
 }
 
