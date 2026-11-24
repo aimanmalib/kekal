@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import app from "../../../config/app.json";
 import { translator } from "../src/lib/i18n";
-import { pageMetadata, robotsFile, siteUrl } from "../src/lib/site";
+import { pageMetadata, robotsFile, siteUrl, siteViewport } from "../src/lib/site";
 
 const og = app.web.site.ogImage;
 const asset = (name: string) => readFileSync(new URL(`../src/app/${name}`, import.meta.url));
@@ -78,5 +78,27 @@ describe("opengraph-image.png", () => {
   });
   it("has no .alt.txt beside it, so the locale alt text is the only one", () => {
     expect(() => asset("opengraph-image.alt.txt")).toThrow();
+  });
+});
+
+describe("icons and theme colour", () => {
+  it("theme colour is the --paper token from globals.css", () => {
+    const css = asset("globals.css").toString("utf8");
+    const paper = /--paper:\s*(#[0-9a-fA-F]{3,8})\s*;/.exec(css)?.[1];
+    expect(paper).toBeDefined();
+    expect(app.web.site.themeColor.toLowerCase()).toBe(paper?.toLowerCase());
+    expect(siteViewport.themeColor).toBe(app.web.site.themeColor);
+  });
+  it("icon.svg is a square SVG that draws without fonts", () => {
+    const svg = asset("icon.svg").toString("utf8");
+    expect(svg).toMatch(/^<svg [^>]*viewBox="0 0 (\d+) \1"/);
+    expect(svg).not.toMatch(/<text|font-family/);
+  });
+  it("apple-icon.png is an opaque PNG of the configured size", () => {
+    const png = asset("apple-icon.png");
+    expect(png.subarray(1, 4).toString("latin1")).toBe("PNG");
+    expect(png.readUInt32BE(16)).toBe(app.web.site.appleIcon.size);
+    expect(png.readUInt32BE(20)).toBe(app.web.site.appleIcon.size);
+    expect([0, 2]).toContain(png[25]); // greyscale or RGB: no alpha channel
   });
 });

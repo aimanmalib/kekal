@@ -1,5 +1,5 @@
 // Public address, robots rules and link-preview metadata. Values come from config/app.json (web.site) and env.
-import type { Metadata, MetadataRoute } from "next";
+import type { Metadata, MetadataRoute, Viewport } from "next";
 import { webConfig } from "./config";
 import type { Lang, Translate } from "./i18n";
 
@@ -24,6 +24,9 @@ export function robotsFile(env: Record<string, string | undefined> = process.env
     host: siteUrl(env).origin,
   };
 }
+
+/** Browser bar colour (config web.site.themeColor, kept equal to the --paper token). Icons: app/icon.svg, app/apple-icon.png. */
+export const siteViewport: Viewport = { themeColor: siteConfig.themeColor };
 
 const ogLocale: Record<Lang, string> = { en: "en_US", ms: "ms_MY" };
 

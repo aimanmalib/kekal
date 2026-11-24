@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import "@fontsource-variable/newsreader";
 import "@fontsource-variable/public-sans";
@@ -10,10 +10,13 @@ import "./demo.css";
 import "./board.css";
 import { localeMetadata } from "@/lib/page-metadata";
 import { requestLang } from "@/lib/request-lang";
+import { siteViewport } from "@/lib/site";
 
 export async function generateMetadata(): Promise<Metadata> {
   return localeMetadata();
 }
+
+export const viewport: Viewport = siteViewport;
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const lang = await requestLang();
