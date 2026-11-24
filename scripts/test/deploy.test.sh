@@ -95,8 +95,8 @@ cleaned() { grep -q '^rm -fv kekal-smoke-' "$T/docker.log" && grep -q '^volume r
 health '{"ok":true,"program":"not_deployed"}'
 smoke || fail "smoke rejected a healthy image"
 grep -q -- '--read-only' "$T/docker.log" || fail "smoke container is not read-only"
-grep -q -- '--network bridge' "$T/docker.log" || fail "smoke container is not on the default bridge"
-! grep -q -- 'coolify\|proxy' "$T/docker.log" || fail "smoke container joined a shared network"
+[ "$(grep -o -- '--network [^ ]*' "$T/docker.log" | sort -u)" = "--network bridge" ] \
+  || fail "smoke container is not only on the default bridge (a shared network would expose it to the proxy)"
 cleaned || fail "smoke left its container or volume behind"
 pass "smoke: healthy image passes, isolated, cleaned up"
 
