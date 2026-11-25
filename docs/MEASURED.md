@@ -47,7 +47,7 @@ shared Linux x86-64 host. Times are wall-clock and include start-up.
 |---|---|---|---|
 | Program (LiteSVM, 13 test files) | `cargo test -p kekal` (after `anchor build`) | 72 | 76 s |
 | SDK | `npx vitest run` in `packages/sdk` | 55 | 3 s |
-| Web app | `npx vitest run` in `apps/web` | 251 | 25 s |
+| Web app | `npx vitest run` in `apps/web` | 258 | 25 s |
 | Scripts | `npx vitest run` in `scripts` | 22 | 6 s |
 | Keeper | `npx vitest run` in `apps/keeper` | 10 | 5 s |
 | Server package (SQLite; 9 Postgres tests skip without a database) | `npx vitest run` in `packages/server` | 14 | 3 s |

@@ -267,6 +267,11 @@
       "sqlitePath": "data/kekal.db",
       "migrationsDir": "supabase/migrations",
       "postgres": { "urlEnv": "SUPABASE_DB_URL", "maxConnections": 4, "connectTimeoutSecs": 10, "idleTimeoutSecs": 60, "ssl": "require", "prepare": false }
+    },
+    "health": {
+      "_doc": "GET /api/health. relayerFunded is true when the relay.keyRole key holds at least relayerMinSol, false below it, null when the key is not loaded or no RPC endpoint answered. The balance is read at most once per balanceCacheSecs per process. features lists the optional integrations live in this deployment (supabase when the data backend is Postgres).",
+      "relayerMinSol": 0.5,
+      "balanceCacheSecs": 60
     }
   }
 }

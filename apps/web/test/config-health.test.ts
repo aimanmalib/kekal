@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import app from "../../../config/app.json";
 import idl from "@kekal/sdk/idl";
 import { parseUrlList, runtimeCluster, sampleReserve } from "../src/lib/config";
-import { buildHealth, KEEPER_LAST_RUN_KEY } from "../src/lib/health";
+import { buildHealth, KEEPER_LAST_RUN_KEY, liveFeatures } from "../src/lib/health";
 
 describe("runtimeCluster", () => {
   it("defaults to the config cluster and its RPC list", () => {
@@ -45,6 +45,19 @@ describe("buildHealth", () => {
       keeperLastRun: 1700000000,
       relayerFunded: null,
     });
+  });
+  it("passes the relayer funding check through", async () => {
+    expect((await buildHealth(cluster, store(null), async () => false)).relayerFunded).toBe(false);
+    expect((await buildHealth(cluster, new Error("x"), async () => true)).relayerFunded).toBe(true);
+  });
+  it("lists supabase as a live feature only on the Postgres backend", async () => {
+    expect(liveFeatures("sqlite")).toEqual([]);
+    expect(liveFeatures("supabase")).toEqual(["supabase"]);
+    expect((await buildHealth(cluster, store(null))).features).toEqual([]);
+  });
+  it("health limits are sane", () => {
+    expect(app.web.health.relayerMinSol).toBeGreaterThan(0);
+    expect(app.web.health.balanceCacheSecs).toBeGreaterThanOrEqual(1);
   });
   it("null keeper run when never written or garbage", async () => {
     expect((await buildHealth(cluster, store(null))).keeperLastRun).toBeNull();

@@ -10,23 +10,29 @@ export interface Health {
   keeperLastRun: number | null;
   /** Optional integrations that are live in this deployment. */
   features: string[];
-  /** null until the relayer is configured. */
+  /** Relayer balance at or above web.health.relayerMinSol; null when its key is not loaded or the RPC did not answer. */
   relayerFunded: boolean | null;
   error?: string;
 }
 
 export const KEEPER_LAST_RUN_KEY = "keeper_last_run";
 
+/** Optional integrations live in this process. Only those whose code runs here are listed. */
+export function liveFeatures(dataBackend: string): string[] {
+  return dataBackend === "supabase" ? ["supabase"] : [];
+}
+
 export async function buildHealth(
   cluster: RuntimeCluster,
   store: { backend: string; getConfig(key: string): Promise<string | null> } | Error,
+  relayerFunded: () => Promise<boolean | null> = async () => null,
 ): Promise<Health> {
   const base = {
     cluster: cluster.name,
     programId: cluster.programId,
     program: cluster.deployed ? ("deployed" as const) : ("not_deployed" as const),
-    features: [],
-    relayerFunded: null,
+    features: store instanceof Error ? [] : liveFeatures(store.backend),
+    relayerFunded: await relayerFunded(),
   };
   const down = { ok: false, ...base, dataBackend: null, keeperLastRun: null, error: "data store unavailable" };
   if (store instanceof Error) return down;
