@@ -36,6 +36,8 @@ export interface DemoSettings {
 export interface ClusterConfig {
   name: string;
   rpcUrls: string[];
+  /** Pacing for public endpoints that rate-limit by IP; absent = plain fetch (local validator). */
+  scriptRpc?: { minGapMs: number; retryMs: number; maxRetries: number };
   explorerTx: string;
   programId: string | null;
   keysDir: string | null;

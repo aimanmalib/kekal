@@ -9,7 +9,9 @@
     "test": "vitest run --reporter=dot",
     "lifecycle": "tsx lifecycle.ts",
     "seed-demo": "tsx seed-demo.ts",
-    "demo-check": "tsx demo-check.ts"
+    "demo-check": "tsx demo-check.ts",
+    "init-config": "tsx init-config.ts",
+    "measure-cu": "tsx measure-cu.ts"
   },
   "dependencies": {
     "@kekal/keeper": "workspace:*",

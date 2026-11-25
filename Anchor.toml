@@ -12,6 +12,9 @@ skip-lint = false
 [programs.localnet]
 kekal = "3dTk2T83xQWAat7iWDjfCzijdCQWhstUxFtwLk8HUo3X"
 
+[programs.devnet]
+kekal = "3dTk2T83xQWAat7iWDjfCzijdCQWhstUxFtwLk8HUo3X"
+
 [provider]
 cluster = "localnet"
 wallet = "~/.config/solana/id.json"

@@ -60,10 +60,16 @@ export async function fundRoles(env: Pick<Env, "c" | "conn" | "roles">): Promise
   await Promise.all([admin, seller, arbiter, feePayer].map((k) => airdrop(env.conn, k.publicKey, sol)));
 }
 
-/** Uses the configured kUSD mint, else creates one (localnet; devnet uses the `kusd-mint` key as its address). */
+/**
+ * The kUSD mint. With a keys directory (devnet) the `kusd-mint` key is its address: it is created when missing and must
+ * match `mints.kusd` when that is set. Without one (localnet) a configured mint is used as is, else a fresh one is made.
+ */
 export async function ensureMint(c: ClusterConfig, conn: Connection, authority: Keypair): Promise<PublicKey> {
-  if (c.mints.kusd) return new PublicKey(c.mints.kusd);
+  if (c.mints.kusd && !c.keysDir) return new PublicKey(c.mints.kusd);
   const mintKey = c.keysDir ? roleKey(c, "kusd-mint") : Keypair.generate();
+  if (c.mints.kusd && c.mints.kusd !== mintKey.publicKey.toBase58()) {
+    throw new Error(`mints.kusd ${c.mints.kusd} is not the address of the kusd-mint key ${mintKey.publicKey.toBase58()}`);
+  }
   const existing = await getMint(conn, mintKey.publicKey).catch(() => null);
   if (existing) return mintKey.publicKey;
   return createMint(conn, authority, authority.publicKey, null, c.tokenDecimals, mintKey);
