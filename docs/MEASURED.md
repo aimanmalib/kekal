@@ -142,10 +142,13 @@ Raw numbers: [`measured/live-site.json`](measured/live-site.json).
 | Item | Value |
 |---|---|
 | `GET /api/health` | 200, `ok: true`, cluster devnet, program deployed, store SQLite, no optional integrations switched on |
-| Warranty page `/w/<address>` | HTML 58,989 bytes; 9 scripts in the page, 1,222,349 bytes (363,070 bytes gzip) |
+| Warranty page `/w/<address>` | HTML 59,253 bytes; 10 scripts in the page, 1,005,766 bytes (298,535 bytes gzip), from 1,222,349 (363,070 gzip) before ADR 0025 |
 
-The scripts are large because the page reads and signs Solana transactions in the browser (`@solana/web3.js` and the Anchor
-client). Since tag `ed170e4-202611251805` the health endpoint also reports `relayerFunded: true` (the fee relayer holds at
+The page signs Solana transactions in the browser (`@solana/web3.js`); since tag `b81f8ec-202611252003` the Anchor client
+and the IDL load only when the holder first acts ([ADR 0025](decisions/0025-anchor-on-demand.md)). Measured on 25 Nov
+20:06 UTC with `npx tsx scripts/page-weight.ts https://kekal.sasateguh.com /w/<address>` (every `<script src>` in the
+served HTML; chunks imported later are not counted). The audit of every page in English and Bahasa Melayu at 390 and
+320 px in WebKit (iPhone 13) found no control under 44 px and no text under 4.5:1 contrast after the timeline fix. Since tag `ed170e4-202611251805` the health endpoint also reports `relayerFunded: true` (the fee relayer holds at
 least the `web.health.relayerMinSol` in [`config/app.json`](../config/app.json); three reads on 25 Nov 18:07 UTC); the
 balance below is read from the cluster.
 

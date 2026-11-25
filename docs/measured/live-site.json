@@ -16,11 +16,20 @@
   },
   "warrantyPage": {
     "path": "/w/JcAknYguV5WyViYWoMgC8ZfRbR76LHiFohZt1ghu4Sb",
-    "htmlBytes": 58989,
-    "scripts": 9,
-    "scriptBytes": 1222349,
-    "scriptBytesGzip": 363070,
-    "method": "sum of every <script src> in the served HTML, fetched once without and once with Accept-Encoding: gzip; chunks loaded later are not counted"
+    "htmlBytes": 59253,
+    "scripts": 10,
+    "scriptBytes": 1005766,
+    "scriptBytesGzip": 298535,
+    "method": "sum of every <script src> in the served HTML, fetched once without and once with Accept-Encoding: gzip; chunks loaded later are not counted",
+    "measuredAt": "2026-11-25T20:06:30Z",
+    "deployTag": "b81f8ec-202611252003",
+    "command": "npx tsx scripts/page-weight.ts https://kekal.sasateguh.com /w/<address>",
+    "before": {
+      "deployTag": "ed170e4-202611251805",
+      "scripts": 9,
+      "scriptBytes": 1222349,
+      "scriptBytesGzip": 363070
+    }
   },
   "devnetBalances": {
     "feeRelayer": {
