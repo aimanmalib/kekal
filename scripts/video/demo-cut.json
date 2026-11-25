@@ -1,0 +1,25 @@
+{
+  "_doc": "Demo video cut, read by scripts/video/assemble.py. Clip paths are relative to --src (the footage folder from ADR 0019). dur = scene length in seconds (the last frame holds if the clip is shorter); speed > 1 plays faster and the scene's label says so; lines = [narration line, seconds after the scene starts]. crop = [w, h, x, y] in clip pixels before scaling.",
+  "video": { "width": 1920, "height": 1080, "fps": 30, "crf": 20 },
+  "phone": { "height": 880, "top": 30, "bezel": 14, "radius": 44 },
+  "audio": { "sampleRate": 48000, "targetMeanDb": -20.5, "limitDb": -2.0, "bitrate": "160k" },
+  "rules": { "maxSecs": 170, "minGapSecs": 0.2, "maxCueChars": 72, "meanDbRange": [-23, -17], "maxPeakDb": -1.5, "audioVideoSlackSecs": 0.5 },
+  "fonts": {
+    "sans": "apps/web/node_modules/@fontsource-variable/public-sans/files/public-sans-latin-wght-normal.woff2",
+    "serif": "apps/web/node_modules/@fontsource-variable/newsreader/files/newsreader-latin-wght-normal.woff2",
+    "mono": "apps/web/node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-normal.woff2"
+  },
+  "subtitle": { "size": 40, "bottom": 34, "padX": 28, "padY": 14, "radius": 14 },
+  "label": { "size": 28, "margin": 48, "padX": 18, "padY": 10 },
+  "scenes": [
+    { "id": "home", "kind": "phone", "clip": "clips/webkit-iphone13-home.webm", "in": 0, "out": 22, "dur": 22, "lines": [[1, 0.3], [2, 3.7]], "label": "Home page on an iPhone 13" },
+    { "id": "shop", "kind": "wide", "clip": "clips/chromium-en-kedai-seller.webm", "in": 8, "out": 44.5, "speed": 5, "crop": [1088, 612, 0, 0], "dur": 8.2, "lines": [[3, 0.2]], "label": "Shop board: deposit, issue a card · sped up 5×" },
+    { "id": "buyer", "kind": "phone", "clip": "clips/webkit-iphone13-ms-kedai-buyer.webm", "in": 0, "out": 10.5, "dur": 10.5, "lines": [[4, 0.3]], "label": "The buyer's phone, in Bahasa Melayu" },
+    { "id": "silent", "kind": "phone", "clip": "clips/webkit-iphone13-demo-silent.webm", "in": 0, "out": 20.88, "dur": 21.6, "lines": [[5, 0.4], [6, 13.0]], "label": "Test shop with a 5-second answer window" },
+    { "id": "closed", "kind": "phone", "clip": "clips/webkit-iphone13-demo-closed.webm", "in": 0, "out": 18.32, "dur": 18.3, "lines": [[7, 4.0]], "label": "Test shop with a 5-second check-in window" },
+    { "id": "honest", "kind": "wide", "clip": "clips/chromium-en-kedai-seller.webm", "in": 105.6, "out": 106.8, "crop": [853, 480, 60, 140], "dur": 10.2, "lines": [[8, 0.3]], "label": "Shop board: a claim waiting for the shop" },
+    { "id": "program", "kind": "card", "dur": 4.6, "lines": [[9, 0.3]], "title": "The Kekal program on Solana devnet", "cluster": "devnet" },
+    { "id": "tests", "kind": "wide", "clip": "term/cargo-test.mp4", "in": 0, "out": 16.07, "dur": 16.07, "lines": [] },
+    { "id": "close", "kind": "wide", "clip": "clips/chromium-home.webm", "in": 5.5, "out": 13.5, "dur": 12, "lines": [[10, 0.6], [11, 8.4]], "label": "kekal.sasateguh.com" }
+  ]
+}
