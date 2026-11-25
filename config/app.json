@@ -50,12 +50,12 @@
       }
     },
     "devnet": {
-      "rpcUrls": ["https://api.devnet.solana.com"],
+      "rpcUrls": ["https://api.devnet.solana.com", "https://devnet.rpcpool.com", "https://solana-devnet.gateway.tatum.io"],
       "scriptRpc": { "_doc": "Scripts (lifecycle, seed-demo, init-config) on a public endpoint: requests start minGapMs apart; a 429 waits retryMs, doubled per retry.", "minGapMs": 150, "retryMs": 1000, "maxRetries": 6 },
       "explorerTx": "https://explorer.solana.com/tx/{sig}?cluster=devnet",
       "explorerAddress": "https://explorer.solana.com/address/{address}?cluster=devnet",
       "programId": "3dTk2T83xQWAat7iWDjfCzijdCQWhstUxFtwLk8HUo3X",
-      "deployed": false,
+      "deployed": true,
       "keysDir": "~/.config/kekal/keys",
       "mints": { "kusd": "D2bmq7TYt8eVtbydmsKbi26htLtwjCVrJnXA2kdh77oA", "usdc": "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU" },
       "tokenDecimals": 6,

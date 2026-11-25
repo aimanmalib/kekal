@@ -11,6 +11,11 @@ describe("runtimeCluster", () => {
     expect(c.rpcUrls.length).toBeGreaterThan(0);
     expect(c.programId).toBe(idl.address);
   });
+  it("devnet has RPC failover: at least two distinct HTTPS endpoints", () => {
+    const urls = app.clusters.devnet.rpcUrls;
+    expect(new Set(urls.map((u) => new URL(u).host)).size).toBeGreaterThanOrEqual(2);
+    for (const u of urls) expect(new URL(u).protocol).toBe("https:");
+  });
   it("RPC_URLS overrides the list, in order", () => {
     expect(runtimeCluster({ RPC_URLS: "https://a.example, https://b.example" }).rpcUrls).toEqual([
       "https://a.example",

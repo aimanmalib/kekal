@@ -1,6 +1,120 @@
 {
-  "cluster": null,
-  "programId": null,
-  "seconds": null,
-  "paths": {}
+  "cluster": "devnet",
+  "programId": "3dTk2T83xQWAat7iWDjfCzijdCQWhstUxFtwLk8HUo3X",
+  "mint": "D2bmq7TYt8eVtbydmsKbi26htLtwjCVrJnXA2kdh77oA",
+  "seconds": 329,
+  "paths": {
+    "setup": [
+      {
+        "step": "heartbeat",
+        "signature": "8u2vU3gpL1axTHKeFcGCU7jsXPdZtj76np3Ue7RPW43fPDWAQmsNCzvsUCrRctmDCmHXWs9NmUsxNQFBS564BTq",
+        "explorer": "https://explorer.solana.com/tx/8u2vU3gpL1axTHKeFcGCU7jsXPdZtj76np3Ue7RPW43fPDWAQmsNCzvsUCrRctmDCmHXWs9NmUsxNQFBS564BTq?cluster=devnet"
+      },
+      {
+        "step": "create_shop",
+        "signature": "6nRdjXj8JqkKhcL59SYsZgp1kXJkEGqUvGrVMurQTj1JcBxRzT1Lr57p2rjDgYk88tRqetYFRaBT4AN3u7tvXRe",
+        "explorer": "https://explorer.solana.com/tx/6nRdjXj8JqkKhcL59SYsZgp1kXJkEGqUvGrVMurQTj1JcBxRzT1Lr57p2rjDgYk88tRqetYFRaBT4AN3u7tvXRe?cluster=devnet"
+      },
+      {
+        "step": "deposit",
+        "signature": "3K6vLjt3TYuwA97d7gadv6S94McfrXT3pu8JzyL4xAQ1e7RX62qmHqhRy3rbuqdGTPBLPse8bd24LXGB3GmJj9PL",
+        "explorer": "https://explorer.solana.com/tx/3K6vLjt3TYuwA97d7gadv6S94McfrXT3pu8JzyL4xAQ1e7RX62qmHqhRy3rbuqdGTPBLPse8bd24LXGB3GmJj9PL?cluster=devnet"
+      }
+    ],
+    "A": [
+      {
+        "step": "issue_warranty",
+        "signature": "4xsCaxh9StgmLjhtBTMRHWL5cAkMNCG4ryPtnKMgXYstxY3shkSU9G29LPxQZVRMKSyC3abd7eDrCb9s7r215TJ1",
+        "explorer": "https://explorer.solana.com/tx/4xsCaxh9StgmLjhtBTMRHWL5cAkMNCG4ryPtnKMgXYstxY3shkSU9G29LPxQZVRMKSyC3abd7eDrCb9s7r215TJ1?cluster=devnet"
+      },
+      {
+        "step": "file_claim",
+        "signature": "9z2breneK2o4cN1un6HHAajV71EVG2t93sD3S2ywEgPyNHwPusCBxSQ5x8WtDJMJwYmwDuLzERgp18jNuMeTSYR",
+        "explorer": "https://explorer.solana.com/tx/9z2breneK2o4cN1un6HHAajV71EVG2t93sD3S2ywEgPyNHwPusCBxSQ5x8WtDJMJwYmwDuLzERgp18jNuMeTSYR?cluster=devnet"
+      },
+      {
+        "step": "respond_claim",
+        "signature": "2DcMJBHbTPhUWmWuwyR7AhTZY66PQPkM6cfiz4FvPPKDoRawGoLKUxpZex8x5uy1trPm15j4qeB4cyiRRHEpsnpo",
+        "explorer": "https://explorer.solana.com/tx/2DcMJBHbTPhUWmWuwyR7AhTZY66PQPkM6cfiz4FvPPKDoRawGoLKUxpZex8x5uy1trPm15j4qeB4cyiRRHEpsnpo?cluster=devnet"
+      },
+      {
+        "step": "confirm_resolved",
+        "signature": "3N9LfahicbgLZPVnVa1LEi95JsrjPPrdzf1a8iP7Wgq9VmpqhoCphVHZfSAU9W8onW7qFn5XoLxv2a7tu24DrqpV",
+        "explorer": "https://explorer.solana.com/tx/3N9LfahicbgLZPVnVa1LEi95JsrjPPrdzf1a8iP7Wgq9VmpqhoCphVHZfSAU9W8onW7qFn5XoLxv2a7tu24DrqpV?cluster=devnet"
+      }
+    ],
+    "B": [
+      {
+        "step": "issue_warranty",
+        "signature": "5C3TTmeVbL4Q823XaMHzEu6QTbmsKhwJGAybKtpS99TwWftAAwEXYRjN2pHreh7zo7r77FQornezbBFVbvh5DjfY",
+        "explorer": "https://explorer.solana.com/tx/5C3TTmeVbL4Q823XaMHzEu6QTbmsKhwJGAybKtpS99TwWftAAwEXYRjN2pHreh7zo7r77FQornezbBFVbvh5DjfY?cluster=devnet"
+      },
+      {
+        "step": "file_claim",
+        "signature": "2nWnRtWuZBQHRDL1SGUayGxSC6AcCALDJnKtrGrsCScoRMfH5RgvqLz9d2jgYH1LcxsJ9D15Lfab1cQGjKUtarGD",
+        "explorer": "https://explorer.solana.com/tx/2nWnRtWuZBQHRDL1SGUayGxSC6AcCALDJnKtrGrsCScoRMfH5RgvqLz9d2jgYH1LcxsJ9D15Lfab1cQGjKUtarGD?cluster=devnet"
+      },
+      {
+        "step": "settle_unanswered",
+        "signature": "4owiKYJBvHYbKeiwWb4PYUq4YPifYYJ2UxTSW9paVCo8VP1dPMR1mtZ6oc5C2hGwtGpFne84HrSQ28Mueyu9aswT",
+        "explorer": "https://explorer.solana.com/tx/4owiKYJBvHYbKeiwWb4PYUq4YPifYYJ2UxTSW9paVCo8VP1dPMR1mtZ6oc5C2hGwtGpFne84HrSQ28Mueyu9aswT?cluster=devnet"
+      }
+    ],
+    "D": [
+      {
+        "step": "issue_warranty",
+        "signature": "5LWjtiPDfkoqM76sr7AJLBzty3Qff1G6Lt8hT9q8EWKugcYJvJwGtaZGGHoNyoE6sdCW1GVXwTv56i8KDAS2xm6r",
+        "explorer": "https://explorer.solana.com/tx/5LWjtiPDfkoqM76sr7AJLBzty3Qff1G6Lt8hT9q8EWKugcYJvJwGtaZGGHoNyoE6sdCW1GVXwTv56i8KDAS2xm6r?cluster=devnet"
+      },
+      {
+        "step": "release_expired",
+        "signature": "3MjfhCr5iq1wkoKSpKDyB3wdQPRr7wFZybri2jzKNpnYMFFtMq76319B4rBcNY93HSbWet9PJUNFRHPaDZu42Bfi",
+        "explorer": "https://explorer.solana.com/tx/3MjfhCr5iq1wkoKSpKDyB3wdQPRr7wFZybri2jzKNpnYMFFtMq76319B4rBcNY93HSbWet9PJUNFRHPaDZu42Bfi?cluster=devnet"
+      }
+    ],
+    "E": [
+      {
+        "step": "issue_warranty",
+        "signature": "44qJyF4SECPaYBosgw9mVpV9nSCS93wuLHo1fxKkf27aCyr31j5A55WbjJkMVYcQAzbp1PFqW3wfH8sEgUdLiiXW",
+        "explorer": "https://explorer.solana.com/tx/44qJyF4SECPaYBosgw9mVpV9nSCS93wuLHo1fxKkf27aCyr31j5A55WbjJkMVYcQAzbp1PFqW3wfH8sEgUdLiiXW?cluster=devnet"
+      },
+      {
+        "step": "file_claim",
+        "signature": "2AjUmAouVRbFWauEKV6Ti5UxjH7R3GrwAUCCMhw3JnxivsM5zvtaB4J2z9fG7ugj1o8WGt642XVHwrLzeH7VTCVK",
+        "explorer": "https://explorer.solana.com/tx/2AjUmAouVRbFWauEKV6Ti5UxjH7R3GrwAUCCMhw3JnxivsM5zvtaB4J2z9fG7ugj1o8WGt642XVHwrLzeH7VTCVK?cluster=devnet"
+      },
+      {
+        "step": "respond_claim",
+        "signature": "4Cuei1VpwXN1yWiJukLaqY2vSakS9n7xTTtGb155n2NrAPxoHMHG4shTqrXHeuiYyQjyzokXBk6BF5eR5MMsGAkJ",
+        "explorer": "https://explorer.solana.com/tx/4Cuei1VpwXN1yWiJukLaqY2vSakS9n7xTTtGb155n2NrAPxoHMHG4shTqrXHeuiYyQjyzokXBk6BF5eR5MMsGAkJ?cluster=devnet"
+      },
+      {
+        "step": "escalate",
+        "signature": "4wV2xXX4wdzwZUVG5vfrjCMHareosLe5tBdzoG7kmq6VwNPFPoMJnXnr8eD2aQcttzRbQeX8djU2wLED7vsRTooH",
+        "explorer": "https://explorer.solana.com/tx/4wV2xXX4wdzwZUVG5vfrjCMHareosLe5tBdzoG7kmq6VwNPFPoMJnXnr8eD2aQcttzRbQeX8djU2wLED7vsRTooH?cluster=devnet"
+      },
+      {
+        "step": "resolve_dispute",
+        "signature": "4iS8ydC4uF6fmjBbLysSDVU2mJXfnja1Qo6c3bj28Miz52ywtFU1WsYXR23PdkEw2hDkT66fTRnTugftiWbGu6B4",
+        "explorer": "https://explorer.solana.com/tx/4iS8ydC4uF6fmjBbLysSDVU2mJXfnja1Qo6c3bj28Miz52ywtFU1WsYXR23PdkEw2hDkT66fTRnTugftiWbGu6B4?cluster=devnet"
+      }
+    ],
+    "C": [
+      {
+        "step": "issue_warranty",
+        "signature": "5KFJoxaWF8GxpQut8jpgaRDrggY18Kt9LDztFUC7ZR3NKucHKNPjQw3yBCMVpYrPPiVBDdkkFpGcdjb9FZhHvzo",
+        "explorer": "https://explorer.solana.com/tx/5KFJoxaWF8GxpQut8jpgaRDrggY18Kt9LDztFUC7ZR3NKucHKNPjQw3yBCMVpYrPPiVBDdkkFpGcdjb9FZhHvzo?cluster=devnet"
+      },
+      {
+        "step": "declare_dormant",
+        "signature": "5isyuT8vkpfERneqskJkWbsrb3vwC3sDUMuPpVNbVsjqYv1kZHU8RUUDCEbwMN8w24sbQ1hLZ6EfqoV4tBWKyCij",
+        "explorer": "https://explorer.solana.com/tx/5isyuT8vkpfERneqskJkWbsrb3vwC3sDUMuPpVNbVsjqYv1kZHU8RUUDCEbwMN8w24sbQ1hLZ6EfqoV4tBWKyCij?cluster=devnet"
+      },
+      {
+        "step": "claim_orphan",
+        "signature": "4bJmbXDtL6Du5ZR2WoCzJtQh9XdtX6dJpcr7Zq5JrsvJ8AdSig9uzjpk8CAXuyAJaRwUhwEsTUe2t1j9mACttGjR",
+        "explorer": "https://explorer.solana.com/tx/4bJmbXDtL6Du5ZR2WoCzJtQh9XdtX6dJpcr7Zq5JrsvJ8AdSig9uzjpk8CAXuyAJaRwUhwEsTUe2t1j9mACttGjR?cluster=devnet"
+      }
+    ]
+  }
 }

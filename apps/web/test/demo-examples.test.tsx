@@ -27,9 +27,19 @@ describe("readExamples", () => {
 
   it("shows nothing for another cluster, an empty report or links that are not https", () => {
     expect(readExamples(sample, "localnet", ["B"])).toBeNull();
-    expect(readExamples(report, "devnet", ["B"])).toBeNull();
+    const empty = { cluster: null, programId: null, seconds: null, paths: {} };
+    expect(readExamples(empty, "devnet", ["B"])).toBeNull();
     const bad = { ...sample, paths: { B: [{ ...step("file_claim", 1), explorer: "javascript:alert(1)" }] } };
     expect(readExamples(bad, "devnet", ["B"])).toBeNull();
+  });
+});
+
+describe("committed report (config/examples.json)", () => {
+  it("is either empty or a full run on its own cluster with https explorer links", () => {
+    if (report.cluster === null) return;
+    const ex = readExamples(report, report.cluster, ["A", "B", "C", "D", "E"]);
+    expect(ex?.paths.map((p) => p.id)).toEqual(["A", "B", "C", "D", "E"]);
+    for (const p of ex!.paths) for (const s of p.steps) expect(new URL(s.explorer).protocol).toBe("https:");
   });
 });
 
