@@ -1,7 +1,8 @@
 // Browser side of /w/[pda]: the card key, transaction building and the relayer round trip.
 // The card key lives in the URL fragment and in this browser's storage; it is never sent to the server.
-import { accountFieldOffset, base58 as bs58, readOnlyProgram, type KekalProgram } from "@kekal/sdk";
-import { Connection, Keypair, PublicKey, TransactionMessage, VersionedTransaction, type TransactionInstruction } from "@solana/web3.js";
+// Nothing here loads the Anchor client: it is fetched only when an action is built (./program), which keeps the
+// warranty page's first load small on a phone.
+import { Keypair, PublicKey, TransactionMessage, VersionedTransaction, type TransactionInstruction } from "@solana/web3.js";
 
 /** The 32-byte seed in `#<param>=<base58>`, or null when absent or malformed. */
 export function seedFromFragment(hash: string, param: string): Uint8Array | null {
@@ -9,14 +10,14 @@ export function seedFromFragment(hash: string, param: string): Uint8Array | null
   const value = new URLSearchParams(body).get(param);
   if (!value) return null;
   try {
-    const bytes = bs58.decode(value);
-    return bytes.length === 32 ? Uint8Array.from(bytes) : null;
+    // A seed is 32 bytes, the size of a public key, so the key type's base58 codec reads it (and rejects other lengths).
+    return Uint8Array.from(new PublicKey(value).toBytes());
   } catch {
     return null;
   }
 }
 
-export const encodeSeed = (seed: Uint8Array): string => bs58.encode(seed);
+export const encodeSeed = (seed: Uint8Array): string => new PublicKey(seed).toBase58();
 
 export function keypairFromSeed(seed: Uint8Array): Keypair {
   return Keypair.fromSeed(seed);
@@ -29,15 +30,6 @@ export function newSeed(): Uint8Array {
 /** The card link for a seed: the fragment keeps the key out of server logs and referrers. */
 export function cardLink(origin: string, pda: string, param: string, seed: Uint8Array): string {
   return `${origin}/w/${pda}#${param}=${encodeSeed(seed)}`;
-}
-
-/** Instructions are built offline; this connection is never called (the browser talks to /api/rpc and /api/relay). */
-let offline: KekalProgram | undefined;
-export function clientProgram(programId: string): KekalProgram {
-  if (!offline || offline.programId.toBase58() !== programId) {
-    offline = readOnlyProgram(new Connection("http://127.0.0.1:9"), new PublicKey(programId));
-  }
-  return offline;
 }
 
 export class ActionError extends Error {
@@ -102,17 +94,6 @@ export async function waitConfirmed(signature: string, opts: { pollMs: number; t
     await new Promise((r) => setTimeout(r, opts.pollMs));
   }
   throw new ActionError("not_confirmed");
-}
-
-/** The current card holder as the chain sees it (confirmed): only the 32 holder bytes are fetched. Network trouble throws. */
-export async function chainHolder(pda: string, programId: string): Promise<string> {
-  const offset = accountFieldOffset("Warranty", "holder");
-  const r = await rpc<{ value: { owner: string; data: [string, string] } | null }>("getAccountInfo", [
-    pda,
-    { encoding: "base64", commitment: "confirmed", dataSlice: { offset, length: 32 } },
-  ]);
-  if (!r.value || r.value.owner !== programId) throw new ActionError("network");
-  return new PublicKey(fromBase64(r.value.data[0])).toBase58();
 }
 
 /** Base-unit balance of an associated token account, or 0 when it does not exist yet. Network trouble throws. */

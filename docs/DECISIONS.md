@@ -29,5 +29,6 @@ Index of the architecture decision records (ADRs) for Kekal; each record explain
 | [0022](decisions/0022-postgres-store.md) | Postgres store behind the same interface | accepted |
 | [0023](decisions/0023-live-site-on-devnet.md) | The live site on devnet | accepted |
 | [0024](decisions/0024-explorer-footage.md) | Explorer footage of the devnet run in the demo video | accepted |
+| [0025](decisions/0025-anchor-on-demand.md) | The warranty page loads the Anchor client on demand | accepted |
 
 New decisions: add an ADR as `decisions/NNNN-short-title.md` and a line here.

@@ -5,7 +5,8 @@ import { Keypair, PublicKey, type TransactionInstruction } from "@solana/web3.js
 import { fill, translator, type Lang, type MessageKey } from "@/lib/i18n";
 import { readRemembered, SCENE_ROUTE, sceneSteps, scenePhase, type SceneKind } from "@/lib/demo/scene";
 import { evidenceHash, fileClaimIxs, settleIxs } from "@/lib/warranty/actions";
-import { ActionError, clientProgram, encodeSeed, keypairFromSeed, newSeed, seedFromFragment, sendViaRelay } from "@/lib/warranty/client";
+import { clientProgram } from "@/lib/warranty/program";
+import { ActionError, encodeSeed, keypairFromSeed, newSeed, seedFromFragment, sendViaRelay } from "@/lib/warranty/client";
 import { clock, formatDate, formatUnits } from "@/lib/warranty/format";
 import { readTerms } from "@/lib/warranty/terms";
 import type { WarrantyView } from "@/lib/warranty/view";

@@ -32,6 +32,14 @@ describe("card key in the URL fragment", () => {
     expect(seedFromFragment("#x=" + base58.encode(seed), "k")).toBeNull();
     expect(seedFromFragment("", "k")).toBeNull();
   });
+
+  it("reads links written with the SDK's base58 (leading zero bytes too) and rejects other key lengths", () => {
+    const zeros = Uint8Array.from({ length: 32 }, (_, i) => (i < 3 ? 0 : 200 + (i % 50)));
+    expect(seedFromFragment(`#k=${base58.encode(zeros)}`, "k")).toEqual(zeros);
+    expect(seedFromFragment(`#k=${base58.encode(new Uint8Array(31).fill(7))}`, "k")).toBeNull();
+    expect(seedFromFragment(`#k=${base58.encode(new Uint8Array(64).fill(7))}`, "k")).toBeNull();
+    expect(seedFromFragment("#k=0OIl", "k")).toBeNull();
+  });
 });
 
 describe("/semak input", () => {

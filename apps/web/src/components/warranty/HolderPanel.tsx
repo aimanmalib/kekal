@@ -5,9 +5,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Keypair, PublicKey, type TransactionInstruction } from "@solana/web3.js";
 import type { PermissionlessAction } from "@kekal/sdk";
 import { fill, translator, type Lang, type MessageKey } from "@/lib/i18n";
-import { activateIxs, fileClaimIxs, holderClaimIxs, holderTokenAccount, evidenceHash, settleIxs, sendIxs } from "@/lib/warranty/actions";
 import { activateCard, resolveKey } from "@/lib/warranty/card-store";
-import { ActionError, cardLink, chainHolder, clientProgram, keypairFromSeed, newSeed, seedFromFragment, sendViaRelay, tokenBalance } from "@/lib/warranty/client";
+import { ActionError, cardLink, keypairFromSeed, newSeed, seedFromFragment, sendViaRelay, tokenBalance } from "@/lib/warranty/client";
 import { clock, formatUnits } from "@/lib/warranty/format";
 import { holderActions, keyState, type WarrantyView } from "@/lib/warranty/view";
 import { ClaimForm, SendForm } from "./HolderForms";
@@ -35,6 +34,13 @@ interface Props {
 }
 
 const MAY_HAVE_LANDED = new Set(["network", "not_confirmed"]);
+// Instruction building (Anchor, SPL token) is fetched on first use, not with the page: most visits only read the card.
+const chain = async () => {
+  const [actions, program] = await Promise.all([import("@/lib/warranty/actions"), import("@/lib/warranty/program")]);
+  return { ...actions, ...program };
+};
+type Chain = Awaited<ReturnType<typeof chain>>;
+
 const ERRORS = new Set(["send_failed", "rate_ip", "rate_holder", "rate_global", "network", "failed_on_chain", "not_confirmed", "relayer_unavailable"]);
 
 export function HolderPanel({ view: v, lang, relayer, settings: s }: Props) {
@@ -82,6 +88,7 @@ export function HolderPanel({ view: v, lang, relayer, settings: s }: Props) {
 
   const refreshBalance = useCallback(async (key: PublicKey) => {
     try {
+      const { holderTokenAccount } = await chain();
       setBalance(await tokenBalance(holderTokenAccount(v, key).toBase58()));
     } catch {
       setBalance(null);
@@ -92,13 +99,14 @@ export function HolderPanel({ view: v, lang, relayer, settings: s }: Props) {
     if (state === "holder" && stored) void refreshBalance(stored.publicKey);
   }, [state, stored, refreshBalance]);
 
-  async function run(build: () => Promise<TransactionInstruction[]>, signers: Keypair[], after?: () => void) {
+  async function run(build: (c: Chain) => Promise<TransactionInstruction[]>, signers: Keypair[], after?: () => void) {
     if (!relayer) return;
     setBusy(true);
     setError(null);
     setDone(null);
     try {
-      const sig = await sendViaRelay(await build(), relayer, signers, { pollMs: s.confirmPollMs, timeoutMs: s.confirmTimeoutMs });
+      const c = await chain();
+      const sig = await sendViaRelay(await build(c), relayer, signers, { pollMs: s.confirmPollMs, timeoutMs: s.confirmTimeoutMs });
       after?.();
       setDone(sig);
       router.refresh();
@@ -110,7 +118,7 @@ export function HolderPanel({ view: v, lang, relayer, settings: s }: Props) {
     }
   }
 
-  const program = () => clientProgram(v.programId);
+  const program = (c: Chain) => c.clientProgram(v.programId);
   const relayerKey = () => new PublicKey(relayer!);
 
   // The new key is stored as pending before sending (see card-store), so a lost confirmation cannot lose the card.
@@ -125,12 +133,14 @@ export function HolderPanel({ view: v, lang, relayer, settings: s }: Props) {
       storage: window.localStorage,
       storageKey,
       maxPending: s.pendingKeysMax,
-      send: async () =>
-        sendViaRelay(await activateIxs(program(), v, card.publicKey, next.publicKey), relayer, [card], {
+      send: async () => {
+        const c = await chain();
+        return sendViaRelay(await c.activateIxs(program(c), v, card.publicKey, next.publicKey), relayer, [card], {
           pollMs: s.confirmPollMs,
           timeoutMs: s.confirmTimeoutMs,
-        }),
-      chainHolder: () => chainHolder(v.pda, v.programId),
+        });
+      },
+      chainHolder: async () => (await chain()).chainHolder(v.pda, v.programId),
       recheck: s.activationRecheck,
     })
       .then((r) => {
@@ -154,7 +164,7 @@ export function HolderPanel({ view: v, lang, relayer, settings: s }: Props) {
 
   function settle(action: PermissionlessAction) {
     const caller = holderKey ?? Keypair.generate();
-    void run(() => settleIxs(program(), v, action, relayerKey(), caller.publicKey), [caller]);
+    void run((c) => c.settleIxs(program(c), v, action, relayerKey(), caller.publicKey), [caller]);
   }
 
   return (
@@ -192,12 +202,12 @@ export function HolderPanel({ view: v, lang, relayer, settings: s }: Props) {
       ) : null}
 
       {holderKey && actions.includes("confirmResolved") ? (
-        <button type="button" className="button" disabled={busy || !relayer} onClick={() => void run(() => holderClaimIxs(program(), v, holderKey.publicKey, "confirmResolved"), [holderKey])}>
+        <button type="button" className="button" disabled={busy || !relayer} onClick={() => void run((c) => c.holderClaimIxs(program(c), v, holderKey.publicKey, "confirmResolved"), [holderKey])}>
           {t("panel.confirm")}
         </button>
       ) : null}
       {holderKey && actions.includes("escalate") ? (
-        <button type="button" className="button button-quiet" disabled={busy || !relayer} onClick={() => void run(() => holderClaimIxs(program(), v, holderKey.publicKey, "escalate"), [holderKey])}>
+        <button type="button" className="button button-quiet" disabled={busy || !relayer} onClick={() => void run((c) => c.holderClaimIxs(program(c), v, holderKey.publicKey, "escalate"), [holderKey])}>
           {t("panel.escalate")}
         </button>
       ) : null}
@@ -207,7 +217,7 @@ export function HolderPanel({ view: v, lang, relayer, settings: s }: Props) {
           issueTypes={s.issueTypes}
           maxChars={s.claimMaxChars}
           busy={busy || !relayer}
-          onSubmit={(issue, text) => void run(() => fileClaimIxs(program(), v, relayerKey(), holderKey.publicKey, evidenceHash(issue, text)), [holderKey])}
+          onSubmit={(issue, text) => void run((c) => c.fileClaimIxs(program(c), v, relayerKey(), holderKey.publicKey, c.evidenceHash(issue, text)), [holderKey])}
         />
       ) : null}
       {state === "holder" && stored && balance !== null && balance > 0n ? (
@@ -218,7 +228,7 @@ export function HolderPanel({ view: v, lang, relayer, settings: s }: Props) {
           decimals={v.decimals}
           busy={busy || !relayer}
           onSubmit={(to, amount) =>
-            void run(async () => sendIxs(v, relayerKey(), stored.publicKey, to, amount), [stored], () => void refreshBalance(stored.publicKey))
+            void run(async (c) => c.sendIxs(v, relayerKey(), stored.publicKey, to, amount), [stored], () => void refreshBalance(stored.publicKey))
           }
         />
       ) : null}
