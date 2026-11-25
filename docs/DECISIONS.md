@@ -26,5 +26,6 @@ Index of the architecture decision records (ADRs) for Kekal; each record explain
 | [0019](decisions/0019-demo-video-footage.md) | Demo video footage from the browser tests, narration from a stock voice | accepted |
 | [0020](decisions/0020-demo-video-cut.md) | The demo video is cut by a script from a scene list, and measured before use | accepted |
 | [0021](decisions/0021-security-review-fixes.md) | Fixes from the security review of the program and the relayer | accepted |
+| [0022](decisions/0022-postgres-store.md) | Postgres store behind the same interface | accepted |
 
 New decisions: add an ADR as `decisions/NNNN-short-title.md` and a line here.

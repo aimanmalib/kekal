@@ -18,7 +18,7 @@ flowchart LR
     Submit["/api/submit<br/>broadcast only"]
     RpcProxy["/api/rpc<br/>read proxy"]
     DemoApi["/api/demo/*"]
-    Store[("SQLite store<br/>sessions, quotas,<br/>terms text")]
+    Store[("Store: SQLite or Postgres<br/>sessions, quotas,<br/>terms text")]
   end
   Keeper["Keeper<br/>(separate process)"]
   RPC["RPC endpoints<br/>(failover list)"]
@@ -38,7 +38,7 @@ flowchart LR
 | --- | --- | --- | --- |
 | Program | `programs/kekal` | Shops, vaults, warranties, claims, disputes, dormancy, payouts. 20 instructions. | none (PDAs sign) |
 | SDK | `packages/sdk` | IDL, account layouts, PDA helpers, instruction builders, status names. Used by every other part. | none |
-| Server package | `packages/server` | Store interface (SQLite), cluster settings, RPC failover, key loading by role, demo chain steps. | loads by role name |
+| Server package | `packages/server` | Store interface (SQLite, or Postgres by `DATA_BACKEND`; ADR 0022), cluster settings, RPC failover, key loading by role, demo chain steps. | loads by role name |
 | Web app | `apps/web` | Pages, relayer, broadcast endpoint, read proxy, demo API, wallet sessions. | relayer, demo seller, demo arbiter |
 | Keeper | `apps/keeper` | Every few seconds: heartbeats the demo shop, declares lapsed shops dormant, sends each due permissionless step. | relayer (fee payer only) |
 
