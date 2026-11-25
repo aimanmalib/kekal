@@ -55,3 +55,4 @@ One line per step, newest last. Dates are UTC.
 - 2026-11-25: Health check reports `relayerFunded` (relayer balance against `web.health.relayerMinSol`, cached per `balanceCacheSecs`) and `features` (supabase only on the Postgres store); deployed as `ed170e4-202611251805` with no optional integrations switched on.
 - 2026-11-25: Second polish (P4a-style pass): WebKit iPhone 13 audit of every page at 390/320 px in both languages (tap targets, contrast, overflow); the timeline record link gets a 44 px target; the warranty page loads the Anchor client on demand (ADR 0025), first-load script 1.22 MB to 1.01 MB (363 to 299 KB gzip); deployed as `b81f8ec-202611252003`.
 - 2026-11-25: Pre-event freeze: README "Built before vs during" brought up to 25 Nov and points at the git tag `pre-hackathon`, which marks the repository before the event.
+- 2026-11-25: Repository hygiene before going public: the build-guard config note no longer names a host path.
