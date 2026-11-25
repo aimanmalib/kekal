@@ -48,11 +48,13 @@ back to the free balance.
 
 ## Status
 
-- **Program:** 20 instructions, built with Anchor 1.2.2. All five paths below pass on a local validator. It is not on devnet
-  yet: the deploy needs about 4.1 devnet SOL (2.02 SOL stays locked as rent) and the deploy wallet holds none today. The
-  program address and an explorer link will replace this line once the deploy is done.
-- **Web app:** built and tested on a local validator: the no-wallet demo, the buyer's warranty page, the shop board and
-  the arbiter board, in English and Bahasa Melayu. It is not hosted yet.
+- **Program:** 20 instructions, built with Anchor 1.2.2, deployed on devnet at
+  [`3dTk2T83xQWAat7iWDjfCzijdCQWhstUxFtwLk8HUo3X`](https://explorer.solana.com/address/3dTk2T83xQWAat7iWDjfCzijdCQWhstUxFtwLk8HUo3X?cluster=devnet).
+  All five paths below pass on devnet; every transaction is linked on the [measurements page](docs/MEASURED.md). The deploy key
+  is the upgrade authority, so the program can still be upgraded on devnet.
+- **Web app:** runs at [kekal.sasateguh.com](https://kekal.sasateguh.com) but is not switched to devnet yet, so the
+  no-wallet demo is closed for now. The demo, the buyer's warranty page, the shop board and the arbiter board are tested on
+  a local validator, in English and Bahasa Melayu.
 - **Video:** not recorded yet.
 
 ## Try it
@@ -98,11 +100,12 @@ with status 0; the counts are in the next section. The first `anchor build` comp
 | Program tests (LiteSVM, fixed clock, no sleeps) | `programs/kekal/tests/` | 72 | pass |
 | SDK tests (PDAs, instruction builders, decoders, hashing vectors) | `packages/sdk/test/` | 55 | pass |
 | Web app tests (RPC proxy, fee relayer, sessions, demo, warranty page, shop board, cards, locales, program status, home page) | `apps/web/test/` | 234 | pass |
-| Script tests (cluster config, locales, how warranties are issued) | `scripts/test/` | 14 | pass |
+| Script tests (cluster config, locales, how warranties are issued, deploy checks, RPC pacing) | `scripts/test/` | 22 | pass |
 | Keeper tests (heartbeats, dormant shops, due settling steps) | `apps/keeper/test/` | 9 | pass |
 | Deploy script tests (uptime alerts, image smoke test, proxy route template) | `scripts/test/deploy.test.sh` | 9 | pass |
 | Server package tests (store, keys, RPC failover) | `packages/server/test/` | 6 | pass |
 | Lifecycle paths A to E on a local validator | `scripts/lifecycle.ts` | 5 | pass |
+| Lifecycle paths A to E on devnet ([transactions](docs/MEASURED.md)) | `scripts/lifecycle.ts --cluster devnet` | 5 | pass |
 | Browser tests (Playwright: Chromium desktop and WebKit iPhone 13) | `e2e/tests/` | 5 per browser | pass |
 
 The program tests set the clock directly, so every deadline is checked on both sides of its edge: answering at the last
@@ -195,7 +198,8 @@ live warranty, the buyer holds a QR bearer key with no wallet and no fees, and e
 - **The arbiter is trusted.** The shop names it, or takes the default arbiter in the config. The program only makes sure the arbiter cannot be the shop owner and
   that an arbiter who does nothing still loses to the deadline.
 - **`init_config` is taken by its first caller.** Whoever calls it first after a deploy becomes the admin. It is not yet
-  tied to the program's upgrade authority.
+  tied to the program's upgrade authority; the deploy script calls it right after the deploy and stops unless the deploy
+  key is the admin, which it is on devnet.
 - **Someone has to send the settling transactions.** The exits need no signature from the shop or the buyer, but a
   transaction still has to be sent. If no keeper or person sends it, the money waits in the vault until someone does.
 - **The shop must hold a stablecoin and lock capital.** That is a real cost for a small shop, and the reserve per sale is a
@@ -222,6 +226,6 @@ Program itu, bukan kedai, yang memegang wang tersebut dan menguatkuasakan tiga p
 2. Kedai berhenti menghantar degupan: kedai ditanda dorman dan setiap waranti yang masih hidup boleh dibayar.
 3. Waranti tamat tanpa tuntutan terbuka: rizab pulang kepada kedai.
 Pembeli hanya memegang kad QR; tiada dompet, tiada yuran. Tuntutan yang ditolak boleh dibawa kepada penimbang tara bernama.
-Keadaan kini: program, aplikasi web dan ujiannya siap dan lulus di validator tempatan; program belum dipasang di devnet dan
-laman belum dihoskan. Hanya untuk devnet.
+Keadaan kini: program sudah dipasang di devnet (alamat di atas) dan kelima-lima laluan lulus di sana; laman sudah hidup
+tetapi belum ditukar ke devnet, jadi demo tanpa dompet masih ditutup. Hanya untuk devnet.
 Butiran penuh, arahan menjalankan dan had projek ada dalam bahagian bahasa Inggeris di atas. Lesen MIT.

@@ -1,0 +1,84 @@
+{
+  "cluster": "devnet",
+  "steps": [
+    {
+      "step": "heartbeat",
+      "transactions": 1,
+      "min": 5124,
+      "max": 5124
+    },
+    {
+      "step": "deposit",
+      "transactions": 2,
+      "min": 10264,
+      "max": 10266
+    },
+    {
+      "step": "create_shop",
+      "transactions": 1,
+      "min": 27577,
+      "max": 27577
+    },
+    {
+      "step": "issue_warranty",
+      "transactions": 5,
+      "min": 14206,
+      "max": 22330
+    },
+    {
+      "step": "file_claim",
+      "transactions": 3,
+      "min": 14604,
+      "max": 16104
+    },
+    {
+      "step": "respond_claim",
+      "transactions": 2,
+      "min": 7688,
+      "max": 7691
+    },
+    {
+      "step": "confirm_resolved",
+      "transactions": 1,
+      "min": 7134,
+      "max": 7134
+    },
+    {
+      "step": "settle_unanswered",
+      "transactions": 1,
+      "min": 38056,
+      "max": 38056
+    },
+    {
+      "step": "release_expired",
+      "transactions": 1,
+      "min": 5041,
+      "max": 5041
+    },
+    {
+      "step": "escalate",
+      "transactions": 1,
+      "min": 7124,
+      "max": 7124
+    },
+    {
+      "step": "resolve_dispute",
+      "transactions": 1,
+      "min": 40398,
+      "max": 40398
+    },
+    {
+      "step": "declare_dormant",
+      "transactions": 1,
+      "min": 3272,
+      "max": 3272
+    },
+    {
+      "step": "claim_orphan",
+      "transactions": 1,
+      "min": 47144,
+      "max": 47144
+    }
+  ],
+  "missing": 0
+}

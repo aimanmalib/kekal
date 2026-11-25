@@ -1,0 +1,18 @@
+{
+  "cluster": "devnet",
+  "programId": "3dTk2T83xQWAat7iWDjfCzijdCQWhstUxFtwLk8HUo3X",
+  "config": "FhGJFYUDC69arLBocgD7ngd824YqYgSo49ivrxL4soRK",
+  "admin": "DtecSzuDbwsTL2MzBJtvaz6bD8qJSKbcgiPoAR8ukDvu",
+  "mints": {
+    "kusd": "D2bmq7TYt8eVtbydmsKbi26htLtwjCVrJnXA2kdh77oA",
+    "usdc": "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU"
+  },
+  "steps": [
+    {
+      "step": "init_config",
+      "signature": "YTRHq3cjCpy7mmGuK5ssZRXsvJEJqwrm3xVABonPc1FQDCQks2hYrkHBNgMqzo2y4MrmprR7D6QvcZH2Y2QmFNb",
+      "explorer": "https://explorer.solana.com/tx/YTRHq3cjCpy7mmGuK5ssZRXsvJEJqwrm3xVABonPc1FQDCQks2hYrkHBNgMqzo2y4MrmprR7D6QvcZH2Y2QmFNb?cluster=devnet"
+    }
+  ],
+  "problems": []
+}
