@@ -56,14 +56,16 @@ The parts around the program (web app, fee relayer, keeper) and the money flow a
   [`3dTk2T83xQWAat7iWDjfCzijdCQWhstUxFtwLk8HUo3X`](https://explorer.solana.com/address/3dTk2T83xQWAat7iWDjfCzijdCQWhstUxFtwLk8HUo3X?cluster=devnet).
   All five paths below pass on devnet; every transaction is linked on the [measurements page](docs/MEASURED.md). The deploy key
   is the upgrade authority, so the program can still be upgraded on devnet.
-- **Web app:** runs at [kekal.sasateguh.com](https://kekal.sasateguh.com) but is not switched to devnet yet, so the
-  no-wallet demo is closed for now. The demo, the buyer's warranty page, the shop board and the arbiter board are tested on
-  a local validator, in English and Bahasa Melayu.
+- **Web app:** runs at [kekal.sasateguh.com](https://kekal.sasateguh.com) on devnet. The [no-wallet demo](https://kekal.sasateguh.com/demo)
+  issues a real warranty to a card key made in your browser; paths B and C reached the payout in 72 to 77 seconds, measured
+  on the live site in WebKit (iPhone 13) and Chromium ([measurements](docs/MEASURED.md)). A keeper process heartbeats the
+  demo shop and sends the steps anyone may send. [`/contoh`](https://kekal.sasateguh.com/contoh) shows all five paths
+  from a devnet run, each step linked to its transaction.
 - **Video:** not recorded yet.
 
 ## Try it
 
-The quickest look today is the lifecycle script. It starts a throwaway local validator with the built program, creates a
+The quickest look is the [live demo](https://kekal.sasateguh.com/demo). To run the paths yourself, use the lifecycle script. It starts a throwaway local validator with the built program, creates a
 config, a demo stablecoin, a shop and five warranties, then walks each warranty down one path and checks the final state on
 chain:
 
@@ -234,6 +236,6 @@ Program itu, bukan kedai, yang memegang wang tersebut dan menguatkuasakan tiga p
 2. Kedai berhenti menghantar degupan: kedai ditanda dorman dan setiap waranti yang masih hidup boleh dibayar.
 3. Waranti tamat tanpa tuntutan terbuka: rizab pulang kepada kedai.
 Pembeli hanya memegang kad QR; tiada dompet, tiada yuran. Tuntutan yang ditolak boleh dibawa kepada penimbang tara bernama.
-Keadaan kini: program sudah dipasang di devnet (alamat di atas) dan kelima-lima laluan lulus di sana; laman sudah hidup
-tetapi belum ditukar ke devnet, jadi demo tanpa dompet masih ditutup. Hanya untuk devnet.
+Keadaan kini: program sudah dipasang di devnet (alamat di atas) dan kelima-lima laluan lulus di sana. Demo tanpa dompet
+di laman hidup berjalan atas devnet: https://kekal.sasateguh.com/demo (`?lang=ms` untuk Bahasa Melayu). Hanya untuk devnet.
 Butiran penuh, arahan menjalankan dan had projek ada dalam bahagian bahasa Inggeris di atas. Lesen MIT.

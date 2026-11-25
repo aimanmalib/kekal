@@ -90,6 +90,22 @@ link to the public explorer. Raw report: [`measured/devnet-lifecycle.json`](meas
 Path C's `issue_warranty` transaction also carries a heartbeat (the dying shop's window is 60 s), so its compute units
 include both instructions.
 
+## Live demo on the public site (25 Nov 2026, UTC)
+
+The browser tests for `/demo` ran against [kekal.sasateguh.com/demo](https://kekal.sasateguh.com/demo) on devnet (deploy
+tag `907dabc-202611251508`), once on WebKit emulating an iPhone 13 and once on Chromium desktop. Each test clicks the
+scene's first button and stops when the page shows the reserve paid to the card made in that browser. No wallet, no
+sign-up. Raw numbers: [`measured/live-demo.json`](measured/live-demo.json).
+
+| Path | WebKit, iPhone 13 | Chromium desktop |
+|---|---|---|
+| B: claim filed, shop silent, paid | 73.9 s | 72.1 s |
+| C: shop stops checking in, marked dormant, paid | 75.0 s | 76.8 s |
+
+Most of that time is the demo shop's own windows (60 s to answer a claim; 60 s check-in with no grace), set in
+`config/app.json`. Every step on the page links to its devnet transaction. The site reads devnet through three public RPC
+endpoints in failover order ([ADR 0023](decisions/0023-live-site-on-devnet.md)).
+
 ## Compute units per instruction (devnet, from the transactions above)
 
 | Instruction | Transactions | Compute units |
@@ -120,4 +136,5 @@ Command: `pnpm --filter @kekal/scripts measure-cu --cluster devnet --report <lif
 | After deploy, `init_config`, kUSD mint and on-chain IDL | 7.948636125 SOL |
 | After sending 0.6 SOL to the demo shop key, 0.5 to the fee relayer and 0.1 to the arbiter | 6.748621125 SOL |
 | After two lifecycle runs (the first stopped on the public endpoint's rate limit; fresh dying-shop owners, token accounts, minting) | 6.684105805 SOL |
+| After the showcase shop (`seed-demo`, 0.05 SOL to its owner), a third lifecycle run for `/contoh`, and sending 2 SOL to the fee relayer and 1 SOL to the demo shop key before the site went live | 3.601068925 SOL (relayer 2.46, demo shop key 1.51, after the four live demo runs) |
 

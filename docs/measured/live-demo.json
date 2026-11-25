@@ -1,0 +1,12 @@
+{
+  "date": "2026-11-25",
+  "site": "https://kekal.sasateguh.com/demo",
+  "cluster": "devnet",
+  "deployTag": "907dabc-202611251508",
+  "command": "E2E_BASE_URL=https://kekal.sasateguh.com npx playwright test tests/demo.spec.ts --project=<project> (in e2e/)",
+  "firstClickToPaidSecs": {
+    "webkit-iphone13": { "B": 73.9, "C": 75.0 },
+    "chromium": { "B": 72.1, "C": 76.8 }
+  },
+  "windows": "config/app.json clusters.devnet.demo: shared shop answers within 60 s; the dying shop checks in every 60 s with no grace"
+}
