@@ -250,9 +250,10 @@
       "card": { "pdfWidth": 297.64, "pdfHeight": 419.53, "pngWidth": 900, "pngHeight": 1272, "qrMargin": 2 }
     },
     "home": {
-      "_doc": "Home page. repoUrl / videoUrl null = link not shown (set when the repository is public and the video exists). The live numbers are reused for statsCacheSecs between visitors; a read slower than statsTimeoutMs leaves them out of that page view.",
+      "_doc": "Home page. repoUrl / videoUrl null = link not shown (set when the repository is public and the video exists). whySourceUrl is the source linked under the insurance sentence in the Why section. The live numbers are reused for statsCacheSecs between visitors; a read slower than statsTimeoutMs leaves them out of that page view.",
       "repoUrl": null,
       "videoUrl": null,
+      "whySourceUrl": "https://mcscertified.com/installers/help-resources/insurance-backed-guarantee-products/",
       "statsCacheSecs": 60,
       "statsTimeoutMs": 3000
     },

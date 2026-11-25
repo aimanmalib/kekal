@@ -4,6 +4,9 @@ import { HomeFacts } from "@/components/HomeFacts";
 import { JudgeLinks } from "@/components/JudgeLinks";
 import { PhoneFrame } from "@/components/PhoneFrame";
 import { WarrantyCard } from "@/components/WarrantyCard";
+import { HowItWorks } from "@/components/home/HowItWorks";
+import { HomeLimits, HomeQuestions, HomeWhy } from "@/components/home/HomeReading";
+import { SeeItHappen } from "@/components/home/SeeItHappen";
 import { clusterSettings } from "@kekal/server";
 import { runtimeCluster, sampleReserve, webConfig } from "@/lib/config";
 import { siteExamples } from "@/lib/demo/site-examples";
@@ -29,6 +32,7 @@ export default async function Home() {
     new Promise<null>((resolve) => setTimeout(() => resolve(null), webConfig.home.statsTimeoutMs)),
   ]).catch(() => null);
   const network = t(`cluster.${cluster.name}` as MessageKey);
+  const examples = siteExamples(cluster.name);
   const explorer = clusterSettings(cluster.name).explorerAddress.replace("{address}", cluster.programId);
   return (
     <SiteFrame lang={lang} t={t}>
@@ -70,9 +74,20 @@ export default async function Home() {
             currency={webConfig.currency}
             programId={cluster.deployed ? cluster.programId : null}
             network={network}
-            examplesReady={siteExamples(cluster.name) !== null}
+            examplesReady={examples !== null}
           />
         </section>
+        <HowItWorks t={t} lang={lang} />
+        <SeeItHappen
+          t={t}
+          examples={examples}
+          order={webConfig.examples.paths}
+          network={network}
+          videoUrl={webConfig.home.videoUrl}
+        />
+        <HomeWhy t={t} sourceUrl={webConfig.home.whySourceUrl} />
+        <HomeQuestions t={t} />
+        <HomeLimits t={t} />
       </main>
     </SiteFrame>
   );

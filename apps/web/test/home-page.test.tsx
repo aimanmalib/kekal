@@ -4,7 +4,10 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import en from "../../../locales/en.json";
 import ms from "../../../locales/ms.json";
+import { readFileSync } from "node:fs";
+import app from "../../../config/app.json";
 import { JudgeLinks } from "../src/components/JudgeLinks";
+import { SeeItHappen } from "../src/components/home/SeeItHappen";
 import { SiteFrame } from "../src/components/SiteFrame";
 import { fill, translator } from "../src/lib/i18n";
 
@@ -15,6 +18,13 @@ vi.mock("next/headers", () => ({
   headers: async () => new Headers(),
 }));
 vi.mock("../src/lib/demo/site-examples", () => ({ siteExamples: () => null }));
+
+/** Bullets in the README's Limits section: the home page lists the same limits. */
+const readmeLimits = () => {
+  const readme = readFileSync(new URL("../../../README.md", import.meta.url), "utf8");
+  const section = readme.slice(readme.indexOf("## Limits"), readme.indexOf("\n## ", readme.indexOf("## Limits") + 1));
+  return section.split("\n").filter((l) => l.startsWith("- ")).length;
+};
 
 const langs = [["en", en], ["ms", ms]] as const;
 const program = { id: "Prog1111111111111111111111111111111111111111", explorer: "https://explorer.example/address/Prog" };
@@ -101,5 +111,64 @@ describe("home page", () => {
     vi.stubEnv("KEKAL_CLUSTER", "devnet");
     vi.stubEnv("KEKAL_PROGRAM_DEPLOYED", "false");
     expect(await render("en")).not.toContain("judge-links");
+  });
+});
+
+describe("home page below the first screen", () => {
+  const render = async (lang: "en" | "ms") => {
+    request.lang = lang;
+    const { default: Home } = await import("../src/app/page");
+    return renderToStaticMarkup(await Home());
+  };
+  it("follows the intro with how it works, see it happen, why, questions and limits, in both languages", { timeout: 30_000 }, async () => {
+    vi.stubEnv("KEKAL_CLUSTER", "devnet");
+    vi.stubEnv("KEKAL_PROGRAM_DEPLOYED", "false");
+    for (const [lang, dict] of langs) {
+      const html = await render(lang);
+      const at = (key: keyof typeof dict) => html.indexOf(`>${dict[key]}</h2>`);
+      const order = [html.indexOf('<section class="intro">'), at("home.how.title"), at("home.see.title"), at("home.why.title"), at("home.faq.title"), at("home.limits.title")];
+      expect(order.every((i) => i > -1), lang).toBe(true);
+      expect([...order].sort((a, b) => a - b), lang).toEqual(order);
+      // Three steps, each a screen in the page's own language, AVIF first with WebP as the fallback, sized to avoid layout shift.
+      const how = html.slice(order[1]!, order[2]);
+      expect(how.match(/<source type="image\/avif" srcSet="[^"]+\.avif"/g), lang).toHaveLength(3);
+      for (const step of ["shop", "card", "paid"]) {
+        expect(how, lang).toMatch(new RegExp(`<img src="[^"]*${step}-${lang}[^"]*\\.webp"[^>]*width="390" height="780"`));
+        expect(how, lang).toContain(`alt="${dict[`home.how.${step}.alt` as keyof typeof dict].replaceAll("'", "&#x27;")}"`);
+      }
+      // No run recorded for devnet yet: the endings are described with no record links.
+      const see = html.slice(order[2]!, order[3]);
+      expect(see, lang).toContain(fill(dict["home.see.ledePending"], { network: dict["cluster.devnet"] }));
+      expect(see, lang).not.toContain(dict["home.see.record"]);
+      expect(html.slice(order[3]!, order[4]), lang).toContain(`href="${app.web.home.whySourceUrl}"`);
+      expect(html.slice(order[4]!, order[5]).match(/<dt>/g), lang).toHaveLength(6);
+      expect(html.slice(order[5]!).match(/<li>/g)?.length, lang).toBe(readmeLimits());
+    }
+  });
+});
+
+describe("see it happen", () => {
+  const examples = {
+    cluster: "devnet",
+    programId: "Prog",
+    paths: [
+      { id: "B", steps: [{ step: "issue_warranty", signature: "s1", explorer: "https://explorer.example/tx/s1" }, { step: "settle_unanswered", signature: "s2", explorer: "https://explorer.example/tx/s2" }] },
+    ],
+  };
+  it("links the public record of the step that settled each recorded path, and the video once it exists", () => {
+    const html = renderToStaticMarkup(
+      <SeeItHappen t={translator("en")} examples={examples} order={["B", "C"]} network="devnet" videoUrl="https://video.example/k" />,
+    );
+    expect(html).toContain('href="https://explorer.example/tx/s2"');
+    expect(html).not.toContain("tx/s1");
+    expect(html.match(new RegExp(en["home.see.record"], "g"))).toHaveLength(1);
+    expect(html).toContain(en["examples.path.C.title"]);
+    expect(html).toContain('href="/contoh"');
+    expect(html).toContain('href="https://video.example/k"');
+  });
+  it("leaves out the video and the full list while they do not exist", () => {
+    const html = renderToStaticMarkup(<SeeItHappen t={translator("en")} examples={null} order={["B"]} network="devnet" videoUrl={null} />);
+    expect(html).not.toContain("/contoh");
+    expect(html).not.toContain(en["home.see.video"]);
   });
 });

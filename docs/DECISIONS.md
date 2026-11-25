@@ -22,5 +22,6 @@ Index of the architecture decision records (ADRs) for Kekal; each record explain
 | [0015](decisions/0015-browser-tests.md) | Browser end-to-end tests | accepted |
 | [0016](decisions/0016-deploy-and-program-not-deployed.md) | Deploy image and script; honest state before the program is deployed | accepted |
 | [0017](decisions/0017-devnet-deploy.md) | Devnet deploy in one script, Config created in the same run | accepted |
+| [0018](decisions/0018-home-page-screens.md) | Home page steps use real screens from the browser tests | accepted |
 
 New decisions: add an ADR as `decisions/NNNN-short-title.md` and a line here.

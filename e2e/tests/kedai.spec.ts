@@ -51,6 +51,7 @@ test("seller, buyer and arbiter settle a rejected claim", async ({ browser, base
   await card.getByLabel(t("claim.description")).fill(e2e.claimText);
   await card.getByRole("button", { name: t("claim.submit") }).click();
   await expect(card.locator(".ok")).toBeVisible();
+  await shot(card, info, `${lang}-buyer-claimed`);
 
   // 3. The seller sees the claim and rejects it with a note.
   await shop.reload();

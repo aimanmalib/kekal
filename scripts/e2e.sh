@@ -4,6 +4,7 @@
 # project in config/e2e.json (Chromium desktop, WebKit iPhone 13).
 #   E2E_SKIP_BUILD=1   reuse apps/web/.next from an earlier `next build`
 #   E2E_SHOTS=<dir>    also save screenshots there
+#   E2E_LANG=en|ms     language of the /kedai run instead of each project's config/e2e.json `lang`
 #   further arguments go to `playwright test` (e.g. --project=webkit-iphone13, -g "path B")
 # Needs `anchor build` first. Browsers: Playwright's cache (`pnpm --filter @kekal/e2e exec playwright install chromium webkit`).
 set -euo pipefail

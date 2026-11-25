@@ -1,7 +1,7 @@
 // Shared test fixture: which test wallet this project uses (config/e2e.json `projects[].wallet`), plus small page checks.
 import { devices, expect, test as base, type BrowserContextOptions, type Page, type TestInfo } from "@playwright/test";
 import { join } from "node:path";
-import { e2e, shotDir, type Lang } from "./env";
+import { e2e, LANGS, shotDir, type Lang } from "./env";
 
 export const test = base.extend<Record<never, never>, { walletIndex: number }>({
   walletIndex: [0, { option: true, scope: "worker" }],
@@ -31,9 +31,13 @@ export function deviceOptions(info: TestInfo): BrowserContextOptions {
   return options;
 }
 
-/** The language this project's seller and arbiter run uses (config/e2e.json `projects[].lang`). */
+/** The language this project's seller and arbiter run uses (config/e2e.json `projects[].lang`; E2E_LANG overrides it,
+ * e.g. to take the same phone screenshots in the other language). */
 export function projectLang(info: TestInfo): Lang {
   const project = e2e.projects.find((p) => p.name === info.project.name);
   if (!project) throw new Error(`config/e2e.json has no project ${info.project.name}`);
-  return project.lang;
+  const override = process.env.E2E_LANG;
+  if (!override) return project.lang;
+  if (!LANGS.includes(override as Lang)) throw new Error(`E2E_LANG=${override} is not one of ${LANGS.join(", ")}`);
+  return override as Lang;
 }
