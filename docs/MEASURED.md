@@ -145,8 +145,9 @@ Raw numbers: [`measured/live-site.json`](measured/live-site.json).
 | Warranty page `/w/<address>` | HTML 58,989 bytes; 9 scripts in the page, 1,222,349 bytes (363,070 bytes gzip) |
 
 The scripts are large because the page reads and signs Solana transactions in the browser (`@solana/web3.js` and the Anchor
-client). The fee relayer's balance is not reported by the health endpoint yet (`relayerFunded` is `null`); the balance
-below is read from the cluster.
+client). Since tag `ed170e4-202611251805` the health endpoint also reports `relayerFunded: true` (the fee relayer holds at
+least the `web.health.relayerMinSol` in [`config/app.json`](../config/app.json); three reads on 25 Nov 18:07 UTC); the
+balance below is read from the cluster.
 
 ### Limits on the public site
 
