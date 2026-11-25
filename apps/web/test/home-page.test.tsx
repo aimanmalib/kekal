@@ -107,10 +107,13 @@ describe("home page", () => {
       expect(onPhone, lang).toContain(dict["card.sample.notePending"]);
     }
   });
-  it("shows no reviewer row while config has no video, no public source and the program is not deployed", async () => {
+  it("shows the reviewer row only for the links config has, while the program is not deployed", async () => {
     vi.stubEnv("KEKAL_CLUSTER", "devnet");
     vi.stubEnv("KEKAL_PROGRAM_DEPLOYED", "false");
-    expect(await render("en")).not.toContain("judge-links");
+    const html = await render("en");
+    const { repoUrl, videoUrl } = app.web.home as { repoUrl: string | null; videoUrl: string | null };
+    expect(html.includes("judge-links")).toBe(Boolean(repoUrl || videoUrl));
+    if (repoUrl) expect(html).toContain(`href="${repoUrl}"`);
   });
 });
 
