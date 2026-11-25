@@ -4,7 +4,7 @@
 import { readFileSync } from "node:fs";
 import { e2e, LANGS, pattern, text, walletKeyName } from "../lib/env";
 import { newContext, TEST_WALLET_NAME } from "../lib/wallet";
-import { deviceOptions, expect, expectNoOverflow, projectLang, shot, test } from "../lib/test";
+import { closeContext, deviceOptions, expect, expectNoOverflow, projectLang, shot, test } from "../lib/test";
 
 test("seller, buyer and arbiter settle a rejected claim", async ({ browser, baseURL, walletIndex }, info) => {
   const lang = projectLang(info);
@@ -78,5 +78,7 @@ test("seller, buyer and arbiter settle a rejected claim", async ({ browser, base
   await expect(card.locator(".stamp")).toBeVisible();
   await expectNoOverflow(card, "warranty page paid");
   await shot(card, info, `${lang}-buyer-paid`);
-  for (const c of [seller.context, buyer.context, arbiter.context]) await c.close();
+  await closeContext(seller.context, info, `${lang}-kedai-seller`);
+  await closeContext(buyer.context, info, `${lang}-kedai-buyer`);
+  await closeContext(arbiter.context, info, `${lang}-kedai-arbiter`);
 });

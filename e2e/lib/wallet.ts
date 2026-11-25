@@ -2,7 +2,8 @@
 // signed in the test process with an ed25519 key from scripts/page-fixtures.ts; the key never enters the page.
 import { createPrivateKey, sign } from "node:crypto";
 import type { Browser, BrowserContext, BrowserContextOptions } from "@playwright/test";
-import { LANG_COOKIE, secretKey, type Lang } from "./env";
+import { join } from "node:path";
+import { LANG_COOKIE, secretKey, videoDir, videoScale, type Lang } from "./env";
 
 export const TEST_WALLET_NAME = "Kekal Test Wallet";
 
@@ -75,7 +76,15 @@ export async function newContext(
   browser: Browser,
   { lang, baseURL, keyName, options = {} }: { lang: Lang; baseURL: string; keyName?: string; options?: BrowserContextOptions },
 ): Promise<WalletContext> {
-  const context = await browser.newContext({ ...options, baseURL, acceptDownloads: true });
+  const dir = videoDir();
+  const viewport = options.viewport ?? { width: 1280, height: 720 };
+  // WebKit films at device pixels, so a phone clip can be sharper than its viewport; Chromium films at the viewport size
+  // only (a larger frame just adds a grey margin).
+  const scale = browser.browserType().name() === "chromium" ? 1 : videoScale();
+  const recordVideo = dir
+    ? { dir: join(dir, "raw"), size: { width: viewport.width * scale, height: viewport.height * scale } }
+    : undefined;
+  const context = await browser.newContext({ ...options, baseURL, acceptDownloads: true, recordVideo });
   await context.addCookies([{ name: LANG_COOKIE, value: lang, url: baseURL }]);
   if (!keyName) return { context, address: "" };
   const sk = secretKey(keyName);

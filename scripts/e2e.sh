@@ -5,6 +5,8 @@
 #   E2E_SKIP_BUILD=1   reuse apps/web/.next from an earlier `next build`
 #   E2E_SHOTS=<dir>    also save screenshots there
 #   E2E_LANG=en|ms     language of the /kedai run instead of each project's config/e2e.json `lang`
+#   E2E_VIDEO=<dir>    also record each page as <project>-<step>.webm there (demo video footage, ADR 0019)
+#   E2E_SLOWMO_MS=<n>  slow every browser action by n ms (for recordings)
 #   further arguments go to `playwright test` (e.g. --project=webkit-iphone13, -g "path B")
 # Needs `anchor build` first. Browsers: Playwright's cache (`pnpm --filter @kekal/e2e exec playwright install chromium webkit`).
 set -euo pipefail

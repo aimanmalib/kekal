@@ -3,7 +3,7 @@
 import type { Locator, Page } from "@playwright/test";
 import { e2e, pattern, text, type Lang } from "../lib/env";
 import { newContext } from "../lib/wallet";
-import { deviceOptions, expect, expectNoOverflow, shot, test } from "../lib/test";
+import { closeContext, deviceOptions, expect, expectNoOverflow, shot, test } from "../lib/test";
 
 /** Presses whichever "anyone may send this now" button the scene shows, until the scene reports the payout. */
 async function settleUntilPaid(page: Page, scene: Locator, lang: Lang, buttons: string[]): Promise<void> {
@@ -42,7 +42,7 @@ test("path B: the shop goes silent on a claim and the holder is paid (English)",
   expect(await scene.locator("ol.steps li a[href*='explorer']").count()).toBeGreaterThanOrEqual(3);
   await expectNoOverflow(page, "demo B paid");
   await shot(page, info, "demo-silent-paid");
-  await context.close();
+  await closeContext(context, info, "demo-silent");
 });
 
 test("path C: the shop stops checking in, is marked silent and the holder is paid (Bahasa Melayu)", async ({ browser, baseURL }, info) => {
@@ -58,5 +58,5 @@ test("path C: the shop stops checking in, is marked silent and the holder is pai
   await expect(scene.locator("ol.steps").getByText(text(lang, "event.ReservePaid"))).toBeVisible();
   await expectNoOverflow(page, "demo C paid");
   await shot(page, info, "demo-closed-paid");
-  await context.close();
+  await closeContext(context, info, "demo-closed");
 });

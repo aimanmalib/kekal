@@ -76,3 +76,8 @@ export const walletKeyName = (index: number): string => (index === 0 ? "test-wal
 
 /** Where screenshots go: E2E_SHOTS when given, else the test's own output folder. */
 export const shotDir = (): string | null => process.env.E2E_SHOTS || null;
+
+/** Where screen recordings go: E2E_VIDEO when given (one .webm per page, named after the project and the step), else none.
+ * E2E_VIDEO_SCALE (default 2) multiplies the viewport for the recorded frame size in WebKit. Used to film the demo video. */
+export const videoDir = (): string | null => process.env.E2E_VIDEO || null;
+export const videoScale = (): number => Number(process.env.E2E_VIDEO_SCALE || 2);
