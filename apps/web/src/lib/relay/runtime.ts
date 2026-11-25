@@ -13,6 +13,7 @@ export function relayPolicy(cluster: RuntimeCluster, relayer: PublicKey): RelayP
     allowedInstructions: c.allowedInstructions,
     payerAccounts: c.payerAccounts,
     maxInstructions: c.maxInstructions,
+    maxSigners: c.maxSigners,
     maxAccountCreates: c.maxAccountCreates,
     maxTxBytes: c.maxTxBytes,
   };

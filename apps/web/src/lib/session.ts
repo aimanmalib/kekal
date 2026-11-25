@@ -5,6 +5,7 @@ import { PublicKey } from "@solana/web3.js";
 import type { DataStore } from "@kekal/server";
 import { verifyEd25519 } from "./ed25519";
 import { translator, type Lang } from "./i18n";
+import { siteUrl } from "./site";
 
 export interface SessionPolicy {
   ttlSecs: number;
@@ -27,6 +28,15 @@ function parsePubkey(v: unknown): PublicKey | null {
 export function sessionSecret(env: Record<string, string | undefined>, policy: SessionPolicy): string | null {
   const s = env.KEKAL_SESSION_SECRET ?? "";
   return s.length >= policy.minSecretLength ? s : null;
+}
+
+/**
+ * The domain the sign-in message names: the site's own public host (KEKAL_SITE_URL or config web.site.url), never the
+ * request's Host header. Otherwise a look-alike site could fetch a nonce under its own name, show the victim a message
+ * naming that name, and replay the signature here.
+ */
+export function signInDomain(env: Record<string, string | undefined> = process.env): string {
+  return siteUrl(env).host;
 }
 
 export function signInMessage(lang: Lang, f: { domain: string; pubkey: string; nonce: string; issuedAt: number; expiresAt: number }): string {

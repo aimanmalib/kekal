@@ -1,5 +1,6 @@
 // Shared wiring for the four /api/demo/* route handlers.
 import { clientIp } from "../client-ip";
+import { readBodyText } from "../body";
 import { webConfig } from "../config";
 import { dataStore } from "../data";
 import { programGate } from "../program-gate";
@@ -21,12 +22,11 @@ export async function demoRoute(
     console.error("demo: unavailable", (e as Error).message);
     return Response.json({ error: "demo_unavailable" }, { status: 503, headers: noStore });
   }
-  if (Number(req.headers.get("content-length") ?? "0") > webConfig.rpc.maxBodyBytes) {
-    return Response.json({ error: "too_large" }, { status: 413, headers: noStore });
-  }
+  const text = await readBodyText(req, webConfig.rpc.maxBodyBytes);
+  if (text === null) return Response.json({ error: "too_large" }, { status: 413, headers: noStore });
   let body: unknown;
   try {
-    body = JSON.parse(await req.text());
+    body = JSON.parse(text);
   } catch {
     return Response.json({ error: "bad_request" }, { status: 400, headers: noStore });
   }

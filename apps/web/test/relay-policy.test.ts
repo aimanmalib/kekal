@@ -52,6 +52,19 @@ describe("relay policy: what the relayer pays for", () => {
     const v = checkRelayTx(b64(build([createFor(to), sendOut(holderAta, holder.publicKey, mint, getAssociatedTokenAddressSync(mint, to, true))], [holder])), P);
     expect(v.ok && v.accountCreates).toBe(1);
   });
+  it("counts each Kekal instruction that names the relayer as rent payer toward the account budget", async () => {
+    const claimIx = await ix.fileClaim(program, {
+      payer: relayer.publicKey, holder: holder.publicKey, shop, warranty, claimIndex: 0, evidenceHash: new Uint8Array(32),
+    });
+    const fc = checkRelayTx(b64(build([claimIx], [holder])), P);
+    expect(fc.ok && fc.accountCreates).toBe(1);
+    const a = withCaller(await ix.declareDormant(program, { shop }), caller);
+    const b = await ix.claimOrphan(program, { ...payout, shop, warranty, claim: null });
+    const orphan = checkRelayTx(b64(build([a, b], [caller])), P);
+    expect(orphan.ok && orphan.accountCreates).toBe(1);
+    const none = checkRelayTx(b64(build([await transferHolder()], [holder])), P);
+    expect(none.ok && none.accountCreates).toBe(0);
+  });
 });
 
 describe("relay policy: malicious transactions", () => {
@@ -121,6 +134,13 @@ describe("relay policy: malicious transactions", () => {
   it("only associated-account creations, the relayer the sole signer", () => {
     const creates = [0, 1, 2, 3].map(() => createFor(Keypair.generate().publicKey));
     expect(refusal(b64(build(creates, [])))).toBe("no_holder_signer");
+  });
+  it("more signers than config allows (the relayer pays the fee for each signature)", async () => {
+    const extra = [Keypair.generate(), Keypair.generate(), Keypair.generate()];
+    let i = await ix.declareDormant(program, { shop });
+    for (const k of extra) i = withCaller(i, k);
+    expect(refusal(b64(build([i], extra)))).toBe("too_many_signers");
+    expect(refusal(b64(build([i], extra)), policy({ maxSigners: 4 }))).toBe("ok");
   });
   it("a permissionless instruction with no signer but the relayer", async () => {
     expect(refusal(b64(build([await ix.declareDormant(program, { shop })], [])))).toBe("no_holder_signer");

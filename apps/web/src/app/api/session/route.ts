@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { readBodyText } from "@/lib/body";
 import { webConfig } from "@/lib/config";
 import { dataStore } from "@/lib/data";
 import { completeSignIn, readSession, sessionSecret } from "@/lib/session";
@@ -23,9 +24,11 @@ export async function POST(req: Request): Promise<Response> {
   const policy = webConfig.session;
   const secret = sessionSecret(process.env, policy);
   if (!secret) return unavailable();
+  const text = await readBodyText(req, webConfig.rpc.maxBodyBytes);
+  if (text === null) return Response.json({ error: "too_large" }, { status: 413, headers: noStore });
   let body: { pubkey?: unknown; nonce?: unknown; signature?: unknown };
   try {
-    body = JSON.parse(await req.text());
+    body = JSON.parse(text);
   } catch {
     return Response.json({ error: "bad_request" }, { status: 400, headers: noStore });
   }

@@ -94,6 +94,17 @@ describe("relay service", () => {
     expect(await relay({ tx: await openTx() }, "d", d)).toMatchObject({ ok: true });
     expect(sent).toHaveLength(3);
   });
+  it("claims the relayer pays rent for draw on the same daily account budget", async () => {
+    const { d, sent } = deps({ limits: { perHolderPerHour: 10, perIpPerHour: 30, globalPerDay: 1000, accountCreatesPerDay: 2 } });
+    const claimTx = async (i: number) =>
+      b64(build([await ix.fileClaim(program, {
+        payer: relayer.publicKey, holder: holder.publicKey, shop, warranty, claimIndex: i, evidenceHash: new Uint8Array(32),
+      })], [holder]));
+    expect(await relay({ tx: await claimTx(0) }, "a", d)).toMatchObject({ ok: true });
+    expect(await relay({ tx: await claimTx(1) }, "b", d)).toMatchObject({ ok: true });
+    expect(await relay({ tx: await claimTx(2) }, "c", d)).toMatchObject({ status: 429, error: "rate_accounts" });
+    expect(sent).toHaveLength(2);
+  });
   it("RPC failure is reported, not thrown", async () => {
     const { d } = deps({ send: async () => Promise.reject(new Error("Blockhash not found")) });
     expect(await relay({ tx: await openTx() }, "ip", d)).toEqual({

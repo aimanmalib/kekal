@@ -14,6 +14,8 @@ export interface RelayPolicy {
   /** Dotted IDL account paths where the relayer key may stand (rent payer slots). */
   payerAccounts: string[];
   maxInstructions: number;
+  /** Signatures in one transaction, the relayer's included; the relayer pays the fee for each. */
+  maxSigners: number;
   /** Associated-account creations (relayer pays the rent) allowed in one transaction. */
   maxAccountCreates: number;
   maxTxBytes: number;
@@ -34,11 +36,14 @@ export type RelayRefusal =
   | "missing_signature"
   | "bad_signature"
   | "no_holder_signer"
+  | "too_many_signers"
   | "bad_amount"
   | "unpaired_account"
   | "too_many_account_creates";
 
 export type Verdict =
+  /** `accountCreates` = accounts the relayer pays rent for: associated accounts it creates directly plus each Kekal
+   * instruction that names it as rent payer (a claim record, or a holder's account a payout may create). */
   | { ok: true; tx: VersionedTransaction; signers: string[]; accountCreates: number }
   | { ok: false; error: RelayRefusal; index?: number };
 
@@ -96,6 +101,7 @@ export function checkRelayTx(base64: string, policy: RelayPolicy): Verdict {
   if (!keys[0]?.equals(policy.relayer)) return { ok: false, error: "fee_payer" };
   // The relayer never signs alone: someone else's key carries the per-holder limit and stands behind the request.
   if (nSigners < 2) return { ok: false, error: "no_holder_signer" };
+  if (nSigners > policy.maxSigners) return { ok: false, error: "too_many_signers" };
   if (keys.slice(1).some((k) => k.equals(policy.relayer))) return { ok: false, error: "relayer_misuse" };
   const ixs = msg.compiledInstructions;
   if (ixs.length === 0) return { ok: false, error: "no_instructions" };
@@ -106,6 +112,9 @@ export function checkRelayTx(base64: string, policy: RelayPolicy): Verdict {
   // Associated accounts the relayer pays rent for, and the token accounts this transaction sends a real amount to.
   const creates: { ata: PublicKey; index: number }[] = [];
   const fundedDestinations: PublicKey[] = [];
+  // Kekal instructions with the relayer in a rent-payer slot. The program never closes those accounts, so each one is
+  // rent the relayer does not get back; they count against the same daily budget as direct creations.
+  let rentSlots = 0;
 
   for (const [index, ix] of ixs.entries()) {
     const program = keys[ix.programIdIndex];
@@ -117,11 +126,13 @@ export function checkRelayTx(base64: string, policy: RelayPolicy): Verdict {
     if (program.equals(policy.programId)) {
       const meta = KEKAL_BY_DISC.get(Buffer.from(data.subarray(0, 8)).toString("hex"));
       if (!meta || !policy.allowedInstructions.includes(meta.name)) return { ok: false, error: "instruction_not_allowed", index };
+      let paysRent = false;
       for (const [pos, k] of acc.entries()) {
-        if (isRelayer(k) && !policy.payerAccounts.includes(meta.accounts[pos] ?? "")) {
-          return { ok: false, error: "relayer_misuse", index };
-        }
+        if (!isRelayer(k)) continue;
+        if (!policy.payerAccounts.includes(meta.accounts[pos] ?? "")) return { ok: false, error: "relayer_misuse", index };
+        paysRent = true;
       }
+      if (paysRent) rentSlots++;
       continue;
     }
 
@@ -175,5 +186,5 @@ export function checkRelayTx(base64: string, policy: RelayPolicy): Verdict {
     if (!sig || !signer || sig.every((b) => b === 0)) return { ok: false, error: "missing_signature" };
     if (!verifyEd25519(signer.toBytes(), message, sig)) return { ok: false, error: "bad_signature" };
   }
-  return { ok: true, tx, signers: keys.slice(1, nSigners).map((k) => k.toBase58()), accountCreates: creates.length };
+  return { ok: true, tx, signers: keys.slice(1, nSigners).map((k) => k.toBase58()), accountCreates: creates.length + rentSlots };
 }

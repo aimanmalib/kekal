@@ -1,4 +1,5 @@
 import { runtimeCluster, webConfig } from "@/lib/config";
+import { readBodyText } from "@/lib/body";
 import { checkRequest, forwardWithFailover } from "@/lib/rpc-proxy";
 
 export const dynamic = "force-dynamic";
@@ -12,9 +13,9 @@ function rpcError(status: number, message: string): Response {
 export async function POST(req: Request): Promise<Response> {
   const cluster = runtimeCluster();
   const policy = { ...webConfig.rpc, programId: cluster.programId };
-  const declared = Number(req.headers.get("content-length") ?? "0");
-  if (declared > policy.maxBodyBytes) return rpcError(413, "request body too large");
-  const checked = checkRequest(await req.text(), policy);
+  const text = await readBodyText(req, policy.maxBodyBytes);
+  if (text === null) return rpcError(413, "request body too large");
+  const checked = checkRequest(text, policy);
   if (!checked.ok) return rpcError(checked.status, checked.error);
   const payload = JSON.stringify(checked.batch ? checked.calls : checked.calls[0]);
   try {

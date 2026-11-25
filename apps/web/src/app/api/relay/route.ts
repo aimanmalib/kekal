@@ -1,4 +1,5 @@
 import { webConfig } from "@/lib/config";
+import { readBodyText } from "@/lib/body";
 import { clientIp } from "@/lib/client-ip";
 import { dataStore } from "@/lib/data";
 import { relayPolicy, relayRuntime, rpcSender } from "@/lib/relay/runtime";
@@ -18,11 +19,11 @@ export async function POST(req: Request): Promise<Response> {
   } catch {
     return Response.json({ error: "relayer_unavailable" }, { status: 503, headers: noStore });
   }
-  const declared = Number(req.headers.get("content-length") ?? "0");
-  if (declared > webConfig.rpc.maxBodyBytes) return Response.json({ error: "too_large" }, { status: 413, headers: noStore });
+  const text = await readBodyText(req, webConfig.rpc.maxBodyBytes);
+  if (text === null) return Response.json({ error: "too_large" }, { status: 413, headers: noStore });
   let body: unknown;
   try {
-    body = JSON.parse(await req.text());
+    body = JSON.parse(text);
   } catch {
     return Response.json({ error: "bad_request" }, { status: 400, headers: noStore });
   }

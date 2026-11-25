@@ -134,7 +134,7 @@
       "retryStatuses": [429, 500, 502, 503, 504]
     },
     "relay": {
-      "_doc": "POST /api/relay pays the fee for a transaction the holder already signed. At least one key other than the relayer must sign. Only these Kekal instructions, TransferChecked of a non-zero amount of an allowed mint out of the signer's own associated account, and creation of the associated account that transfer pays into (at most maxAccountCreates per transaction, accountCreatesPerDay overall) pass. The relayer key may appear only as fee payer and in the account slots named in payerAccounts. Limits are fixed windows.",
+      "_doc": "POST /api/relay pays the fee for a transaction the holder already signed. At least one key other than the relayer must sign. Only these Kekal instructions, TransferChecked of a non-zero amount of an allowed mint out of the signer's own associated account, and creation of the associated account that transfer pays into (at most maxAccountCreates per transaction) pass. accountCreatesPerDay caps all rent the relayer pays per day: those creations plus every Kekal instruction that names the relayer as rent payer (claim records and payout accounts, which the program never closes). The relayer key may appear only as fee payer and in the account slots named in payerAccounts. maxSigners caps the signatures (relayer included) the relayer pays the fee for. Limits are fixed windows.",
       "keyRole": "relayer",
       "allowedInstructions": [
         "transfer_holder", "file_claim", "confirm_resolved", "escalate",
@@ -142,6 +142,7 @@
       ],
       "payerAccounts": ["payer", "payout.payer"],
       "maxInstructions": 4,
+      "maxSigners": 3,
       "maxAccountCreates": 1,
       "maxTxBytes": 1232,
       "perHolderPerHour": 10,
@@ -170,8 +171,9 @@
       "actionsPerIpPerHour": 30
     },
     "clientIp": {
-      "_doc": "The peer is X-Real-IP (set by the reverse proxy), else the last X-Forwarded-For entry. The CDN header is trusted only when that peer is inside cdnRanges (Cloudflare published ranges).",
+      "_doc": "The peer is X-Real-IP (set by the reverse proxy), else the last X-Forwarded-For entry. The CDN header is trusted only when that peer is inside cdnRanges (Cloudflare published ranges). An IPv6 client is limited per ipv6PrefixBits prefix, not per address. The reverse proxy must overwrite X-Real-IP; a caller who can reach the app port directly picks its own bucket.",
       "cdnHeader": "cf-connecting-ip",
+      "ipv6PrefixBits": 64,
       "cdnRanges": [
         "173.245.48.0/20", "103.21.244.0/22", "103.22.200.0/22", "103.31.4.0/22", "141.101.64.0/18", "108.162.192.0/18",
         "190.93.240.0/20", "188.114.96.0/20", "197.234.240.0/22", "198.41.128.0/17", "162.158.0.0/15", "104.16.0.0/13",

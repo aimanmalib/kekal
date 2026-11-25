@@ -24,6 +24,7 @@ export function policy(over: Partial<RelayPolicy> = {}): RelayPolicy {
     ],
     payerAccounts: ["payer", "payout.payer"],
     maxInstructions: 4,
+    maxSigners: 3,
     maxAccountCreates: 1,
     maxTxBytes: 1232,
     ...over,

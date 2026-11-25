@@ -7,7 +7,7 @@ export interface RelayLimits {
   perHolderPerHour: number;
   perIpPerHour: number;
   globalPerDay: number;
-  /** Associated accounts the relayer pays rent for, all callers, per day. */
+  /** Accounts the relayer pays rent for (direct associated-account creations and Kekal rent-payer slots), per day. */
   accountCreatesPerDay: number;
 }
 
@@ -28,7 +28,10 @@ export interface RelayDeps {
 const HOUR = 3600;
 const DAY = 86400;
 
-/** Counts the hit in every bucket, then reports the first bucket over its limit (so a refused caller still spends quota). */
+/**
+ * Checks the buckets in order (IP, signers, global, rent) and stops at the first one over its limit. Buckets checked up
+ * to that point keep the hit, so a rate-limited caller still spends quota; later buckets are not charged.
+ */
 export function overLimit(
   store: DataStore,
   limits: RelayLimits,

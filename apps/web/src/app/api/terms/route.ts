@@ -2,6 +2,7 @@
 import { decodeAccount, readOnlyProgram, type WarrantyAccount } from "@kekal/sdk";
 import { failoverConnection } from "@kekal/server";
 import { PublicKey } from "@solana/web3.js";
+import { readBodyText } from "@/lib/body";
 import { runtimeCluster, webConfig } from "@/lib/config";
 import { clientIp } from "@/lib/client-ip";
 import { dataStore } from "@/lib/data";
@@ -13,11 +14,11 @@ const noStore = { "cache-control": "no-store" };
 
 export async function POST(req: Request): Promise<Response> {
   const c = webConfig.terms;
-  const declared = Number(req.headers.get("content-length") ?? "0");
-  if (declared > c.maxBytes * 2) return Response.json({ error: "too_large" }, { status: 413, headers: noStore });
+  const text = await readBodyText(req, c.maxBytes * 2);
+  if (text === null) return Response.json({ error: "too_large" }, { status: 413, headers: noStore });
   let body: unknown;
   try {
-    body = JSON.parse(await req.text());
+    body = JSON.parse(text);
   } catch {
     return Response.json({ error: "bad_request" }, { status: 400, headers: noStore });
   }
