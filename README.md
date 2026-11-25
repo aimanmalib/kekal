@@ -55,7 +55,8 @@ The parts around the program (web app, fee relayer, keeper) and the money flow a
 - **Program:** 20 instructions, built with Anchor 1.2.2, deployed on devnet at
   [`3dTk2T83xQWAat7iWDjfCzijdCQWhstUxFtwLk8HUo3X`](https://explorer.solana.com/address/3dTk2T83xQWAat7iWDjfCzijdCQWhstUxFtwLk8HUo3X?cluster=devnet).
   All five paths below pass on devnet; every transaction is linked on the [measurements page](docs/MEASURED.md). The deploy key
-  is the upgrade authority, so the program can still be upgraded on devnet.
+  is the upgrade authority, so the program can still be upgraded on devnet. The executable hash on devnet matches the local build
+  (`solana-verify`, both hashes on the [measurements page](docs/MEASURED.md)).
 - **Web app:** runs at [kekal.sasateguh.com](https://kekal.sasateguh.com) on devnet. The [no-wallet demo](https://kekal.sasateguh.com/demo)
   issues a real warranty to a card key made in your browser; paths B and C reached the payout in 72 to 77 seconds, measured
   on the live site in WebKit (iPhone 13) and Chromium ([measurements](docs/MEASURED.md)). A keeper process heartbeats the

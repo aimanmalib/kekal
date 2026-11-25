@@ -25,6 +25,18 @@ Every number on this page comes from a command run against the cluster named, wi
 Command: `bash scripts/deploy-program.sh devnet` (deploy, `init_config`, IDL, buffer check). Raw output of the
 `init_config` step: [`measured/devnet-init.json`](measured/devnet-init.json).
 
+### On-chain bytes match the local build (25 Nov 2026, 16:05 UTC)
+
+| Source | Executable hash (`solana-verify` 0.5.2) |
+|---|---|
+| Program on devnet: `solana-verify get-program-hash -u devnet 3dTk2T83xQWAat7iWDjfCzijdCQWhstUxFtwLk8HUo3X` | `2060781a9dc853211621c0aaf1881eeee7afdcb87573496f532886ef4acdf77c` |
+| Local build: `solana-verify get-executable-hash target/deploy/kekal.so` | `2060781a9dc853211621c0aaf1881eeee7afdcb87573496f532886ef4acdf77c` |
+
+The two hashes are the same: the program on devnet is the `kekal.so` measured above. That file was built with
+`anchor build` (Anchor 1.2.2, pins in [ADR 0001](decisions/0001-toolchain.md)) from program sources last
+changed in commit `6bc52fc`. It was not built in the `solana-verify build` container, so a different machine may produce
+different bytes from the same source; this check shows the deployed program is this build, not that the build is reproducible.
+
 ## Tests at the deployed commit
 
 From `bash scripts/gerbang-ujian.sh` on the same day: `cargo clippy -D warnings` clean, 72 program tests (LiteSVM),
