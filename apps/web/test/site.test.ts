@@ -102,3 +102,19 @@ describe("icons and theme colour", () => {
     expect([0, 2]).toContain(png[25]); // greyscale or RGB: no alpha channel
   });
 });
+
+describe("hackathon form images in docs/media", () => {
+  const g = app.web.site.gallery;
+  const media = (name: string) => readFileSync(new URL(`../../../docs/media/${name}`, import.meta.url));
+  const size = (png: Buffer) => [png.readUInt32BE(16), png.readUInt32BE(20)];
+  it("gallery images are PNGs of the configured size", () => {
+    for (const name of ["gallery-buyer.png", "gallery-shop.png", "gallery-states.png"]) {
+      const png = media(name);
+      expect(png.subarray(1, 4).toString("latin1"), name).toBe("PNG");
+      expect(size(png), name).toEqual([g.width, g.height]);
+    }
+  });
+  it("the banner is the link-preview card drawn at the banner scale", () => {
+    expect(size(media("banner.png"))).toEqual([og.width * g.bannerScale, og.height * g.bannerScale]);
+  });
+});

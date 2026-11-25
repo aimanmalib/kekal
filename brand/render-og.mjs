@@ -1,8 +1,10 @@
 // Draws the link-preview card (apps/web/src/app/opengraph-image.png) from the real stylesheet, fonts and English text.
 // Run from the repo root after `pnpm install`: node brand/render-og.mjs   (needs Playwright with Chromium)
+// With --banner <file.png> it draws the same card at web.site.gallery.bannerScale times the size, as the banner image
+// for the hackathon form, and skips the link-preview byte limit.
 // Colours, fonts and the card markup come from apps/web (globals.css tokens, WarrantyCard classes); copy from
 // locales/en.json; size and byte limit from config/app.json web.site.ogImage.
-/* global console, document, innerWidth, innerHeight */
+/* global console, document, innerWidth, innerHeight, process */
 import { mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, resolve } from "node:path";
@@ -17,7 +19,10 @@ const web = resolve(root, "apps/web");
 const app = JSON.parse(readFileSync(resolve(root, "config/app.json"), "utf8"));
 const en = JSON.parse(readFileSync(resolve(root, "locales/en.json"), "utf8"));
 const { width, height, maxBytes } = app.web.site.ogImage;
-const out = resolve(web, "src/app/opengraph-image.png");
+const bannerAt = process.argv.indexOf("--banner");
+const banner = bannerAt > 0 ? resolve(process.argv[bannerAt + 1] ?? "") : null;
+const out = banner ?? resolve(web, "src/app/opengraph-image.png");
+const scale = banner ? app.web.site.gallery.bannerScale : 1;
 
 const cluster = app.clusters[app.defaultCluster];
 const reserve = (Number(BigInt(cluster.lifecycle.reserve)) / 10 ** cluster.tokenDecimals).toFixed(2);
@@ -89,7 +94,7 @@ const htmlFile = resolve(tmp, "og.html");
 writeFileSync(htmlFile, html);
 const browser = await chromium.launch();
 try {
-  const page = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: 1 });
+  const page = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: scale });
   await page.goto(pathToFileURL(htmlFile).href, { waitUntil: "load" });
   await page.evaluate(() => document.fonts.ready);
   const over = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth || document.documentElement.scrollHeight > innerHeight);
@@ -100,5 +105,5 @@ try {
   rmSync(tmp, { recursive: true, force: true });
 }
 const bytes = statSync(out).size;
-if (bytes > maxBytes) throw new Error(`${out}: ${bytes} bytes > ${maxBytes}`);
-console.log(`wrote ${width}x${height} ${bytes} bytes`);
+if (!banner && bytes > maxBytes) throw new Error(`${out}: ${bytes} bytes > ${maxBytes}`);
+console.log(`wrote ${out}: ${width * scale}x${height * scale} ${bytes} bytes`);
