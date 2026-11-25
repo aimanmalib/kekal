@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Single test gate: format, lint, program tests, SDK, script and web tests, web build, target sweep tests (needs cargo-sweep),
+# Single test gate: no tracked cache files, format, lint, program tests, SDK, script and web tests, web build, target sweep tests (needs cargo-sweep),
 # deploy script tests (needs python3 for a local static server).
 #   KEKAL_LIFECYCLE=1  also runs paths A-E, then the demo steps + keeper check, on throwaway local validators
 #                      (scripts/localnet.sh).
@@ -11,6 +11,15 @@ cd "$ROOT"
 
 step() { printf '\n== %s\n' "$*"; }
 
+step "no compiled or cache files tracked"
+# Bytecode and cache files embed the absolute path of the machine that built them.
+if git rev-parse --git-dir >/dev/null 2>&1; then
+  TRACKED="$(git ls-files -- '*.pyc' '*.pyo' '*/__pycache__/*' '*.DS_Store')"
+  if [ -n "$TRACKED" ]; then
+    printf 'tracked build or cache files:\n%s\n' "$TRACKED" >&2
+    exit 1
+  fi
+fi
 step "cargo fmt --check"
 cargo fmt --all -- --check
 step "anchor build"
