@@ -18,7 +18,17 @@ await esbuild.build({
   platform: "node",
   target: "node22",
   format: "esm",
-  // CommonJS dependencies inside an ESM bundle still call require().
-  banner: { js: "import { createRequire as __kekalRequire } from 'node:module'; const require = __kekalRequire(import.meta.url);" },
+  // CommonJS dependencies inside an ESM bundle still call require() and read __filename/__dirname (bindings does,
+  // on its first call during a pass), so the bundle defines all three for the bundle file itself.
+  banner: {
+    js: [
+      "import { createRequire as __kekalRequire } from 'node:module';",
+      "import { fileURLToPath as __kekalPath } from 'node:url';",
+      "import { dirname as __kekalDir } from 'node:path';",
+      "const require = __kekalRequire(import.meta.url);",
+      "const __filename = __kekalPath(import.meta.url);",
+      "const __dirname = __kekalDir(__filename);",
+    ].join(" "),
+  },
   logLevel: "warning",
 });
