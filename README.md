@@ -2,7 +2,7 @@
 
 <h1 align="center">Kekal</h1>
 
-<p align="center"><img src="https://img.shields.io/badge/Solana-Anchor%201.2.2-12261F?style=flat-square" alt="Solana, Anchor 1.2.2"> <img src="https://img.shields.io/badge/program%20tests-72%20passing-E8A23A?style=flat-square" alt="72 program tests passing"> <img src="https://img.shields.io/badge/license-MIT-F4F1EA?style=flat-square" alt="MIT license"><br>
+<p align="center"><a href="https://github.com/aimanmalib/kekal/actions/workflows/ci.yml"><img src="https://github.com/aimanmalib/kekal/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a> <img src="https://img.shields.io/badge/Solana-Anchor%201.2.2-12261F?style=flat-square" alt="Solana, Anchor 1.2.2"> <img src="https://img.shields.io/badge/program%20tests-72%20passing-E8A23A?style=flat-square" alt="72 program tests passing"> <img src="https://img.shields.io/badge/license-MIT-F4F1EA?style=flat-square" alt="MIT license"><br>
 <a href="https://kekal.sasateguh.com/demo">Live demo</a> · <a href="#status">Status</a> · <a href="#run-it-yourself">Run it</a> · <a href="#limits">Limits</a> · <a href="#bahasa-melayu">Bahasa Melayu</a></p>
 
 **The warranty that outlives the shop.** For each sale a shop locks a small reserve in a Solana program. If the shop goes
@@ -106,6 +106,11 @@ with status 0; the counts are in the next section. The first `anchor build` comp
 ## Tests
 
 Counts measured again on 25 Nov 2026; commands and run times are on the [measurements page](docs/MEASURED.md).
+
+[CI](.github/workflows/ci.yml) runs on every push to `main`: format, `anchor build`, the IDL check, clippy and the program tests;
+then lint, typecheck, the SDK, server, keeper, script and web tests, the Postgres store tests and the web build. The local
+validator runs and the browser tests stay in `scripts/gerbang-ujian.sh` and `scripts/e2e.sh`
+([ADR 0026](docs/decisions/0026-public-ci.md)).
 
 | Suite | Where | Count | Result |
 |-------|-------|-------|--------|

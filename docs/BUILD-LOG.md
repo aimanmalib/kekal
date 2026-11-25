@@ -57,3 +57,4 @@ One line per step, newest last. Dates are UTC.
 - 2026-11-25: Pre-event freeze: README "Built before vs during" brought up to 25 Nov and points at the git tag `pre-hackathon`, which marks the repository before the event.
 - 2026-11-25: Repository hygiene before going public: the build-guard config note no longer names a host path.
 - 2026-11-25: The repository is public; the home page links to the source code.
+- 2026-11-25: Public CI on GitHub Actions (program build, clippy and tests; app lint, tests, Postgres store tests and web build); first run green, README badge.
