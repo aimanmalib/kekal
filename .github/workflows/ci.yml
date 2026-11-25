@@ -1,0 +1,83 @@
+# Public CI: the same checks as scripts/gerbang-ujian.sh, minus the local-validator runs and the host-only script tests.
+# Toolchain versions are read from the repository (rust-toolchain.toml, Anchor.toml, .nvmrc, package.json packageManager).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  program:
+    name: Program (fmt, build, clippy, tests)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Read toolchain versions from Anchor.toml
+        id: v
+        run: |
+          echo "solana=$(sed -n 's/^solana_version = "\(.*\)"/\1/p' Anchor.toml)" >> "$GITHUB_OUTPUT"
+          echo "anchor=$(sed -n 's/^anchor_version = "\(.*\)"/\1/p' Anchor.toml)" >> "$GITHUB_OUTPUT"
+      - name: Rust (rust-toolchain.toml)
+        run: rustup toolchain install
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ~/.cache/solana
+            target
+          key: program-${{ runner.os }}-${{ steps.v.outputs.solana }}-${{ hashFiles('Cargo.lock', 'rust-toolchain.toml') }}
+          restore-keys: program-${{ runner.os }}-${{ steps.v.outputs.solana }}-
+      - name: Solana CLI
+        run: |
+          sh -c "$(curl -sSfL "https://release.anza.xyz/v${{ steps.v.outputs.solana }}/install")"
+          echo "$HOME/.local/share/solana/install/active_release/bin" >> "$GITHUB_PATH"
+      - name: Anchor CLI
+        run: |
+          mkdir -p "$HOME/.local/bin"
+          A="${{ steps.v.outputs.anchor }}"
+          curl -sSfL -o "$HOME/.local/bin/anchor" \
+            "https://github.com/solana-foundation/anchor/releases/download/v$A/anchor-$A-x86_64-unknown-linux-gnu"
+          chmod +x "$HOME/.local/bin/anchor"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - run: cargo fmt --all -- --check
+      - run: anchor build
+      - name: IDL in the SDK matches the build
+        run: bash scripts/sync-idl.sh --check
+      - run: cargo clippy --all-targets --quiet -- -D warnings
+      - run: cargo test -p kekal --quiet
+
+  app:
+    name: SDK, server, keeper, web
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+      - name: pnpm (package.json packageManager)
+        run: |
+          corepack enable
+          corepack install
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - name: Store tests on a throwaway Postgres
+        run: bash scripts/test-postgres.sh
+      - name: Web build
+        working-directory: apps/web
+        env:
+          NEXT_TELEMETRY_DISABLED: "1"
+        run: pnpm build
