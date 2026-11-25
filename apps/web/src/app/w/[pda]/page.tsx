@@ -23,7 +23,8 @@ export default async function WarrantyPage({ params }: { params: Promise<{ pda: 
   const lang = await requestLang();
   const t = translator(lang);
   const cluster = runtimeCluster();
-  const r = await readWarranty(pda, { store: termsStore(), cluster });
+  // No program on the cluster means no card exists: say so rather than wait on the network to report "not found".
+  const r = cluster.deployed ? await readWarranty(pda, { store: termsStore(), cluster }) : ({ ok: false, reason: "not_deployed" } as const);
   if (!r.ok) {
     return (
       <SiteFrame lang={lang} t={t}>

@@ -127,8 +127,8 @@ export function WarrantyDetails({ view: v, lang, t, now, children }: Props) {
   );
 }
 
-/** Shown instead of the warranty when the address is wrong, unknown, or the network is down. */
-export function WarrantyMissing({ reason, t }: { reason: "bad_address" | "not_found" | "network"; t: Translate }) {
+/** No card to show: a bad address, nothing at it, the network unreachable, or no program on the cluster yet. */
+export function WarrantyMissing({ reason, t }: { reason: "bad_address" | "not_found" | "network" | "not_deployed"; t: Translate }) {
   return (
     <main className="warranty-missing">
       <h1>{t(`missing.${reason}.title` as MessageKey)}</h1>

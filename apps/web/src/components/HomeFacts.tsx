@@ -14,7 +14,7 @@ interface Props {
   programId: string | null;
   explorer: string;
   network: string;
-  /** False while no run is recorded for this cluster: /contoh only describes the paths, so it is a quiet link. */
+  /** False while no run is recorded for this cluster: /contoh is not offered, and with no program either there is no call to action. */
   examplesReady: boolean;
   repoUrl: string | null;
   videoUrl: string | null;
@@ -24,16 +24,20 @@ interface Props {
 export function HomeFacts({ t, stats, decimals, currency, programId, explorer, network, examplesReady, repoUrl, videoUrl }: Props) {
   return (
     <section className="home-facts">
-      <p className="home-cta">
-        {programId ? (
-          <Link href="/demo" className="button">
-            {t("home.cta")}
-          </Link>
-        ) : null}
-        <Link href="/contoh" className={programId || !examplesReady ? "button button-link" : "button"}>
-          {t(examplesReady ? "home.examples" : "home.examplesPending")}
-        </Link>
-      </p>
+      {programId || examplesReady ? (
+        <p className="home-cta">
+          {programId ? (
+            <Link href="/demo" className="button">
+              {t("home.cta")}
+            </Link>
+          ) : null}
+          {examplesReady ? (
+            <Link href="/contoh" className={programId ? "button button-link" : "button"}>
+              {t("home.examples")}
+            </Link>
+          ) : null}
+        </p>
+      ) : null}
       {stats ? (
         <dl className="figures" aria-label={fill(t("home.stats.label"), { network })}>
           <div>

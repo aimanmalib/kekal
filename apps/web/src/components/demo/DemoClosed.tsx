@@ -10,7 +10,7 @@ export function DemoClosed({ t, network, examplesReady }: { t: Translate; networ
       <p>{t(examplesReady ? "demo.closed.notDeployed.body" : "demo.closed.notDeployed.bodyPending")}</p>
       <p>
         <Link href="/contoh" className={examplesReady ? "button" : "button button-link"}>
-          {t(examplesReady ? "demo.examplesLink" : "home.examplesPending")}
+          {t(examplesReady ? "demo.examplesLink" : "examples.titlePending")}
         </Link>
       </p>
     </section>

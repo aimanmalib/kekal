@@ -12,9 +12,14 @@ not raw RPC errors, and the deploy has to be repeatable and reversible on a sing
 
 - **Each cluster in `config/app.json` has `deployed`** (`KEKAL_PROGRAM_DEPLOYED` overrides it). It is separate from
   `programId`, whose `null` already means "the address in the SDK IDL". While `deployed` is false: every page shows one
-  status line saying the program is not on the network yet; `/demo` shows what the demo will do and links to the finished
-  examples; the home page leaves out the program address and skips reading chain figures; `/api/demo/*`, `/api/submit`
+  status line saying the program is not on the network yet; `/demo` shows what the demo will do; the home page leaves out the program address and skips reading chain figures; `/api/demo/*`, `/api/submit`
   and `/api/relay` answer 503 `program_not_deployed`; `/api/health` stays 200 with `program: "not_deployed"`.
+- **No text promises what does not exist yet.** The finished examples count as present only when
+  `config/examples.json` holds a run for the site's cluster. Until then `/contoh` describes how each path ends, the
+  status line and `/demo` do not mention finished examples, the home page offers neither the demo nor `/contoh`, a
+  warranty page says no card exists yet without asking the network, and `/kedai`, `/timbang` and the wallet picker do
+  not say they run on the network or link to the closed demo. A test renders every page in English and Malay in this
+  state and fails on any deployed-only text or link.
 - **One image for the web app and the keeper** (`Dockerfile`): Next.js standalone output plus the keeper bundled by
   esbuild (the copy tsx already ships), so the runtime image has no TypeScript, Rust or Solana toolchain. Built from a
   clean `git archive` of HEAD, never from the working folder.

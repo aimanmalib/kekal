@@ -89,6 +89,8 @@
   "missing.network.title": "We could not reach the network",
   "missing.network.body": "Your warranty is not affected: the reserve stays locked whether or not this page loads. Try again in a minute.",
   "missing.checkAnother": "Check another card",
+  "missing.not_deployed.title": "No warranty cards exist yet",
+  "missing.not_deployed.body": "The program is not on the test network yet, so no card has been issued and none can be read.",
   "panel.readOnly": "Read-only view. To act on this warranty, open the link from the card itself.",
   "panel.unactivated": "This card is not activated yet. Activating moves it to this phone: after that, the printed code no longer controls the warranty.",
   "panel.activate": "Activate on this phone",
@@ -200,14 +202,13 @@
   "examples.step.resolve_dispute": "Arbiter decided",
   "examples.step.heartbeat": "Shop checked in",
   "examples.step.other": "Another step",
-  "error.demo_unavailable": "The demo is resting right now. The finished examples still show every path.",
-  "error.demo_shop_missing": "The demo shop is not set up on this network yet. The finished examples still show every path.",
+  "error.demo_unavailable": "The demo is resting right now. Try again in a few minutes.",
+  "error.demo_shop_missing": "The demo shop is not set up on this network yet.",
   "card.serial": "Serial number",
   "card.print.scan": "Scan with your phone camera to activate this card.",
   "card.print.footer": "{host} · card {id}",
   "home.cta": "Try the live demo: no wallet needed",
   "home.examples": "See finished examples",
-  "home.examplesPending": "How a warranty can end",
   "home.stats.label": "Live figures on {network}",
   "home.stats.shops": "Shops",
   "home.stats.active": "Warranties running",
@@ -303,5 +304,5 @@
   "demo.closed.notDeployed.title": "The live demo opens when the program is on {network}",
   "demo.closed.notDeployed.body": "It will issue you a real card on the test network and pay it out when the shop goes quiet. Until then, the finished examples walk through every path one step at a time.",
   "demo.closed.notDeployed.bodyPending": "It will issue you a real card on the test network and pay it out when the shop goes quiet.",
-  "error.program_not_deployed": "The program is not on the network yet, so this cannot be sent. The finished examples still show every path."
+  "error.program_not_deployed": "The program is not on the network yet, so this cannot be sent."
 }

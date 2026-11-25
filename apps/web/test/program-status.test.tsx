@@ -19,6 +19,12 @@ import { PROGRAM_NOT_DEPLOYED, programGate } from "../src/lib/program-gate";
 
 // The language switch is a client component that asks for the app router; a static render has none.
 vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: () => undefined }) }));
+// Pages read the language from the request cookie; the sweep below sets it per render.
+const request = vi.hoisted(() => ({ lang: "en" }));
+vi.mock("next/headers", () => ({
+  cookies: async () => ({ get: (name: string) => (name === "kekal_lang" ? { value: request.lang } : undefined) }),
+  headers: async () => new Headers(),
+}));
 
 // What config/examples.json holds for the cluster: set per test so the notice does not depend on the committed report.
 const recorded = vi.hoisted(() => ({ examples: null as unknown }));
@@ -136,12 +142,12 @@ describe("site notice and /demo state", () => {
     expect(html).not.toContain('href="/demo"');
     expect(html).toMatch(/<a class="button" href="\/contoh">/);
   });
-  it("the home page does not make /contoh its main button while no examples are recorded", () => {
+  it("the home page links neither the closed demo nor /contoh while no examples are recorded", () => {
     const html = home(null, false);
-    expect(html).not.toMatch(/<a class="button" href="\/contoh">/);
-    expect(html).not.toContain(en["home.examples"]);
-    expect(html).toContain(en["home.examplesPending"]);
+    expect(html).not.toContain('href="/contoh"');
     expect(html).not.toContain('href="/demo"');
+    expect(html).not.toContain("home-cta");
+    expect(html).toContain('href="/kedai"');
   });
   it("the sample card note does not point at the closed demo while the program is missing", () => {
     expect(en["card.sample.notePending"]).not.toMatch(/demo/i);
@@ -220,5 +226,76 @@ describe("/contoh, /kedai and the wallet picker while the program is missing", (
     expect(html).not.toContain(en["demo.closed.notDeployed.body"]);
     expect(html).toContain(en["demo.closed.notDeployed.bodyPending"]);
     expect(html).not.toMatch(/<a class="button" href="\/contoh">/);
+  });
+});
+
+describe("error texts and the sweep of every page while the program is missing and no examples are recorded", () => {
+  it("(6) error texts shown by the boards do not point at finished examples", () => {
+    for (const dict of [en, ms]) {
+      for (const k of ["error.program_not_deployed", "error.demo_unavailable", "error.demo_shop_missing"] as const) {
+        expect(dict[k], k).not.toContain(en["examples.title"]);
+        expect(dict[k], k).not.toMatch(/example|contoh|every path|setiap laluan/i);
+      }
+    }
+  });
+  it("(7) a warranty page says no card exists yet instead of reading the network", () => {
+    for (const dict of [en, ms]) {
+      expect(dict["missing.not_deployed.title"]).toBeTruthy();
+      expect(dict["missing.not_deployed.body"]).not.toMatch(/demo|runs on|berjalan di/i);
+    }
+  });
+
+  // Text that promises something which does not exist yet: fixed phrases, plus the deployed-only locale texts in both languages.
+  const phrases = ["live demo works", "opens now", "runs on", "show every path", "Try it yourself", "already finished"];
+  const deployedOnly = [
+    "footer.network", "kedai.devnet", "examples.title", "examples.lede", "examples.empty", "examples.demoLink", "notice.notDeployed",
+    "home.cta", "home.examples", "demo.examplesLink", "demo.closed.notDeployed.body", "card.sample.note", "wallet.tryDemo",
+    "error.demo_unavailable",
+  ] as const;
+  const forbidden = (dict: typeof en) => [...phrases, ...deployedOnly.map((k) => fill(dict[k], { network: dict["cluster.devnet"] }))];
+  const pages: [string, () => Promise<{ default: (props: never) => Promise<React.ReactElement> }>, object?][] = [
+    ["/", () => import("../src/app/page")],
+    ["/contoh", () => import("../src/app/contoh/page")],
+    ["/demo", () => import("../src/app/demo/page")],
+    ["/kedai", () => import("../src/app/kedai/page")],
+    ["/semak", () => import("../src/app/semak/page")],
+    ["/timbang", () => import("../src/app/timbang/page")],
+    ["/w/<pda>", () => import("../src/app/w/[pda]/page"), { params: Promise.resolve({ pda: finished.programId }) }],
+  ];
+  it("(8) no page says the demo works, the site runs on the network or the examples are finished", { timeout: 30_000 }, async () => {
+    vi.stubEnv("KEKAL_CLUSTER", "devnet");
+    vi.stubEnv("KEKAL_PROGRAM_DEPLOYED", "false");
+    const found: string[] = [];
+    for (const [lang, dict] of langs) {
+      request.lang = lang;
+      for (const [path, load, props] of pages) {
+        const html = renderToStaticMarkup(await (await load()).default((props ?? {}) as never));
+        if (!html.includes(dict["app.name"])) found.push(`${lang} ${path}: did not render`);
+        if (html.includes('href="/demo"')) found.push(`${lang} ${path}: links to the closed demo`);
+        for (const f of forbidden(dict)) if (html.toLowerCase().includes(f.toLowerCase())) found.push(`${lang} ${path}: "${f}"`);
+      }
+    }
+    expect(found).toEqual([]);
+  });
+  it("(9) once deployed with recorded examples, the demo and the examples come back", () => {
+    vi.stubEnv("KEKAL_CLUSTER", "devnet");
+    vi.stubEnv("KEKAL_PROGRAM_DEPLOYED", "true");
+    recorded.examples = finished;
+    const t = translator("en");
+    const network = en["cluster.devnet"];
+    const homeHtml = renderToStaticMarkup(
+      <HomeFacts t={t} stats={null} decimals={6} currency="USDC" programId={finished.programId} explorer="https://explorer.example/x"
+        network={network} examplesReady repoUrl={null} videoUrl={null} />,
+    );
+    expect(homeHtml).toMatch(/<a class="button" href="\/demo">/);
+    expect(homeHtml).toContain('href="/contoh"');
+    const contoh = renderToStaticMarkup(<ExamplesView t={t} examples={finished} deployed network={network} order={app.web.examples.paths} />);
+    expect(contoh).toContain(en["examples.title"]);
+    expect(contoh).toContain('href="/demo"');
+    const frameHtml = renderToStaticMarkup(<SiteFrame lang="en" t={t}><main /></SiteFrame>);
+    expect(frameHtml).toContain(fill(en["footer.network"], { network }));
+    expect(frameHtml).not.toContain("program-notice");
+    expect(renderToStaticMarkup(<ShopNetworkNote t={t} cluster={{ name: "devnet", deployed: true }} />)).toContain(fill(en["kedai.devnet"], { network }));
+    expect(renderToStaticMarkup(<DemoClosed t={t} network={network} examplesReady />)).toContain(en["demo.examplesLink"]);
   });
 });
