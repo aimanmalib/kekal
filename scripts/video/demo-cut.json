@@ -11,14 +11,28 @@
   },
   "subtitle": { "size": 40, "bottom": 34, "padX": 28, "padY": 14, "radius": 14 },
   "label": { "size": 28, "margin": 48, "padX": 18, "padY": 10 },
+  "explorerFootage": {
+    "_doc": "Explorer footage filmed by e2e/tests/film-explorer.spec.ts (E2E_VIDEO + E2E_EXPLORER, Chromium project) from the run in config/examples.json. tx = [path, step] in that file; address = a key of that file. Each stop scrolls to the heading with exactly that name ('heading') or the first element containing that text ('text'); neither = stay where the page is; the target lands marginPx below the top, clear of the explorer's sticky tab bar. Then it holds for 'hold' seconds.",
+    "viewport": { "width": 1280, "height": 720 },
+    "loadSecs": 6,
+    "marginPx": 110,
+    "shots": [
+      { "id": "explorer-deposit", "tx": ["setup", "deposit"], "stops": [{ "hold": 2 }, { "heading": "Tokens", "hold": 6 }] },
+      { "id": "explorer-payout", "tx": ["B", "settle_unanswered"], "stops": [{ "hold": 2 }, { "heading": "Tokens", "hold": 5 }, { "text": "Reserve Paid", "hold": 6 }] },
+      { "id": "explorer-program", "address": "programId", "stops": [{ "hold": 8 }] }
+    ]
+  },
   "scenes": [
     { "id": "home", "kind": "phone", "clip": "clips/webkit-iphone13-home.webm", "in": 0, "out": 22, "dur": 22, "lines": [[1, 0.3], [2, 3.7]], "label": "Home page on an iPhone 13" },
     { "id": "shop", "kind": "wide", "clip": "clips/chromium-en-kedai-seller.webm", "in": 8, "out": 44.5, "speed": 5, "crop": [1088, 612, 0, 0], "dur": 8.2, "lines": [[3, 0.2]], "label": "Shop board: deposit, issue a card · sped up 5×" },
+    { "id": "deposit-explorer", "kind": "wide", "clip": "clips/chromium-explorer-deposit.webm", "in": 15, "out": 22.7, "crop": [1040, 585, 120, 40], "dur": 6.5, "lines": [], "label": "Solana Explorer, devnet: the deposit locked in the shop's vault" },
     { "id": "buyer", "kind": "phone", "clip": "clips/webkit-iphone13-ms-kedai-buyer.webm", "in": 0, "out": 10.5, "dur": 10.5, "lines": [[4, 0.3]], "label": "The buyer's phone, in Bahasa Melayu" },
-    { "id": "silent", "kind": "phone", "clip": "clips/webkit-iphone13-demo-silent.webm", "in": 0, "out": 20.88, "dur": 21.6, "lines": [[5, 0.4], [6, 13.0]], "label": "Test shop with a 5-second answer window" },
-    { "id": "closed", "kind": "phone", "clip": "clips/webkit-iphone13-demo-closed.webm", "in": 0, "out": 18.32, "dur": 18.3, "lines": [[7, 4.0]], "label": "Test shop with a 5-second check-in window" },
+    { "id": "silent", "kind": "phone", "clip": "clips/webkit-iphone13-demo-silent.webm", "in": 0, "out": 20.4, "dur": 20.4, "lines": [[5, 0.4], [6, 13.0]], "label": "Test shop with a 5-second answer window" },
+    { "id": "payout-tokens", "kind": "wide", "clip": "clips/chromium-explorer-payout.webm", "in": 23.5, "out": 27.5, "crop": [1040, 585, 120, 40], "dur": 4.0, "lines": [], "label": "Solana Explorer, devnet: the reserve paid to the buyer" },
+    { "id": "payout-event", "kind": "wide", "clip": "clips/chromium-explorer-payout.webm", "in": 30.0, "out": 34.0, "crop": [1040, 585, 120, 40], "dur": 4.0, "lines": [], "label": "The program's own record of the payout" },
+    { "id": "closed", "kind": "phone", "clip": "clips/webkit-iphone13-demo-closed.webm", "in": 2.0, "out": 18.32, "dur": 16.3, "lines": [[7, 1.0]], "label": "Test shop with a 5-second check-in window" },
     { "id": "honest", "kind": "wide", "clip": "clips/chromium-en-kedai-seller.webm", "in": 105.6, "out": 106.8, "crop": [853, 480, 60, 140], "dur": 10.2, "lines": [[8, 0.3]], "label": "Shop board: a claim waiting for the shop" },
-    { "id": "program", "kind": "card", "dur": 4.6, "lines": [[9, 0.3]], "title": "The Kekal program on Solana devnet", "cluster": "devnet" },
+    { "id": "program", "kind": "wide", "clip": "clips/chromium-explorer-program.webm", "in": 13.8, "out": 17.6, "crop": [656, 369, 140, 90], "dur": 5.0, "lines": [[9, 0.3]], "label": "The Kekal program on Solana devnet" },
     { "id": "tests", "kind": "wide", "clip": "term/cargo-test.mp4", "in": 0, "out": 16.07, "dur": 16.07, "lines": [] },
     { "id": "close", "kind": "wide", "clip": "clips/chromium-home.webm", "in": 5.5, "out": 13.5, "dur": 12, "lines": [[10, 0.6], [11, 8.4]], "label": "kekal.sasateguh.com" }
   ]

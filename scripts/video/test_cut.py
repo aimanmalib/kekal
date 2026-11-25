@@ -91,6 +91,25 @@ class DemoCutFileTest(unittest.TestCase):
                     self.assertIn("sped up", s["label"])
         json.dumps(cfg)
 
+    def test_explorer_scenes_have_shots(self):
+        """Every explorer scene comes from a shot in explorerFootage, and every shot names a step or address in the examples."""
+        root = Path(__file__).resolve().parents[2]
+        cfg = cut.load(Path(__file__).resolve().parent / "demo-cut.json")
+        examples = json.loads((root / "config" / "examples.json").read_text(encoding="utf-8"))
+        shots = {s["id"]: s for s in cfg["explorerFootage"]["shots"]}
+        used = {Path(s["clip"]).stem.removeprefix("chromium-") for s in cfg["scenes"] if "explorer-" in s.get("clip", "")}
+        self.assertTrue(used)
+        self.assertLessEqual(used, set(shots))
+        for shot in shots.values():
+            if "tx" in shot:
+                path, step = shot["tx"]
+                self.assertIn(step, [s["step"] for s in examples["paths"][path]])
+            else:
+                self.assertIsInstance(examples[shot["address"]], str)
+            for stop in shot["stops"]:
+                self.assertGreater(stop["hold"], 0)
+                self.assertLessEqual(len({"heading", "text"} & set(stop)), 1)
+
 
 if __name__ == "__main__":
     unittest.main()
