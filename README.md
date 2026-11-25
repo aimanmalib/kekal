@@ -3,7 +3,7 @@
 <h1 align="center">Kekal</h1>
 
 <p align="center"><img src="https://img.shields.io/badge/Solana-Anchor%201.2.2-12261F?style=flat-square" alt="Solana, Anchor 1.2.2"> <img src="https://img.shields.io/badge/program%20tests-72%20passing-E8A23A?style=flat-square" alt="72 program tests passing"> <img src="https://img.shields.io/badge/license-MIT-F4F1EA?style=flat-square" alt="MIT license"><br>
-<a href="#run-it-yourself">Run it</a> · <a href="#limits">Limits</a> · <a href="#bahasa-melayu">Bahasa Melayu</a></p>
+<a href="https://kekal.sasateguh.com/demo">Live demo</a> · <a href="#status">Status</a> · <a href="#run-it-yourself">Run it</a> · <a href="#limits">Limits</a> · <a href="#bahasa-melayu">Bahasa Melayu</a></p>
 
 **The warranty that outlives the shop.** For each sale a shop locks a small reserve in a Solana program. If the shop goes
 silent, the buyer is paid.
@@ -62,7 +62,10 @@ The parts around the program (web app, fee relayer, keeper) and the money flow a
   on the live site in WebKit (iPhone 13) and Chromium ([measurements](docs/MEASURED.md)). A keeper process heartbeats the
   demo shop and sends the steps anyone may send. [`/contoh`](https://kekal.sasateguh.com/contoh) shows all five paths
   from a devnet run, each step linked to its transaction.
-- **Video:** not recorded yet.
+- **Video:** a 135-second cut is recorded (the web app, the devnet explorer and a replay of the program tests); it is not
+  published yet.
+- **Integrations:** none. The site runs on its own SQLite store; a Postgres store is written and tested
+  (see Tests) but not switched on.
 
 ## Try it
 
@@ -101,6 +104,8 @@ exits. Each command above was run once, in order, from a clean archive of this r
 with status 0; the counts are in the next section. The first `anchor build` compiles every dependency and takes a while.
 
 ## Tests
+
+Counts measured again on 25 Nov 2026; commands and run times are on the [measurements page](docs/MEASURED.md).
 
 | Suite | Where | Count | Result |
 |-------|-------|-------|--------|
@@ -182,6 +187,14 @@ record.
 | 23 Nov | Warranty page `/w`, read-only `/semak`, guided `/demo` and `/contoh` | `1bdd3ce` to `0b308b3` |
 | 23 Nov | Shop board `/kedai`, arbiter board `/timbang`, printed cards | `a5852d7` to `ee75e0e` |
 | 23 Nov | Browser end-to-end tests (Chromium and WebKit iPhone 13) and the `/demo` capture above | `b9519a1` to `bd33c97` |
+| 24 Nov | AI_USAGE and README brought up to date, favicon, deploy code (image, compose, proxy route, uptime check, image smoke test) | `22b511d` to `779c495` |
+| 24–25 Nov | Honest pages while the program was not deployed, first deploy of the web app, home page with the card in a phone | `d1080cf` to `a491df1` |
+| 25 Nov | Program deployed to devnet with `init_config` in the same run, paths A to E on devnet | `b036b20`, `50ed5d7` |
+| 25 Nov | Home page part two, form images, demo video tools | `2776a98` to `d07f589` |
+| 25 Nov | Security review fixes, `docs/SECURITY.md` and `docs/ARCHITECTURE.md` | `d437968`, `5ebd1f8` |
+| 25 Nov | Postgres store adapter behind an async store interface | `bf03fe0`, `72c4517` |
+| 25 Nov | Live site switched to devnet with RPC failover, demo timed on the live site, devnet hash matches the build | `49e2228` to `7d3ffa3` |
+| 25 Nov | Explorer shots for the demo video | `2651d44` |
 
 Work done during the event will be added to this table with its commits.
 

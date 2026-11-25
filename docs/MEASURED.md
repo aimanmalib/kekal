@@ -37,10 +37,27 @@ The two hashes are the same: the program on devnet is the `kekal.so` measured ab
 changed in commit `6bc52fc`. It was not built in the `solana-verify build` container, so a different machine may produce
 different bytes from the same source; this check shows the deployed program is this build, not that the build is reproducible.
 
-## Tests at the deployed commit
+## Tests (25 Nov 2026, commit `2651d44`, UTC)
 
-From `bash scripts/gerbang-ujian.sh` on the same day: `cargo clippy -D warnings` clean, 72 program tests (LiteSVM),
-55 SDK, 234 web app, 22 script, 9 keeper and 6 server package tests, all passing.
+At the program deploy, `bash scripts/gerbang-ujian.sh` reported `cargo clippy -D warnings` clean. The counts below were
+measured again at commit `2651d44` (web app source unchanged since the deployed image `907dabc`), one suite at a time on a
+shared Linux x86-64 host. Times are wall-clock and include start-up.
+
+| Suite | Command | Passed | Time |
+|---|---|---|---|
+| Program (LiteSVM, 13 test files) | `cargo test -p kekal` (after `anchor build`) | 72 | 76 s |
+| SDK | `npx vitest run` in `packages/sdk` | 55 | 3 s |
+| Web app | `npx vitest run` in `apps/web` | 251 | 25 s |
+| Scripts | `npx vitest run` in `scripts` | 22 | 6 s |
+| Keeper | `npx vitest run` in `apps/keeper` | 10 | 5 s |
+| Server package (SQLite; 9 Postgres tests skip without a database) | `npx vitest run` in `packages/server` | 14 | 3 s |
+| Store on a throwaway Postgres 16 container | `bash scripts/test-postgres.sh` | 19 (9 of them Postgres only) | not timed |
+| Deploy scripts | `bash scripts/test/deploy.test.sh` | 9 | not timed |
+| Video cut | `pytest scripts/video/test_cut.py` | 11 | 0.05 s |
+
+Browser tests (`bash scripts/e2e.sh`, Playwright 1.65.1, own local validator): 5 tests on Chromium desktop and 5 on WebKit
+emulating an iPhone 13, all passing, last full run on 23 Nov 2026 (commit `bd33c97`). The two `/demo` tests also ran against
+the public site on devnet on 25 Nov (next sections).
 
 ## Paths A to E on devnet
 
@@ -118,6 +135,30 @@ Most of that time is the demo shop's own windows (60 s to answer a claim; 60 s c
 `config/app.json`. Every step on the page links to its devnet transaction. The site reads devnet through three public RPC
 endpoints in failover order ([ADR 0023](decisions/0023-live-site-on-devnet.md)).
 
+### Site health and page weight (25 Nov 2026, 17:22 UTC)
+
+Raw numbers: [`measured/live-site.json`](measured/live-site.json).
+
+| Item | Value |
+|---|---|
+| `GET /api/health` | 200, `ok: true`, cluster devnet, program deployed, store SQLite, no optional integrations switched on |
+| Warranty page `/w/<address>` | HTML 58,989 bytes; 9 scripts in the page, 1,222,349 bytes (363,070 bytes gzip) |
+
+The scripts are large because the page reads and signs Solana transactions in the browser (`@solana/web3.js` and the Anchor
+client). The fee relayer's balance is not reported by the health endpoint yet (`relayerFunded` is `null`); the balance
+below is read from the cluster.
+
+### Limits on the public site
+
+The limits live in [`config/app.json`](../config/app.json) and are read by the server.
+
+| What | Limit |
+|---|---|
+| No-wallet demo sessions | 3 per IP per hour, 500 per day overall |
+| Dying shops for path C | 3 per IP per hour, 60 per day overall (0.03 SOL each from the demo shop key) |
+| Demo seller and arbiter actions | 30 per IP per hour |
+| Fee relayer | 10 per holder per hour, 30 per IP per hour, 2,000 per day overall, 100 new token accounts per day |
+
 ## Compute units per instruction (devnet, from the transactions above)
 
 | Instruction | Transactions | Compute units |
@@ -150,3 +191,11 @@ Command: `pnpm --filter @kekal/scripts measure-cu --cluster devnet --report <lif
 | After two lifecycle runs (the first stopped on the public endpoint's rate limit; fresh dying-shop owners, token accounts, minting) | 6.684105805 SOL |
 | After the showcase shop (`seed-demo`, 0.05 SOL to its owner), a third lifecycle run for `/contoh`, and sending 2 SOL to the fee relayer and 1 SOL to the demo shop key before the site went live | 3.601068925 SOL (relayer 2.46, demo shop key 1.51, after the four live demo runs) |
 
+Balances read again at 17:22 UTC the same day were unchanged: fee relayer `5iAiugNu…` 2.46 SOL, demo shop key `DmxxbJiD…`
+1.51 SOL, arbiter 0.1 SOL ([`measured/live-site.json`](measured/live-site.json)).
+
+## Demo video (25 Nov 2026)
+
+The second cut of the demo video is 135.17 s long (`ffprobe -show_entries format=duration`). It shows the web app (home page
+filmed on the live site, the demo paths on a local validator), the devnet explorer and a replay of real `cargo test`
+output. It has not been published yet.

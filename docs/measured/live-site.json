@@ -1,0 +1,43 @@
+{
+  "measuredAt": "2026-11-25T17:22:40Z",
+  "site": "https://kekal.sasateguh.com",
+  "deployTag": "907dabc-202611251508",
+  "health": {
+    "path": "/api/health",
+    "status": 200,
+    "body": {
+      "ok": true,
+      "cluster": "devnet",
+      "program": "deployed",
+      "features": [],
+      "relayerFunded": null,
+      "dataBackend": "sqlite"
+    }
+  },
+  "warrantyPage": {
+    "path": "/w/JcAknYguV5WyViYWoMgC8ZfRbR76LHiFohZt1ghu4Sb",
+    "htmlBytes": 58989,
+    "scripts": 9,
+    "scriptBytes": 1222349,
+    "scriptBytesGzip": 363070,
+    "method": "sum of every <script src> in the served HTML, fetched once without and once with Accept-Encoding: gzip; chunks loaded later are not counted"
+  },
+  "devnetBalances": {
+    "feeRelayer": {
+      "address": "5iAiugNu32fHgnWu19CjJcjeN9gtst3yatgjGmQBB97V",
+      "sol": 2.46114788
+    },
+    "demoShopKey": {
+      "address": "DmxxbJiD8Kkb2HfvBarcpkxjDYgZauixntkwKvrGsL5N",
+      "sol": 1.50860344
+    },
+    "arbiter": {
+      "address": "AWKc3fbMZ3uBkg6ZZkFi2Vns7EaeqsKX754d1Rqd1Meo",
+      "sol": 0.1
+    },
+    "deployKey": {
+      "address": "DtecSzuDbwsTL2MzBJtvaz6bD8qJSKbcgiPoAR8ukDvu",
+      "sol": 3.601068925
+    }
+  }
+}
