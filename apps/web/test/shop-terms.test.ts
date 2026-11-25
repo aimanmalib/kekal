@@ -16,7 +16,7 @@ function deps(onChain: Uint8Array | null | Error, perIp = 10) {
   return {
     kept,
     deps: {
-      store: { hit: (k: string) => hits.set(k, (hits.get(k) ?? 0) + 1).get(k)!, putWarrantyTerms: (p: string, j: string) => void (kept.has(p) || kept.set(p, j)) },
+      store: { hit: async (k: string) => hits.set(k, (hits.get(k) ?? 0) + 1).get(k)!, putWarrantyTerms: async (p: string, j: string) => void (kept.has(p) || kept.set(p, j)) },
       maxBytes: 4096,
       perIpPerHour: perIp,
       chainTermsHash: async () => {

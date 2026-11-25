@@ -37,7 +37,7 @@ const finished: Examples = {
 };
 const langs = [["en", en], ["ms", ms]] as const;
 
-const store = { backend: "sqlite", getConfig: () => null };
+const store = { backend: "sqlite", getConfig: async () => null };
 
 afterEach(() => {
   vi.unstubAllEnvs();
@@ -64,12 +64,12 @@ describe("deployed flag", () => {
 });
 
 describe("health", () => {
-  it("ok with program not_deployed when the program is missing", () => {
-    const h = buildHealth(runtimeCluster({ KEKAL_CLUSTER: "localnet", KEKAL_PROGRAM_DEPLOYED: "false" }), store);
+  it("ok with program not_deployed when the program is missing", async () => {
+    const h = await buildHealth(runtimeCluster({ KEKAL_CLUSTER: "localnet", KEKAL_PROGRAM_DEPLOYED: "false" }), store);
     expect(h).toMatchObject({ ok: true, program: "not_deployed" });
   });
-  it("program deployed otherwise", () => {
-    expect(buildHealth(runtimeCluster({ KEKAL_CLUSTER: "localnet", KEKAL_PROGRAM_DEPLOYED: "true" }), store).program).toBe("deployed");
+  it("program deployed otherwise", async () => {
+    expect((await buildHealth(runtimeCluster({ KEKAL_CLUSTER: "localnet", KEKAL_PROGRAM_DEPLOYED: "true" }), store)).program).toBe("deployed");
   });
 });
 

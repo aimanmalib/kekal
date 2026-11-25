@@ -261,6 +261,12 @@
       "statsTimeoutMs": 3000
     },
     "currency": "kUSD",
-    "data": { "backend": "sqlite", "sqlitePath": "data/kekal.db", "migrationsDir": "supabase/migrations" }
+    "data": {
+      "_doc": "Off-chain store. backend sqlite (file at sqlitePath) or supabase (Postgres; the connection string is read from the variable postgres.urlEnv names, never from this file). Both run supabase/migrations; *.pg.sql files are Postgres-only. prepare false suits the Supabase transaction pooler. DATA_BACKEND, KEKAL_SQLITE_PATH and KEKAL_MIGRATIONS_DIR override.",
+      "backend": "sqlite",
+      "sqlitePath": "data/kekal.db",
+      "migrationsDir": "supabase/migrations",
+      "postgres": { "urlEnv": "SUPABASE_DB_URL", "maxConnections": 4, "connectTimeoutSecs": 10, "idleTimeoutSecs": 60, "ssl": "require", "prepare": false }
+    }
   }
 }

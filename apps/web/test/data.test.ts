@@ -4,7 +4,7 @@ import { join, resolve } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { afterEach, describe, expect, it } from "vitest";
 import { findUp } from "../src/lib/data";
-import { migrate, openSqlite } from "@kekal/server";
+import { migrate } from "@kekal/server";
 import { backendName } from "@kekal/server";
 
 const MIGRATIONS = resolve(__dirname, "../../../supabase/migrations");
@@ -26,6 +26,9 @@ describe("sqlite store", () => {
     for (const t of ["shops", "products", "warranty_meta", "claim_meta", "media", "config", "counters", "events"]) {
       expect(names).toContain(t);
     }
+    // Postgres-only files (row level security) are not SQLite and are skipped.
+    const applied = (db.prepare("select name from schema_migrations").all() as { name: string }[]).map((r) => r.name);
+    expect(applied.some((n) => n.endsWith(".pg.sql"))).toBe(false);
     db.close();
   });
 
@@ -46,27 +49,6 @@ describe("sqlite store", () => {
     expect(tables).toContain("a");
     expect(tables).not.toContain("b");
     db.close();
-  });
-
-  it("stores config values and survives a reopen", () => {
-    const path = join(tempDir(), "sub", "kekal.db");
-    const s = openSqlite(path, MIGRATIONS, 100);
-    expect(s.getConfig("keeper_last_run")).toBeNull();
-    s.setConfig("keeper_last_run", "123", 100);
-    s.setConfig("keeper_last_run", "456", 101);
-    s.close();
-    const again = openSqlite(path, MIGRATIONS, 200);
-    expect(again.getConfig("keeper_last_run")).toBe("456");
-    again.close();
-  });
-
-  it("counts hits per fixed window", () => {
-    const s = openSqlite(":memory:", MIGRATIONS, 0);
-    expect(s.hit("ip:1", 3600, 7200)).toBe(1);
-    expect(s.hit("ip:1", 3600, 10799)).toBe(2);
-    expect(s.hit("ip:2", 3600, 10799)).toBe(1);
-    expect(s.hit("ip:1", 3600, 10800)).toBe(1);
-    s.close();
   });
 });
 

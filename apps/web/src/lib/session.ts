@@ -49,18 +49,18 @@ export function signInMessage(lang: Lang, f: { domain: string; pubkey: string; n
     .replaceAll("{expires}", iso(f.expiresAt));
 }
 
-export function issueNonce(
+export async function issueNonce(
   store: DataStore,
   input: { pubkey: unknown; domain: string; lang: Lang; now: number },
   policy: SessionPolicy,
-): { ok: true; nonce: string; message: string; expiresAt: number } | { ok: false; error: SessionError } {
+): Promise<{ ok: true; nonce: string; message: string; expiresAt: number } | { ok: false; error: SessionError }> {
   const pk = parsePubkey(input.pubkey);
   if (!pk) return { ok: false, error: "bad_pubkey" };
   const nonce = randomBytes(16).toString("hex");
   const expiresAt = input.now + policy.nonceTtlSecs;
   const pubkey = pk.toBase58();
   const message = signInMessage(input.lang, { domain: input.domain, pubkey, nonce, issuedAt: input.now, expiresAt });
-  store.putNonce({ nonce, pubkey, message, expiresAt }, input.now);
+  await store.putNonce({ nonce, pubkey, message, expiresAt }, input.now);
   return { ok: true, nonce, message, expiresAt };
 }
 
@@ -86,18 +86,18 @@ export function readSession(token: string | undefined, secret: string, now: numb
 }
 
 /** Checks the signed challenge (signature = base64 of the 64-byte Ed25519 signature over the UTF-8 message). */
-export function completeSignIn(
+export async function completeSignIn(
   store: DataStore,
   input: { pubkey?: unknown; nonce?: unknown; signature?: unknown; now: number },
   policy: SessionPolicy,
   secret: string,
-): { ok: true; pubkey: string; token: string; expiresAt: number } | { ok: false; error: SessionError } {
+): Promise<{ ok: true; pubkey: string; token: string; expiresAt: number } | { ok: false; error: SessionError }> {
   const { nonce, signature } = input;
   if (typeof nonce !== "string" || typeof signature !== "string") return { ok: false, error: "bad_request" };
   const pk = parsePubkey(input.pubkey);
   if (!pk) return { ok: false, error: "bad_pubkey" };
   // Taking the nonce burns it, so a wrong signature cannot be retried against the same challenge.
-  const row = store.takeNonce(nonce, input.now);
+  const row = await store.takeNonce(nonce, input.now);
   if (!row) return { ok: false, error: "nonce_unknown" };
   if (row.pubkey !== pk.toBase58()) return { ok: false, error: "pubkey_mismatch" };
   const sig = Buffer.from(signature, "base64");

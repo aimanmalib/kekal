@@ -17,7 +17,7 @@ export interface SubmitDeps {
 export async function submit(body: unknown, ip: string, deps: SubmitDeps): Promise<SubmitResult> {
   const tx64 = (body as { tx?: unknown } | null)?.tx;
   if (typeof tx64 !== "string") return { ok: false, status: 400, error: "bad_request" };
-  if (deps.store.hit(`submit:ip:${ip}`, 3600, deps.now) > deps.perIpPerHour) return { ok: false, status: 429, error: "rate_ip" };
+  if ((await deps.store.hit(`submit:ip:${ip}`, 3600, deps.now)) > deps.perIpPerHour) return { ok: false, status: 429, error: "rate_ip" };
   const verdict = checkSubmitTx(tx64, deps.policy);
   if (!verdict.ok) return { ok: false, status: 400, error: verdict.error };
   try {

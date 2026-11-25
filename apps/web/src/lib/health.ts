@@ -17,10 +17,10 @@ export interface Health {
 
 export const KEEPER_LAST_RUN_KEY = "keeper_last_run";
 
-export function buildHealth(
+export async function buildHealth(
   cluster: RuntimeCluster,
-  store: { backend: string; getConfig(key: string): string | null } | Error,
-): Health {
+  store: { backend: string; getConfig(key: string): Promise<string | null> } | Error,
+): Promise<Health> {
   const base = {
     cluster: cluster.name,
     programId: cluster.programId,
@@ -28,10 +28,15 @@ export function buildHealth(
     features: [],
     relayerFunded: null,
   };
-  if (store instanceof Error) {
-    return { ok: false, ...base, dataBackend: null, keeperLastRun: null, error: "data store unavailable" };
+  const down = { ok: false, ...base, dataBackend: null, keeperLastRun: null, error: "data store unavailable" };
+  if (store instanceof Error) return down;
+  let raw: string | null;
+  try {
+    raw = await store.getConfig(KEEPER_LAST_RUN_KEY);
+  } catch (e) {
+    console.error("health: data store", (e as Error).message);
+    return down;
   }
-  const raw = store.getConfig(KEEPER_LAST_RUN_KEY);
   const n = raw === null ? NaN : Number(raw);
   return { ok: true, ...base, dataBackend: store.backend, keeperLastRun: Number.isFinite(n) ? n : null };
 }

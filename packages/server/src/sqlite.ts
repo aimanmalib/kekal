@@ -1,7 +1,8 @@
-import { existsSync, mkdirSync, readdirSync, readFileSync } from "node:fs";
+import { existsSync, mkdirSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { DatabaseSync } from "node:sqlite";
-import type { DemoSession, DataStore } from "./store";
+import { MIGRATIONS_TABLE, migrationFiles } from "./migrations";
+import { windowStart, type DemoSession, type DataStore } from "./store";
 
 /** Walks up from `start` to the first folder that holds `rel` (the repo root in dev, the app root in the image). */
 export function findUp(rel: string, start: string): string | null {
@@ -16,17 +17,13 @@ export function findUp(rel: string, start: string): string | null {
 
 /** Applies supabase/migrations/*.sql in name order, each once, recorded in schema_migrations. Returns names applied now. */
 export function migrate(db: DatabaseSync, migrationsDir: string, now: number): string[] {
-  db.exec("create table if not exists schema_migrations (name text primary key, applied_at bigint not null)");
+  db.exec(MIGRATIONS_TABLE);
   const done = new Set(
     (db.prepare("select name from schema_migrations").all() as { name: string }[]).map((r) => r.name),
   );
-  const files = readdirSync(migrationsDir)
-    .filter((f) => f.endsWith(".sql"))
-    .sort();
   const applied: string[] = [];
-  for (const f of files) {
+  for (const { name: f, sql } of migrationFiles(migrationsDir, "sqlite")) {
     if (done.has(f)) continue;
-    const sql = readFileSync(join(migrationsDir, f), "utf8");
     db.exec("begin");
     try {
       db.exec(sql);
@@ -51,7 +48,7 @@ export function openSqlite(path: string, migrationsDir: string, now = Math.floor
     "insert into config (key, value, updated_at) values (?, ?, ?) on conflict(key) do update set value = excluded.value, updated_at = excluded.updated_at",
   );
   const bump = db.prepare(
-    "insert into counters (key, window_start, count) values (?, ?, 1) on conflict(key, window_start) do update set count = count + 1 returning count",
+    "insert into counters (key, window_start, count) values (?, ?, 1) on conflict(key, window_start) do update set count = counters.count + 1 returning count",
   );
   const dropOld = db.prepare("delete from session_nonces where expires_at < ?");
   const putN = db.prepare("insert into session_nonces (nonce, pubkey, message, expires_at) values (?, ?, ?, ?)");
@@ -66,35 +63,32 @@ export function openSqlite(path: string, migrationsDir: string, now = Math.floor
   const getTerms = db.prepare("select terms_json from warranty_meta where pda = ?");
   return {
     backend: "sqlite",
-    getConfig: (key) => (getCfg.get(key) as { value: string } | undefined)?.value ?? null,
-    setConfig: (key, value, at) => {
+    getConfig: async (key) => (getCfg.get(key) as { value: string } | undefined)?.value ?? null,
+    setConfig: async (key, value, at) => {
       setCfg.run(key, value, at);
     },
-    hit: (key, windowSecs, at) => {
-      const start = at - (at % windowSecs);
-      return Number((bump.get(key, start) as { count: number | bigint }).count);
-    },
-    putNonce: (n, at) => {
+    hit: async (key, windowSecs, at) => Number((bump.get(key, windowStart(at, windowSecs)) as { count: number | bigint }).count),
+    putNonce: async (n, at) => {
       dropOld.run(at);
       putN.run(n.nonce, n.pubkey, n.message, n.expiresAt);
     },
-    takeNonce: (nonce, at) => {
+    takeNonce: async (nonce, at) => {
       const r = takeN.get(at, nonce, at) as { nonce: string; pubkey: string; message: string; expires_at: number | bigint } | undefined;
       return r ? { nonce: r.nonce, pubkey: r.pubkey, message: r.message, expiresAt: Number(r.expires_at) } : null;
     },
-    putDemoSession: (d) => {
+    putDemoSession: async (d) => {
       putDemo.run(d.warranty, d.holder, d.shop, d.kind, d.createdAt);
     },
-    getDemoSession: (warranty) => {
+    getDemoSession: async (warranty) => {
       const r = getDemo.get(warranty) as
         | { warranty: string; holder: string; shop: string; kind: DemoSession["kind"]; created_at: number | bigint }
         | undefined;
       return r ? { warranty: r.warranty, holder: r.holder, shop: r.shop, kind: r.kind, createdAt: Number(r.created_at) } : null;
     },
-    putWarrantyTerms: (pda, termsJson, at) => {
+    putWarrantyTerms: async (pda, termsJson, at) => {
       putTerms.run(pda, termsJson, at);
     },
-    getWarrantyTerms: (pda) => (getTerms.get(pda) as { terms_json: string } | undefined)?.terms_json ?? null,
-    close: () => db.close(),
+    getWarrantyTerms: async (pda) => (getTerms.get(pda) as { terms_json: string } | undefined)?.terms_json ?? null,
+    close: async () => db.close(),
   };
 }

@@ -7,8 +7,8 @@ import { arbiterAction, sellerAction, startDyingShop, startSession, type DemoDep
 const MIGRATIONS = resolve(__dirname, "../../../supabase/migrations");
 const LIMITS: DemoLimits = { sessionsPerIpPerHour: 3, sessionsPerDay: 5, dyingShopsPerIpPerHour: 2, dyingShopsPerDay: 3, actionsPerIpPerHour: 4 };
 const stores: DataStore[] = [];
-afterEach(() => {
-  while (stores.length) stores.pop()!.close();
+afterEach(async () => {
+  while (stores.length) await stores.pop()!.close();
 });
 
 function setup(over: Partial<DemoOps> = {}) {
@@ -36,8 +36,8 @@ describe("demo session", () => {
     expect(r.ok).toBe(true);
     if (!r.ok) return;
     expect(r.body).toMatchObject({ holder: h, signatures: [{ signature: "s1", explorer: "https://x/tx/s1" }] });
-    expect(store.getDemoSession(r.body.warranty as string)).toMatchObject({ holder: h, kind: "shared", createdAt: 1_000_000 });
-    expect(store.getWarrantyTerms(r.body.warranty as string)).toBe('{"v":1}');
+    expect(await store.getDemoSession(r.body.warranty as string)).toMatchObject({ holder: h, kind: "shared", createdAt: 1_000_000 });
+    expect(await store.getWarrantyTerms(r.body.warranty as string)).toBe('{"v":1}');
   });
 
   it("rejects a missing, malformed or off-curve holder before touching the chain", async () => {
@@ -73,7 +73,7 @@ describe("dying shop", () => {
   it("has its own limits (per IP and per day)", async () => {
     const { deps, store } = setup();
     const ok = await startDyingShop({ holder: holder() }, "1.1.1.1", deps);
-    expect(ok.ok && store.getDemoSession(ok.body.warranty as string)?.kind).toBe("dying");
+    expect(ok.ok && (await store.getDemoSession(ok.body.warranty as string))?.kind).toBe("dying");
     expect((await startDyingShop({ holder: holder() }, "1.1.1.1", deps)).ok).toBe(true);
     expect(await startDyingShop({ holder: holder() }, "1.1.1.1", deps)).toMatchObject({ status: 429, error: "rate_ip" });
     expect(await startDyingShop({ holder: holder() }, "2.2.2.2", deps)).toMatchObject({ status: 429, error: "rate_global" });

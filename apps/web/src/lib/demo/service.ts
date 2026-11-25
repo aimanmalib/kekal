@@ -58,9 +58,9 @@ function boolField(body: unknown, field: string): boolean | null {
 }
 
 /** Counts the hit in both buckets (so a refused caller still spends quota); returns the first one over. */
-function limited(deps: DemoDeps, kind: string, ip: string, perIpHour: number, perDay: number): DemoResult | null {
-  const ipOver = deps.store.hit(`demo:${kind}:ip:${ip}`, HOUR, deps.now) > perIpHour;
-  const dayOver = deps.store.hit(`demo:${kind}:day`, DAY, deps.now) > perDay;
+async function limited(deps: DemoDeps, kind: string, ip: string, perIpHour: number, perDay: number): Promise<DemoResult | null> {
+  const ipOver = (await deps.store.hit(`demo:${kind}:ip:${ip}`, HOUR, deps.now)) > perIpHour;
+  const dayOver = (await deps.store.hit(`demo:${kind}:day`, DAY, deps.now)) > perDay;
   if (ipOver) return refuse(429, "rate_ip");
   if (dayOver) return refuse(429, "rate_global");
   return null;
@@ -81,8 +81,8 @@ async function issueWith(body: unknown, ip: string, deps: DemoDeps, kind: "share
   const l = deps.limits;
   const over =
     kind === "shared"
-      ? limited(deps, "session", ip, l.sessionsPerIpPerHour, l.sessionsPerDay)
-      : limited(deps, "dying", ip, l.dyingShopsPerIpPerHour, l.dyingShopsPerDay);
+      ? await limited(deps, "session", ip, l.sessionsPerIpPerHour, l.sessionsPerDay)
+      : await limited(deps, "dying", ip, l.dyingShopsPerIpPerHour, l.dyingShopsPerDay);
   if (over) return over;
   let issued: Issued;
   try {
@@ -90,14 +90,14 @@ async function issueWith(body: unknown, ip: string, deps: DemoDeps, kind: "share
   } catch (e) {
     return chainFailure(e);
   }
-  deps.store.putDemoSession({
+  await deps.store.putDemoSession({
     warranty: issued.warranty.toBase58(),
     holder: holder.toBase58(),
     shop: issued.shop.toBase58(),
     kind,
     createdAt: deps.now,
   });
-  deps.store.putWarrantyTerms(issued.warranty.toBase58(), issued.termsJson, deps.now);
+  await deps.store.putWarrantyTerms(issued.warranty.toBase58(), issued.termsJson, deps.now);
   return { ok: true, body: issuedBody(deps, issued, holder) };
 }
 
@@ -118,9 +118,9 @@ async function onSession(
   const warranty = pubkeyField(body, "warranty", false);
   const value = boolField(body, flag);
   if (!warranty || value === null) return refuse(400, "bad_request");
-  const session = deps.store.getDemoSession(warranty.toBase58());
+  const session = await deps.store.getDemoSession(warranty.toBase58());
   if (!session || !kinds.has(session.kind)) return refuse(404, "not_a_demo_warranty");
-  if (deps.store.hit(`demo:action:ip:${ip}`, HOUR, deps.now) > deps.limits.actionsPerIpPerHour) return refuse(429, "rate_ip");
+  if ((await deps.store.hit(`demo:action:ip:${ip}`, HOUR, deps.now)) > deps.limits.actionsPerIpPerHour) return refuse(429, "rate_ip");
   try {
     const signature = await act(warranty, value);
     return { ok: true, body: { signature, explorer: deps.explorer(signature) } };

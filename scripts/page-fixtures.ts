@@ -59,10 +59,10 @@ async function main() {
   for (let i = 0; i < count; i++) {
     const seed = crypto.getRandomValues(new Uint8Array(32));
     const issued = await issueToHolder(chain, Keypair.fromSeed(seed).publicKey);
-    store.putWarrantyTerms(issued.warranty.toBase58(), issued.termsJson, Math.floor(Date.now() / 1000));
+    await store.putWarrantyTerms(issued.warranty.toBase58(), issued.termsJson, Math.floor(Date.now() / 1000));
     cards.push({ warranty: issued.warranty.toBase58(), fragment: `#k=${base58.encode(seed)}` });
   }
-  store.close();
+  await store.close();
   writeFileSync(join(dir, "fixtures.json"), JSON.stringify({ mint: mint.toBase58(), programId: program.programId.toBase58(), wallet: wallets[0]?.publicKey.toBase58() ?? null, wallets: wallets.map((w) => w.publicKey.toBase58()), cards }, null, 2));
   console.log(`page-fixtures: ${cards.length} warranties, mint ${mint.toBase58()}`);
 }

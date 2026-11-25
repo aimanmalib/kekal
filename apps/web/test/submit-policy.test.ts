@@ -68,7 +68,7 @@ describe("checkSubmitTx", () => {
 describe("submit", () => {
   const store = () => {
     const hits = new Map<string, number>();
-    return { hit: (k: string) => hits.set(k, (hits.get(k) ?? 0) + 1).get(k)! };
+    return { hit: async (k: string) => hits.set(k, (hits.get(k) ?? 0) + 1).get(k)! };
   };
 
   it("sends a passing transaction and reports the RPC refusal otherwise", async () => {

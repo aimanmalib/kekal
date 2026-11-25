@@ -32,7 +32,7 @@ export async function POST(req: Request): Promise<Response> {
   } catch {
     return Response.json({ error: "bad_request" }, { status: 400, headers: noStore });
   }
-  const r = completeSignIn(dataStore(), { ...body, now: Math.floor(Date.now() / 1000) }, policy, secret);
+  const r = await completeSignIn(dataStore(), { ...body, now: Math.floor(Date.now() / 1000) }, policy, secret);
   if (!r.ok) return Response.json({ error: r.error }, { status: 401, headers: noStore });
   (await cookies()).set(webConfig.session.cookie, r.token, {
     httpOnly: true,

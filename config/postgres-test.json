@@ -1,0 +1,7 @@
+{
+  "_doc": "Throwaway Postgres for the store tests (scripts/test-postgres.sh). The container keeps its data in memory (tmpfs), listens on 127.0.0.1 only, and is removed when the tests end. Use the major version the Supabase project runs.",
+  "image": "postgres:16-alpine",
+  "cpus": "1",
+  "memory": "256m",
+  "readyTimeoutSecs": 60
+}

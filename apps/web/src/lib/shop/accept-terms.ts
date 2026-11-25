@@ -23,7 +23,7 @@ export async function acceptTerms(body: unknown, ip: string, deps: TermsDeps): P
   const pda = parseAddress(b.warranty);
   if (!pda) return { ok: false, status: 400, error: "bad_request" };
   if (new TextEncoder().encode(b.terms).length > deps.maxBytes) return { ok: false, status: 413, error: "too_large" };
-  if (deps.store.hit(`terms:ip:${ip}`, 3600, deps.now) > deps.perIpPerHour) return { ok: false, status: 429, error: "rate_ip" };
+  if ((await deps.store.hit(`terms:ip:${ip}`, 3600, deps.now)) > deps.perIpPerHour) return { ok: false, status: 429, error: "rate_ip" };
   let onChain: Uint8Array | null;
   try {
     onChain = await deps.chainTermsHash(pda.toBase58());
@@ -32,6 +32,6 @@ export async function acceptTerms(body: unknown, ip: string, deps: TermsDeps): P
   }
   if (!onChain) return { ok: false, status: 404, error: "not_found" };
   if (toHex(termsHashOf(b.terms)) !== toHex(onChain)) return { ok: false, status: 400, error: "hash_mismatch" };
-  deps.store.putWarrantyTerms(pda.toBase58(), b.terms, deps.now);
+  await deps.store.putWarrantyTerms(pda.toBase58(), b.terms, deps.now);
   return { ok: true };
 }

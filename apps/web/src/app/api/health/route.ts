@@ -4,7 +4,7 @@ import { buildHealth } from "@/lib/health";
 
 export const dynamic = "force-dynamic";
 
-export function GET(): Response {
+export async function GET(): Promise<Response> {
   let store;
   try {
     store = dataStore();
@@ -12,6 +12,6 @@ export function GET(): Response {
     console.error("health: data store", (e as Error).message);
     store = e as Error;
   }
-  const health = buildHealth(runtimeCluster(), store);
+  const health = await buildHealth(runtimeCluster(), store);
   return Response.json(health, { status: health.ok ? 200 : 503, headers: { "cache-control": "no-store" } });
 }

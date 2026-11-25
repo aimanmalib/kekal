@@ -11,8 +11,8 @@ import { b64, build, holder, mint, policy, program, relayer, shop, warranty, wit
 
 const MIGRATIONS = resolve(__dirname, "../../../supabase/migrations");
 const stores: DataStore[] = [];
-afterEach(() => {
-  while (stores.length) stores.pop()!.close();
+afterEach(async () => {
+  while (stores.length) await stores.pop()!.close();
 });
 
 function deps(over: Partial<RelayDeps> = {}) {

@@ -31,9 +31,9 @@ describe("runtimeCluster", () => {
 
 describe("buildHealth", () => {
   const cluster = runtimeCluster({ KEKAL_CLUSTER: "localnet" });
-  const store = (v: string | null) => ({ backend: "sqlite", getConfig: (k: string) => (k === KEEPER_LAST_RUN_KEY ? v : null) });
-  it("reports keeper_last_run when present", () => {
-    expect(buildHealth(cluster, store("1700000000"))).toMatchObject({
+  const store = (v: string | null) => ({ backend: "sqlite", getConfig: async (k: string) => (k === KEEPER_LAST_RUN_KEY ? v : null) });
+  it("reports keeper_last_run when present", async () => {
+    expect(await buildHealth(cluster, store("1700000000"))).toMatchObject({
       ok: true,
       cluster: "localnet",
       dataBackend: "sqlite",
@@ -41,11 +41,15 @@ describe("buildHealth", () => {
       relayerFunded: null,
     });
   });
-  it("null keeper run when never written or garbage", () => {
-    expect(buildHealth(cluster, store(null)).keeperLastRun).toBeNull();
-    expect(buildHealth(cluster, store("soon")).keeperLastRun).toBeNull();
+  it("null keeper run when never written or garbage", async () => {
+    expect((await buildHealth(cluster, store(null))).keeperLastRun).toBeNull();
+    expect((await buildHealth(cluster, store("soon"))).keeperLastRun).toBeNull();
   });
-  it("not ok when the store failed", () => {
-    expect(buildHealth(cluster, new Error("x"))).toMatchObject({ ok: false, dataBackend: null });
+  it("not ok when the store failed", async () => {
+    expect(await buildHealth(cluster, new Error("x"))).toMatchObject({ ok: false, dataBackend: null });
+  });
+  it("not ok when the store cannot answer (database down)", async () => {
+    const down = { backend: "supabase", getConfig: async () => Promise.reject(new Error("connect ECONNREFUSED")) };
+    expect(await buildHealth(cluster, down)).toMatchObject({ ok: false, dataBackend: null, error: "data store unavailable" });
   });
 });

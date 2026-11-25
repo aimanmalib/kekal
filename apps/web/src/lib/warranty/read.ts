@@ -138,7 +138,7 @@ export async function readWarranty(raw: string, deps: ReadDeps): Promise<ReadRes
     const shop = decodeAccount<ShopAccount>(program, "shop", shopInfo.data);
     const shopEntries = shop.status === ShopStatus.Dormant ? await readTimeline(conn, program, warranty.shop, cluster) : [];
     const claim = claimInfo && claimKey ? decodeAccount<ClaimAccount>(program, "claim", claimInfo.data) : null;
-    const json = deps.store.getWarrantyTerms(pda.toBase58());
+    const json = await deps.store.getWarrantyTerms(pda.toBase58());
     const view = buildView({
       pda: pda.toBase58(),
       programId: program.programId.toBase58(),

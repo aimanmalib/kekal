@@ -1,33 +1,6 @@
-import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { canonicalJson } from "@kekal/sdk";
-import { demoTermsJson, failoverConnection, openSqlite, programErrorName, runtimeCluster, SendError } from "../src";
-
-const MIGRATIONS = resolve(__dirname, "../../../supabase/migrations");
-
-describe("demo sessions in the store", () => {
-  it("stores once, reads back, ignores a replay, rejects an unknown kind", () => {
-    const s = openSqlite(":memory:", MIGRATIONS);
-    const row = { warranty: "W1", holder: "H1", shop: "S1", kind: "shared" as const, createdAt: 10 };
-    s.putDemoSession(row);
-    s.putDemoSession({ ...row, holder: "H2", createdAt: 20 });
-    expect(s.getDemoSession("W1")).toEqual(row);
-    expect(s.getDemoSession("W2")).toBeNull();
-    expect(() => s.putDemoSession({ ...row, warranty: "W3", kind: "other" as never })).toThrow(/CHECK/);
-    s.close();
-  });
-});
-
-describe("warranty terms in the store", () => {
-  it("keeps the first terms text for a warranty and ignores later writes", () => {
-    const s = openSqlite(":memory:", MIGRATIONS);
-    s.putWarrantyTerms("W1", '{"a":1}', 10);
-    s.putWarrantyTerms("W1", '{"a":2}', 20);
-    expect(s.getWarrantyTerms("W1")).toBe('{"a":1}');
-    expect(s.getWarrantyTerms("W2")).toBeNull();
-    s.close();
-  });
-});
+import { demoTermsJson, failoverConnection, programErrorName, runtimeCluster, SendError } from "../src";
 
 describe("demo terms", () => {
   it("are canonical JSON of the config terms plus kind, reserve and term, without the doc string", () => {

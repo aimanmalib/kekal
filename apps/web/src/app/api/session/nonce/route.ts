@@ -23,11 +23,11 @@ export async function POST(req: Request): Promise<Response> {
   }
   const store = dataStore();
   const now = Math.floor(Date.now() / 1000);
-  if (store.hit(`session:nonce:${clientIp(req.headers)}`, 3600, now) > policy.noncePerIpPerHour) {
+  if ((await store.hit(`session:nonce:${clientIp(req.headers)}`, 3600, now)) > policy.noncePerIpPerHour) {
     return Response.json({ error: "rate_ip" }, { status: 429, headers: noStore });
   }
   const lang = isLang(body.lang) ? body.lang : pickLang(undefined, req.headers.get("accept-language"));
-  const r = issueNonce(store, { pubkey: body.pubkey, domain: signInDomain(), lang, now }, policy);
+  const r = await issueNonce(store, { pubkey: body.pubkey, domain: signInDomain(), lang, now }, policy);
   if (!r.ok) return Response.json({ error: r.error }, { status: 400, headers: noStore });
   return Response.json({ nonce: r.nonce, message: r.message, expiresAt: r.expiresAt }, { headers: noStore });
 }

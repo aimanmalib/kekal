@@ -1,23 +1,15 @@
 /**
  * Keeper process (PRD 4.4): `pnpm --filter @kekal/keeper start [--once]`.
- * Env: KEKAL_CLUSTER, RPC_URLS, KEKAL_PROGRAM_ID, KEKAL_KEYS_DIR, KEKAL_SQLITE_PATH, KEKAL_MIGRATIONS_DIR (see config/app.json).
+ * Env: KEKAL_CLUSTER, RPC_URLS, KEKAL_PROGRAM_ID, KEKAL_KEYS_DIR, DATA_BACKEND, KEKAL_SQLITE_PATH or SUPABASE_DB_URL,
+ * KEKAL_MIGRATIONS_DIR (see config/app.json web.data).
  */
 import { readOnlyProgram } from "@kekal/sdk";
-import { appConfig, failoverConnection, findUp, loadKeypair, openSqlite, runtimeCluster, sendSigned, type DataStore } from "@kekal/server";
+import { appConfig, failoverConnection, loadKeypair, openStore, runtimeCluster, sendSigned } from "@kekal/server";
 import { PublicKey, type Keypair } from "@solana/web3.js";
-import { isAbsolute, join } from "node:path";
 import { runPass } from "./pass";
 import { liveReader } from "./reader";
 
 const log = (line: string) => console.log(`${new Date().toISOString()} ${line}`);
-
-function openStore(env: NodeJS.ProcessEnv): DataStore {
-  const data = appConfig.web.data;
-  const migrations = env.KEKAL_MIGRATIONS_DIR ?? findUp(data.migrationsDir, process.cwd());
-  if (!migrations) throw new Error(`migrations folder ${data.migrationsDir} not found; set KEKAL_MIGRATIONS_DIR`);
-  const raw = env.KEKAL_SQLITE_PATH ?? data.sqlitePath;
-  return openSqlite(isAbsolute(raw) || raw === ":memory:" ? raw : join(process.cwd(), raw), migrations);
-}
 
 function optionalKey(keysDir: string | null, role: string): Keypair | null {
   try {
@@ -36,7 +28,7 @@ async function main() {
   const program = readOnlyProgram(conn, new PublicKey(cluster.programId));
   const feePayer = loadKeypair(cluster.keysDir, k.feePayerRole);
   const heartbeatOwners = k.heartbeatRoles.map((r) => optionalKey(cluster.keysDir, r)).filter((x): x is Keypair => x !== null);
-  const store = openStore(process.env);
+  const store = openStore(process.env, appConfig.web.data, process.cwd());
   const lastHeartbeat = new Map<string, number>();
   log(`keeper on ${cluster.name}, program ${cluster.programId}, every ${k.intervalSecs} s`);
 
@@ -62,7 +54,7 @@ async function main() {
         maxActions: k.maxActionsPerPass,
         log,
       });
-      store.setConfig(k.lastRunKey, String(Math.floor(Date.now() / 1000)), Math.floor(Date.now() / 1000));
+      await store.setConfig(k.lastRunKey, String(Math.floor(Date.now() / 1000)), Math.floor(Date.now() / 1000));
       if (r.outcomes.length > 0 || r.failed > 0) log(`pass at ${r.clock}: ${r.outcomes.length} sent, ${r.failed} failed`);
       return r.failed === 0;
     } catch (e) {
@@ -73,14 +65,14 @@ async function main() {
 
   if (once) {
     const ok = await pass();
-    store.close();
+    await store.close();
     process.exit(ok ? 0 : 1);
   }
   const loop = async () => {
     if (stopping) return;
     await pass();
     if (!stopping) timer = setTimeout(() => void loop(), k.intervalSecs * 1000);
-    else store.close();
+    else await store.close();
   };
   await loop();
 }
