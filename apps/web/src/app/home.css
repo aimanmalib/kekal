@@ -1,0 +1,166 @@
+/* Home page: the title, then the sample card on a drawn phone, then the rules. From 56rem the phone gets its own column. */
+.home {
+  display: grid;
+  grid-template-areas: "links" "title" "phone" "intro";
+  gap: var(--space-2);
+  padding-top: var(--space-2);
+}
+
+.home > * {
+  min-width: 0;
+}
+
+.judge-links {
+  grid-area: links;
+}
+
+.home-title {
+  grid-area: title;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--step-3);
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  max-width: 18ch;
+  text-wrap: balance;
+}
+
+.phone-wrap {
+  grid-area: phone;
+  justify-self: center;
+  width: min(100%, 22rem);
+}
+
+.intro {
+  grid-area: intro;
+  padding-top: var(--space-2);
+}
+
+.intro .lede {
+  margin-top: 0;
+}
+
+/* Links for someone reviewing the project: plain text links on one hairline, each shown only once its target exists. */
+.judge-links ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--space-3);
+  margin: 0;
+  padding: 0 0 var(--space-1);
+  list-style: none;
+  border-bottom: 1px solid var(--rule);
+  font-size: var(--step--1);
+}
+
+.judge-links li {
+  max-width: 100%;
+}
+
+.judge-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  color: var(--ink);
+  text-underline-offset: 0.2em;
+  overflow-wrap: anywhere;
+}
+
+.judge-links .mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The phone: an ink body around a paper screen. Drawn with borders only; no shadow, no image. */
+.phone {
+  padding: 0.55rem;
+  border-radius: 2.75rem;
+  background: var(--ink);
+}
+
+.phone-screen {
+  position: relative;
+  padding: 0 0.75rem 1.5rem;
+  border-radius: 2.25rem;
+  background: var(--paper);
+  overflow: hidden;
+}
+
+/* The speaker slot at the top of the screen, level with the site name like a status bar. */
+.phone-screen::before {
+  content: "";
+  position: absolute;
+  top: 0.6rem;
+  left: 50%;
+  width: 4.5rem;
+  height: 1.25rem;
+  margin-left: -2.25rem;
+  border-radius: 999px;
+  background: var(--ink);
+}
+
+.phone-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  min-height: 1.25rem;
+  padding: 0.6rem 0.5rem 0.6rem;
+  font-family: var(--font-display);
+  font-size: var(--step--1);
+  font-weight: 600;
+}
+
+.phone-bar .brand-mark {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.phone .card {
+  max-width: none;
+}
+
+.phone .card-body {
+  padding: var(--space-2);
+}
+
+.phone .card-title {
+  margin-bottom: var(--space-1);
+}
+
+.phone .card-fields {
+  gap: 0.5rem;
+}
+
+.phone .stamp {
+  right: var(--space-1);
+  width: 5.5rem;
+  height: 5.5rem;
+  font-size: var(--step-1);
+}
+
+.phone .card-body:has(.stamp) .card-fields > div:last-child {
+  padding-right: 5.5rem;
+}
+
+.phone-caption {
+  margin: var(--space-1) 0 0;
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+  text-align: center;
+}
+
+@media (min-width: 56rem) {
+  .home {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas: "links links" "title phone" "intro phone";
+    gap: var(--space-3) var(--space-4);
+    align-items: start;
+    padding-top: var(--space-4);
+  }
+
+  .home-title {
+    max-width: 14ch;
+  }
+}

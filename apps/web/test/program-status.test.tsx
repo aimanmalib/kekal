@@ -129,11 +129,8 @@ describe("site notice and /demo state", () => {
         decimals={6}
         currency="USDC"
         programId={programId}
-        explorer="https://explorer.example/x"
         network={en["cluster.devnet"]}
         examplesReady={examplesReady}
-        repoUrl={null}
-        videoUrl={null}
       />,
     );
   it("the home page offers the finished examples, not the closed demo, while the program is missing", () => {
@@ -285,8 +282,8 @@ describe("error texts and the sweep of every page while the program is missing a
     const t = translator("en");
     const network = en["cluster.devnet"];
     const homeHtml = renderToStaticMarkup(
-      <HomeFacts t={t} stats={null} decimals={6} currency="USDC" programId={finished.programId} explorer="https://explorer.example/x"
-        network={network} examplesReady repoUrl={null} videoUrl={null} />,
+      <HomeFacts t={t} stats={null} decimals={6} currency="USDC" programId={finished.programId}
+        network={network} examplesReady />,
     );
     expect(homeHtml).toMatch(/<a class="button" href="\/demo">/);
     expect(homeHtml).toContain('href="/contoh"');

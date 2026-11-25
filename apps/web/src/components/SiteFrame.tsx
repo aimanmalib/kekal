@@ -3,6 +3,7 @@ import Link from "next/link";
 import { runtimeCluster, webConfig } from "@/lib/config";
 import { siteExamples } from "@/lib/demo/site-examples";
 import { fill, type Lang, type MessageKey, type Translate } from "@/lib/i18n";
+import { BrandMark } from "./BrandMark";
 import { LangSwitch } from "./LangSwitch";
 
 /** Masthead, page body and footer shared by every page. */
@@ -13,6 +14,7 @@ export function SiteFrame({ lang, t, children }: { lang: Lang; t: Translate; chi
     <div className="page">
       <header className="masthead">
         <Link href="/" className="wordmark">
+          <BrandMark />
           {t("app.name")}
         </Link>
         <LangSwitch
@@ -29,7 +31,10 @@ export function SiteFrame({ lang, t, children }: { lang: Lang; t: Translate; chi
         </p>
       )}
       {children}
-      <footer className="foot">{fill(t(cluster.deployed ? "footer.network" : "footer.networkPending"), { network })}</footer>
+      <footer className="foot">
+        <BrandMark />
+        <span>{fill(t(cluster.deployed ? "footer.network" : "footer.networkPending"), { network })}</span>
+      </footer>
     </div>
   );
 }

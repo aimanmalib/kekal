@@ -9,19 +9,16 @@ interface Props {
   stats: ProgramStats | null;
   decimals: number;
   currency: string;
-  /** Null while the program is not on the cluster: the address line is left out rather than linking to nothing,
-   * the closed demo is not offered, and the finished examples become the main call to action. */
+  /** Null while the program is not on the cluster: the closed demo is not offered, and the finished examples become the
+   * main call to action. The address itself is in the row of links at the top of the page (JudgeLinks). */
   programId: string | null;
-  explorer: string;
   network: string;
   /** False while no run is recorded for this cluster: /contoh is not offered, and with no program either there is no call to action. */
   examplesReady: boolean;
-  repoUrl: string | null;
-  videoUrl: string | null;
 }
 
-/** The demo call to action, live numbers read from the program, the program address and where to go next. */
-export function HomeFacts({ t, stats, decimals, currency, programId, explorer, network, examplesReady, repoUrl, videoUrl }: Props) {
+/** The demo call to action, live numbers read from the program and where to go next. */
+export function HomeFacts({ t, stats, decimals, currency, programId, network, examplesReady }: Props) {
   return (
     <section className="home-facts">
       {programId || examplesReady ? (
@@ -60,14 +57,6 @@ export function HomeFacts({ t, stats, decimals, currency, programId, explorer, n
           </div>
         </dl>
       ) : null}
-      {programId ? (
-        <p className="note">
-          {fill(t("home.program"), { network })}{" "}
-          <a className="mono" href={explorer} target="_blank" rel="noopener noreferrer">
-            {programId}
-          </a>
-        </p>
-      ) : null}
       <ul className="home-links">
         <li>
           <Link href="/kedai">{t("home.link.kedai")}</Link>
@@ -78,16 +67,6 @@ export function HomeFacts({ t, stats, decimals, currency, programId, explorer, n
         <li>
           <Link href="/timbang">{t("home.link.timbang")}</Link>
         </li>
-        {repoUrl ? (
-          <li>
-            <a href={repoUrl}>{t("home.link.repo")}</a>
-          </li>
-        ) : null}
-        {videoUrl ? (
-          <li>
-            <a href={videoUrl}>{t("home.link.video")}</a>
-          </li>
-        ) : null}
       </ul>
     </section>
   );
