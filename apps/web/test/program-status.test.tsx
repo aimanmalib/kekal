@@ -246,7 +246,8 @@ describe("error texts and the sweep of every page while the program is missing a
   });
 
   // Text that promises something which does not exist yet: fixed phrases, plus the deployed-only locale texts in both languages.
-  const phrases = ["live demo works", "opens now", "runs on", "show every path", "Try it yourself", "already finished"];
+  // Matched without case, so "runs on" also catches "Runs on" and "This runs on".
+  const phrases = ["live demo works", "opens now", "This runs on", "runs on", "show every path", "still show every path", "Try it yourself", "already finished"];
   const deployedOnly = [
     "footer.network", "kedai.devnet", "examples.title", "examples.lede", "examples.empty", "examples.demoLink", "notice.notDeployed",
     "home.cta", "home.examples", "demo.examplesLink", "demo.closed.notDeployed.body", "card.sample.note", "wallet.tryDemo",
