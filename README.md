@@ -46,6 +46,10 @@ the reserve from the shop's free balance into that warranty's locked amount, and
 When a warranty is paid out, the locked amount goes to the token account of the current holder. When it is released, it goes
 back to the free balance.
 
+The parts around the program (web app, fee relayer, keeper) and the money flow are drawn in
+[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). The threat model, invariants and review findings are in
+[`docs/SECURITY.md`](docs/SECURITY.md).
+
 ## Status
 
 - **Program:** 20 instructions, built with Anchor 1.2.2, deployed on devnet at
@@ -99,7 +103,7 @@ with status 0; the counts are in the next section. The first `anchor build` comp
 |-------|-------|-------|--------|
 | Program tests (LiteSVM, fixed clock, no sleeps) | `programs/kekal/tests/` | 72 | pass |
 | SDK tests (PDAs, instruction builders, decoders, hashing vectors) | `packages/sdk/test/` | 55 | pass |
-| Web app tests (RPC proxy, fee relayer, sessions, demo, warranty page, shop board, cards, locales, program status, home page, form images) | `apps/web/test/` | 239 | pass |
+| Web app tests (RPC proxy, fee relayer, sessions, request limits, demo, warranty page, shop board, cards, locales, program status, home page, form images) | `apps/web/test/` | 250 | pass |
 | Script tests (cluster config, locales, how warranties are issued, deploy checks, RPC pacing) | `scripts/test/` | 22 | pass |
 | Keeper tests (heartbeats, dormant shops, due settling steps) | `apps/keeper/test/` | 9 | pass |
 | Deploy script tests (uptime alerts, image smoke test, proxy route template) | `scripts/test/deploy.test.sh` | 9 | pass |
@@ -192,6 +196,8 @@ Where Kekal differs: silence pays (no evaluator or oracle decides a claim the sh
 live warranty, the buyer holds a QR bearer key with no wallet and no fees, and every state has an exit with a deadline.
 
 ## Limits
+
+The full list, with the threat model behind it, is in [`docs/SECURITY.md`](docs/SECURITY.md).
 
 - **Devnet only.** The program has not been audited. Do not use it with real money.
 - **No cash-out to ringgit.** A buyer who is paid receives a stablecoin on a key; turning that into ringgit is outside the
