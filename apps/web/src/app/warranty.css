@@ -227,6 +227,11 @@ a {
 .timeline a {
   font-size: var(--step--1);
   white-space: nowrap;
+  /* A full tap target that keeps the row's rhythm: the extra height sits inside the row padding. */
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  margin-block: calc((var(--tap) - 1lh) / -2);
 }
 
 .tech {
