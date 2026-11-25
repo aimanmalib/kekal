@@ -170,7 +170,8 @@ rule looks the way it does is written down in the [decision records](docs/DECISI
 ## Built before vs during
 
 The Dev3pack Global Hackathon runs 27–29 Nov 2026. Everything below was built before the event; the commit history is the
-record.
+record, and the git tag [`pre-hackathon`](https://github.com/aimanmalib/kekal/tree/pre-hackathon) marks the state of the
+repository at the end of this table.
 
 | Dates (2026) | What | Commits |
 |--------------|------|---------|
@@ -195,8 +196,11 @@ record.
 | 25 Nov | Postgres store adapter behind an async store interface | `bf03fe0`, `72c4517` |
 | 25 Nov | Live site switched to devnet with RPC failover, demo timed on the live site, devnet hash matches the build | `49e2228` to `7d3ffa3` |
 | 25 Nov | Explorer shots for the demo video | `2651d44` |
+| 25 Nov | README v2 and a measurement for every public number | `50b63e8` |
+| 25 Nov | Health check reports the fee relayer's balance and live integrations | `ed170e4` to `bf9968e` |
+| 25 Nov | Phone audit of every page in both languages, 44 px record link, Anchor client loaded on demand on `/w` | `f2a4e8c` to `653426e` |
 
-Work done during the event will be added to this table with its commits.
+Work done during the event will be added to its own table with its commits; `git log pre-hackathon..main` lists it.
 
 ## Related work
 
