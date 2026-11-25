@@ -6,7 +6,8 @@ const STEPS = new Set([
   "issue_warranty", "file_claim", "respond_claim", "confirm_resolved", "settle_unanswered", "declare_dormant", "claim_orphan",
   "release_expired", "escalate", "resolve_dispute", "heartbeat",
 ]);
-const PATHS = new Set(["A", "B", "C", "D", "E"]);
+/** Paths that have locale text; others in config or a report are left out. */
+export const PATHS = new Set(["A", "B", "C", "D", "E"]);
 
 const stepKey = (step: string): MessageKey => (STEPS.has(step) ? `examples.step.${step}` : "examples.step.other") as MessageKey;
 

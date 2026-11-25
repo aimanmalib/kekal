@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { runtimeCluster, webConfig } from "@/lib/config";
+import { siteExamples } from "@/lib/demo/site-examples";
 import { fill, type Lang, type MessageKey, type Translate } from "@/lib/i18n";
 import { LangSwitch } from "./LangSwitch";
 
@@ -24,7 +25,7 @@ export function SiteFrame({ lang, t, children }: { lang: Lang; t: Translate; chi
       </header>
       {cluster.deployed ? null : (
         <p className="program-notice" role="status">
-          {fill(t("notice.notDeployed"), { network })}
+          {fill(t(siteExamples(cluster.name) ? "notice.notDeployed" : "notice.notDeployedPending"), { network })}
         </p>
       )}
       {children}

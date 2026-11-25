@@ -6,19 +6,37 @@ import app from "../../../config/app.json";
 import en from "../../../locales/en.json";
 import ms from "../../../locales/ms.json";
 import { DemoClosed } from "../src/components/demo/DemoClosed";
+import { ExamplesView } from "../src/components/demo/ExamplesView";
+import { ShopNetworkNote } from "../src/components/kedai/ShopNetworkNote";
+import { WalletPicker } from "../src/components/kedai/WalletPicker";
 import { HomeFacts } from "../src/components/HomeFacts";
 import { SiteFrame } from "../src/components/SiteFrame";
 import { parseFlag, runtimeCluster } from "../src/lib/config";
 import { buildHealth } from "../src/lib/health";
 import { fill, translator } from "../src/lib/i18n";
+import type { Examples } from "../src/lib/demo/examples";
 import { PROGRAM_NOT_DEPLOYED, programGate } from "../src/lib/program-gate";
 
 // The language switch is a client component that asks for the app router; a static render has none.
 vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: () => undefined }) }));
 
+// What config/examples.json holds for the cluster: set per test so the notice does not depend on the committed report.
+const recorded = vi.hoisted(() => ({ examples: null as unknown }));
+vi.mock("../src/lib/demo/site-examples", () => ({ siteExamples: () => recorded.examples }));
+
+const finished: Examples = {
+  cluster: "devnet",
+  programId: "Prog1111111111111111111111111111111111111111",
+  paths: [{ id: "B", steps: [{ step: "issue_warranty", signature: "sig1", explorer: "https://explorer.example/tx/sig1" }] }],
+};
+const langs = [["en", en], ["ms", ms]] as const;
+
 const store = { backend: "sqlite", getConfig: () => null };
 
-afterEach(() => vi.unstubAllEnvs());
+afterEach(() => {
+  vi.unstubAllEnvs();
+  recorded.examples = null;
+});
 
 describe("deployed flag", () => {
   it("each cluster's flag comes from config", () => {
@@ -71,11 +89,21 @@ describe("site notice and /demo state", () => {
     );
   };
   it("every page says the program is not on the network yet, in both languages", () => {
+    recorded.examples = finished;
     for (const [lang, dict] of [["en", en], ["ms", ms]] as const) {
       const html = frame("false", lang);
       expect(html).toContain('class="program-notice" role="status"');
       expect(html).toContain(fill(dict["notice.notDeployed"], { network: dict["cluster.devnet"] }));
     }
+  });
+  it("the notice does not promise finished examples while none are recorded", () => {
+    for (const [lang, dict] of langs) {
+      const html = frame("false", lang);
+      const network = dict["cluster.devnet"];
+      expect(html).toContain(fill(dict["notice.notDeployedPending"], { network }));
+      expect(html).not.toContain(fill(dict["notice.notDeployed"], { network }));
+    }
+    expect(en["notice.notDeployedPending"]).not.toMatch(/example/i);
   });
   it("no notice once the program is deployed", () => expect(frame("true")).not.toContain("program-notice"));
   it("the footer does not claim the site runs on the network while the program is missing", () => {
@@ -87,7 +115,7 @@ describe("site notice and /demo state", () => {
       expect(frame("true", lang)).toContain(fill(dict["footer.network"], { network }));
     }
   });
-  const home = (programId: string | null) =>
+  const home = (programId: string | null, examplesReady = true) =>
     renderToStaticMarkup(
       <HomeFacts
         t={translator("en")}
@@ -97,6 +125,7 @@ describe("site notice and /demo state", () => {
         programId={programId}
         explorer="https://explorer.example/x"
         network={en["cluster.devnet"]}
+        examplesReady={examplesReady}
         repoUrl={null}
         videoUrl={null}
       />,
@@ -106,6 +135,13 @@ describe("site notice and /demo state", () => {
     expect(html).not.toContain(en["home.cta"]);
     expect(html).not.toContain('href="/demo"');
     expect(html).toMatch(/<a class="button" href="\/contoh">/);
+  });
+  it("the home page does not make /contoh its main button while no examples are recorded", () => {
+    const html = home(null, false);
+    expect(html).not.toMatch(/<a class="button" href="\/contoh">/);
+    expect(html).not.toContain(en["home.examples"]);
+    expect(html).toContain(en["home.examplesPending"]);
+    expect(html).not.toContain('href="/demo"');
   });
   it("the sample card note does not point at the closed demo while the program is missing", () => {
     expect(en["card.sample.notePending"]).not.toMatch(/demo/i);
@@ -117,9 +153,72 @@ describe("site notice and /demo state", () => {
     expect(html).toMatch(/<a class="button" href="\/demo">/);
   });
   it("/demo closed state names the network and links to the finished examples", () => {
-    const html = renderToStaticMarkup(<DemoClosed t={translator("en")} network={en["cluster.devnet"]} />);
+    const html = renderToStaticMarkup(<DemoClosed t={translator("en")} network={en["cluster.devnet"]} examplesReady />);
     expect(html).toContain(fill(en["demo.closed.notDeployed.title"], { network: en["cluster.devnet"] }));
     expect(html).toContain('href="/contoh"');
     expect(html).toContain(en["demo.examplesLink"]);
+  });
+});
+
+describe("/contoh, /kedai and the wallet picker while the program is missing", () => {
+  const view = (examples: Examples | null, deployed: boolean, lang: "en" | "ms" = "en") =>
+    renderToStaticMarkup(
+      <ExamplesView
+        t={translator(lang)}
+        examples={examples}
+        deployed={deployed}
+        network={(lang === "en" ? en : ms)["cluster.devnet"]}
+        order={app.web.examples.paths}
+      />,
+    );
+  it("/contoh describes the paths without claiming they ran or that the demo works", () => {
+    for (const [lang, dict] of langs) {
+      const html = view(null, false, lang);
+      expect(html).not.toContain('href="/demo"');
+      expect(html).not.toContain(dict["examples.empty"]);
+      expect(html).not.toContain(dict["examples.lede"]);
+      expect(html).not.toContain(dict["examples.title"]);
+      expect(html).toContain(dict["examples.titlePending"]);
+      expect(html).toContain(fill(dict["examples.ledePending"], { network: dict["cluster.devnet"] }));
+      expect(html).toContain(dict["examples.path.B.title"]);
+    }
+    expect(view(null, false)).not.toMatch(/live demo works|already finished/i);
+  });
+  it("/contoh offers the live demo only once the program is deployed", () => {
+    const html = view(null, true);
+    expect(html).toContain(en["examples.empty"]);
+    expect(html).toContain('href="/demo"');
+    expect(view(finished, false)).not.toContain('href="/demo"');
+    expect(view(finished, true)).toContain('href="/demo"');
+  });
+  it("/contoh shows the records and the finished wording once a run is recorded", () => {
+    const html = view(finished, false);
+    expect(html).toContain(en["examples.title"]);
+    expect(html).toContain('href="https://explorer.example/tx/sig1"');
+  });
+  it("/kedai does not say it runs on the network or link to the closed demo", () => {
+    for (const [lang, dict] of langs) {
+      const network = dict["cluster.devnet"];
+      const html = renderToStaticMarkup(<ShopNetworkNote t={translator(lang)} cluster={{ name: "devnet", deployed: false }} />);
+      expect(html).not.toContain(fill(dict["kedai.devnet"], { network }));
+      expect(html).not.toContain('href="/demo"');
+      expect(html).toContain(fill(dict["kedai.pending"], { network }));
+    }
+    const live = renderToStaticMarkup(<ShopNetworkNote t={translator("en")} cluster={{ name: "devnet", deployed: true }} />);
+    expect(live).toContain('href="/demo"');
+  });
+  it("the wallet picker offers the no-wallet demo only when it is open", () => {
+    const picker = (demoOpen: boolean) =>
+      renderToStaticMarkup(<WalletPicker t={translator("en")} wallets={[]} failed={false} demoOpen={demoOpen} onPick={() => undefined} />);
+    expect(picker(false)).not.toContain('href="/demo"');
+    expect(picker(false)).toContain(en["wallet.nonePending"]);
+    expect(picker(true)).toContain('href="/demo"');
+  });
+  it("/demo closed state does not promise finished examples while none are recorded", () => {
+    const html = renderToStaticMarkup(<DemoClosed t={translator("en")} network={en["cluster.devnet"]} examplesReady={false} />);
+    expect(html).not.toContain(en["demo.examplesLink"]);
+    expect(html).not.toContain(en["demo.closed.notDeployed.body"]);
+    expect(html).toContain(en["demo.closed.notDeployed.bodyPending"]);
+    expect(html).not.toMatch(/<a class="button" href="\/contoh">/);
   });
 });

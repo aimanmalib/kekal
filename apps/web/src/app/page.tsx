@@ -4,6 +4,7 @@ import { HomeFacts } from "@/components/HomeFacts";
 import { WarrantyCard } from "@/components/WarrantyCard";
 import { clusterSettings } from "@kekal/server";
 import { runtimeCluster, sampleReserve, webConfig } from "@/lib/config";
+import { siteExamples } from "@/lib/demo/site-examples";
 import { translator, type MessageKey } from "@/lib/i18n";
 import { localeMetadata } from "@/lib/page-metadata";
 import { requestLang } from "@/lib/request-lang";
@@ -44,6 +45,7 @@ export default async function Home() {
             programId={cluster.deployed ? cluster.programId : null}
             explorer={clusterSettings(cluster.name).explorerAddress.replace("{address}", cluster.programId)}
             network={t(`cluster.${cluster.name}` as MessageKey)}
+            examplesReady={siteExamples(cluster.name) !== null}
             repoUrl={webConfig.home.repoUrl}
             videoUrl={webConfig.home.videoUrl}
           />

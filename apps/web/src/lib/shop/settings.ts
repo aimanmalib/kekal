@@ -17,6 +17,7 @@ export function boardSettings(): BoardSettings {
   const w = webConfig.warrantyPage;
   return {
     chain: chainId(cluster.name),
+    demoOpen: cluster.deployed,
     currency: webConfig.currency,
     mints: mintChoices(cluster.name, cluster.mints),
     windows: b.windows,
@@ -40,6 +41,7 @@ export function arbiterSettings(): ArbiterSettings {
   const w = webConfig.warrantyPage;
   return {
     chain: chainId(cluster.name),
+    demoOpen: cluster.deployed,
     currency: webConfig.currency,
     pollMs: webConfig.shopBoard.pollMs,
     confirmPollMs: w.confirmPollMs,

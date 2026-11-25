@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteFrame } from "@/components/SiteFrame";
+import { siteExamples } from "@/lib/demo/site-examples";
 import { DemoClosed } from "@/components/demo/DemoClosed";
 import { DemoScene, type DemoSettings } from "@/components/demo/DemoScene";
 import { runtimeCluster, webConfig } from "@/lib/config";
@@ -41,7 +42,7 @@ export default async function DemoPage() {
           <section className="demo-head">
             <h1>{t("demo.title")}</h1>
           </section>
-          <DemoClosed t={t} network={t(`cluster.${cluster.name}` as MessageKey)} />
+          <DemoClosed t={t} network={t(`cluster.${cluster.name}` as MessageKey)} examplesReady={siteExamples(cluster.name) !== null} />
         </main>
       </SiteFrame>
     );

@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { SiteFrame } from "@/components/SiteFrame";
 import { ShopBoard } from "@/components/kedai/ShopBoard";
+import { ShopNetworkNote } from "@/components/kedai/ShopNetworkNote";
 import { runtimeCluster } from "@/lib/config";
-import { fill, translator, type MessageKey } from "@/lib/i18n";
+import { translator } from "@/lib/i18n";
 import { localeMetadata } from "@/lib/page-metadata";
 import { requestLang } from "@/lib/request-lang";
 import { boardSettings } from "@/lib/shop/settings";
@@ -24,9 +24,7 @@ export default async function ShopPage() {
         <section>
           <h1>{t("kedai.title")}</h1>
           <p className="lede">{t("kedai.lede")}</p>
-          <p className="note">
-            {fill(t("kedai.devnet"), { network: t(`cluster.${runtimeCluster().name}` as MessageKey) })} <Link href="/demo">{t("wallet.tryDemo")}</Link>
-          </p>
+          <ShopNetworkNote t={t} cluster={runtimeCluster()} />
         </section>
         <ShopBoard lang={lang} settings={boardSettings()} />
       </main>

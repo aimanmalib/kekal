@@ -8,17 +8,24 @@ interface Props {
   t: Translate;
   wallets: Wallet[];
   failed: boolean;
+  demoOpen: boolean;
   onPick: (w: Wallet) => void;
 }
 
-/** Lists the wallets this browser offers; without one, says how to get one and points to the no-wallet demo. */
-export function WalletPicker({ t, wallets, failed, onPick }: Props) {
+/** Lists the wallets this browser offers; without one, says how to get one and points to the no-wallet demo when it is open. */
+export function WalletPicker({ t, wallets, failed, demoOpen, onPick }: Props) {
   return (
     <div className="panel-block wallet-picker">
       <p>{t("wallet.why")}</p>
       {wallets.length === 0 ? (
         <p className="note">
-          {t("wallet.none")} <Link href="/demo">{t("wallet.tryDemo")}</Link>
+          {demoOpen ? (
+            <>
+              {t("wallet.none")} <Link href="/demo">{t("wallet.tryDemo")}</Link>
+            </>
+          ) : (
+            t("wallet.nonePending")
+          )}
         </p>
       ) : (
         <ul className="wallet-list">

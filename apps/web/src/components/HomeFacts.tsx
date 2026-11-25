@@ -14,12 +14,14 @@ interface Props {
   programId: string | null;
   explorer: string;
   network: string;
+  /** False while no run is recorded for this cluster: /contoh only describes the paths, so it is a quiet link. */
+  examplesReady: boolean;
   repoUrl: string | null;
   videoUrl: string | null;
 }
 
 /** The demo call to action, live numbers read from the program, the program address and where to go next. */
-export function HomeFacts({ t, stats, decimals, currency, programId, explorer, network, repoUrl, videoUrl }: Props) {
+export function HomeFacts({ t, stats, decimals, currency, programId, explorer, network, examplesReady, repoUrl, videoUrl }: Props) {
   return (
     <section className="home-facts">
       <p className="home-cta">
@@ -28,8 +30,8 @@ export function HomeFacts({ t, stats, decimals, currency, programId, explorer, n
             {t("home.cta")}
           </Link>
         ) : null}
-        <Link href="/contoh" className={programId ? "button button-link" : "button"}>
-          {t("home.examples")}
+        <Link href="/contoh" className={programId || !examplesReady ? "button button-link" : "button"}>
+          {t(examplesReady ? "home.examples" : "home.examplesPending")}
         </Link>
       </p>
       {stats ? (

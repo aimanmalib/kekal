@@ -12,6 +12,8 @@ import { useWallet } from "../kedai/useWallet";
 
 export interface ArbiterSettings {
   chain: string;
+  /** False while the program is not on the cluster: the no-wallet demo is closed, so it is not offered. */
+  demoOpen: boolean;
   currency: string;
   pollMs: number;
   confirmPollMs: number;
@@ -69,7 +71,7 @@ export function ArbiterBoard({ lang, settings: s }: { lang: Lang; settings: Arbi
     }
   }
 
-  if (!connected) return <WalletPicker t={t} wallets={wallets} failed={failed} onPick={(w) => void connect(w)} />;
+  if (!connected) return <WalletPicker t={t} wallets={wallets} failed={failed} demoOpen={s.demoOpen} onPick={(w) => void connect(w)} />;
   return (
     <div className="board" aria-busy={busy}>
       <p className="board-who">

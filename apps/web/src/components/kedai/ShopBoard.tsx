@@ -17,6 +17,8 @@ import { useWallet } from "./useWallet";
 
 export interface BoardSettings {
   chain: string;
+  /** False while the program is not on the cluster: the no-wallet demo is closed, so it is not offered. */
+  demoOpen: boolean;
   currency: string;
   mints: { name: string; address: string }[];
   windows: { responseSecs: number; repairSecs: number; disputeSecs: number; heartbeatSecs: number; graceSecs: number };
@@ -133,7 +135,7 @@ export function ShopBoard({ lang, settings: s }: { lang: Lang; settings: BoardSe
   }
 
   if (!connected || !owner) {
-    return <WalletPicker t={t} wallets={wallets} failed={failed} onPick={(w) => void connect(w)} />;
+    return <WalletPicker t={t} wallets={wallets} failed={failed} demoOpen={s.demoOpen} onPick={(w) => void connect(w)} />;
   }
   const now = board?.chainNow ?? Math.floor(Date.now() / 1000);
   const shop = board?.shop ?? null;
