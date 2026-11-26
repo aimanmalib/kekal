@@ -41,11 +41,11 @@
         "timeoutSecs": 180
       },
       "demo": {
-        "_doc": "Demo shops (PRD 4.6). sharedShop serves /api/demo/session and the keeper heartbeats it; shop windows are fixed at creation and lifecycle uses the same owner key, so lifecycle.shopWindows must equal sharedShop.windows. sellerFloat is kUSD kept in the shared seller's own account to fund each dying shop (fresh owner per /api/demo/dying-shop, key discarded after issue). showcaseShop has realistic windows for screenshots and the merchant board; seed-demo tops its owner up to sol from the admin key.",
+        "_doc": "Demo shops (PRD 4.6). sharedShop serves /api/demo/session and the keeper heartbeats it; shop windows are fixed at creation and lifecycle uses the same owner key, so lifecycle.shopWindows must equal sharedShop.windows. sellerFloat is kUSD kept in the shared seller's own account to fund each dying shop (fresh owner per /api/demo/dying-shop, key discarded after issue). The dying shop owner gets exactly the rent of the accounts it pays for plus dyingShop.marginLamports (0, or at least the rent of an empty account); its token account is closed back to the shared seller. showcaseShop has realistic windows for screenshots and the merchant board; seed-demo tops its owner up to sol from the admin key.",
         "reserve": "25000000",
         "termSecs": 86400,
         "sharedShop": { "role": "demo-seller", "windows": { "responseSecs": 5, "repairSecs": 5, "disputeSecs": 5, "heartbeatSecs": 3600, "graceSecs": 0 }, "depositAmount": "500000000", "sellerFloat": "2000000000" },
-        "dyingShop": { "windows": { "responseSecs": 5, "repairSecs": 5, "disputeSecs": 5, "heartbeatSecs": 5, "graceSecs": 0 }, "sol": 0.05 },
+        "dyingShop": { "windows": { "responseSecs": 5, "repairSecs": 5, "disputeSecs": 5, "heartbeatSecs": 5, "graceSecs": 0 }, "marginLamports": 0 },
         "showcaseShop": { "role": "showcase-seller", "windows": { "responseSecs": 604800, "repairSecs": 1814400, "disputeSecs": 1209600, "heartbeatSecs": 2592000, "graceSecs": 1209600 }, "depositAmount": "200000000", "warranties": 3, "sol": 0.05 }
       }
     },
@@ -88,11 +88,11 @@
         "timeoutSecs": 900
       },
       "demo": {
-        "_doc": "Demo shops (PRD 4.6). sharedShop serves /api/demo/session and the keeper heartbeats it; shop windows are fixed at creation and lifecycle uses the same owner key, so lifecycle.shopWindows must equal sharedShop.windows. sellerFloat is kUSD kept in the shared seller's own account to fund each dying shop (fresh owner per /api/demo/dying-shop, key discarded after issue). showcaseShop has realistic windows for screenshots and the merchant board; seed-demo tops its owner up to sol from the admin key.",
+        "_doc": "Demo shops (PRD 4.6). sharedShop serves /api/demo/session and the keeper heartbeats it; shop windows are fixed at creation and lifecycle uses the same owner key, so lifecycle.shopWindows must equal sharedShop.windows. sellerFloat is kUSD kept in the shared seller's own account to fund each dying shop (fresh owner per /api/demo/dying-shop, key discarded after issue). The dying shop owner gets exactly the rent of the accounts it pays for plus dyingShop.marginLamports (0, or at least the rent of an empty account); its token account is closed back to the shared seller. showcaseShop has realistic windows for screenshots and the merchant board; seed-demo tops its owner up to sol from the admin key.",
         "reserve": "25000000",
         "termSecs": 31536000,
         "sharedShop": { "role": "demo-seller", "windows": { "responseSecs": 60, "repairSecs": 120, "disputeSecs": 60, "heartbeatSecs": 120, "graceSecs": 60 }, "depositAmount": "200000000", "sellerFloat": "2000000000" },
-        "dyingShop": { "windows": { "responseSecs": 60, "repairSecs": 60, "disputeSecs": 60, "heartbeatSecs": 60, "graceSecs": 0 }, "sol": 0.03 },
+        "dyingShop": { "windows": { "responseSecs": 60, "repairSecs": 60, "disputeSecs": 60, "heartbeatSecs": 60, "graceSecs": 0 }, "marginLamports": 0 },
         "showcaseShop": { "role": "showcase-seller", "windows": { "responseSecs": 604800, "repairSecs": 1814400, "disputeSecs": 1209600, "heartbeatSecs": 2592000, "graceSecs": 1209600 }, "depositAmount": "200000000", "warranties": 3, "sol": 0.05 }
       }
     }

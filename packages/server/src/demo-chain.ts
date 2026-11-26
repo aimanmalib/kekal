@@ -17,18 +17,21 @@ import {
   type ShopWindows,
 } from "@kekal/sdk";
 import {
+  ACCOUNT_SIZE,
   createAssociatedTokenAccountIdempotentInstruction,
+  createCloseAccountInstruction,
   createTransferCheckedInstruction,
   getAssociatedTokenAddressSync,
 } from "@solana/spl-token";
-import { Keypair, LAMPORTS_PER_SOL, SystemProgram, type Connection, type PublicKey } from "@solana/web3.js";
+import { Keypair, SystemProgram, type Connection, type PublicKey } from "@solana/web3.js";
 import { sendSigned } from "./chain";
 import { appConfig } from "./cluster";
 
 export interface DemoShopSettings {
   reserve: string;
   termSecs: number;
-  dyingShop: { windows: ShopWindows; sol: number };
+  /** marginLamports: extra SOL for the throwaway owner on top of the rent it pays; 0, or at least the rent of an empty account. */
+  dyingShop: { windows: ShopWindows; marginLamports: number };
 }
 
 export interface DemoChain {
@@ -160,9 +163,40 @@ export async function arbiterResolve(d: DemoChain, warranty: PublicKey, buyerWin
   return sendSigned(d.conn, d.feePayer, [built], [d.arbiter]);
 }
 
+// Rent depends only on the account size, so one RPC read per size per process.
+const rents = new WeakMap<Connection, Map<number, Promise<number>>>();
+function rentFor(conn: Connection, size: number): Promise<number> {
+  let bySize = rents.get(conn);
+  if (!bySize) rents.set(conn, (bySize = new Map()));
+  let r = bySize.get(size);
+  if (!r) {
+    r = conn.getMinimumBalanceForRentExemption(size);
+    r.catch(() => bySize.delete(size));
+    bySize.set(size, r);
+  }
+  return r;
+}
+
+/**
+ * SOL the throwaway owner of a dying shop needs: the rent of the three accounts it pays for (shop, vault, warranty)
+ * plus the configured margin. Fees are paid by the shared seller, so the owner key ends at the margin (0 by default)
+ * instead of keeping SOL nobody can spend.
+ */
+export async function dyingShopLamports(d: Pick<DemoChain, "conn" | "program" | "settings">): Promise<number> {
+  const margin = d.settings.dyingShop.marginLamports;
+  const accounts = d.program.account as unknown as Record<"shop" | "warranty", { size: number }>;
+  const sizes = [accounts.shop.size, ACCOUNT_SIZE, accounts.warranty.size];
+  const [empty, ...paid] = await Promise.all([rentFor(d.conn, 0), ...sizes.map((n) => rentFor(d.conn, n))]);
+  // A system account may not be left holding less than the rent of an empty account, so a small margin would fail.
+  if (margin !== 0 && margin < empty!) throw new Error(`dyingShop.marginLamports must be 0 or at least ${empty}`);
+  return paid.reduce((a, b) => a + b, margin);
+}
+
 /**
  * Path C set-up: a shop with a fresh owner key, funded from the shared seller (SOL for rent, one reserve of kUSD),
  * issues one warranty to `holder`. The owner key is not returned or stored: nobody can heartbeat this shop again.
+ * The owner's token account only carries the reserve into the vault, so it is closed in the same transaction and its
+ * rent goes back to the shared seller.
  */
 export async function dyingShop(d: DemoChain, holder: PublicKey): Promise<Issued> {
   const owner = Keypair.generate();
@@ -175,7 +209,7 @@ export async function dyingShop(d: DemoChain, holder: PublicKey): Promise<Issued
     arbiter: d.arbiter.publicKey,
     profileHash: hashJson({ demo: "dying-shop", owner: owner.publicKey.toBase58() }),
   });
-  const lamports = Math.round(d.settings.dyingShop.sol * LAMPORTS_PER_SOL);
+  const lamports = await dyingShopLamports(d);
   const fund = SystemProgram.transfer({ fromPubkey: d.seller.publicKey, toPubkey: owner.publicKey, lamports });
   const s1 = await sendSigned(d.conn, d.seller, [fund, create], [owner]);
 
@@ -187,6 +221,7 @@ export async function dyingShop(d: DemoChain, holder: PublicKey): Promise<Issued
     createTransferCheckedInstruction(from, d.mint, to, d.seller.publicKey, reserve, d.decimals),
     await ix.deposit(d.program, { owner: owner.publicKey, mint: d.mint, ownerToken: to, amount: reserve }),
     await ix.issueWarranty(d.program, { owner: owner.publicKey, warrantyId: 0n, params: terms.params }),
+    createCloseAccountInstruction(to, d.seller.publicKey, owner.publicKey),
   ];
   const s2 = await sendSigned(d.conn, d.seller, ixs, [owner]);
   return { shop, warranty: warrantyPda(d.program.programId, shop, 0n), signatures: [s1, s2], termsJson: terms.termsJson };

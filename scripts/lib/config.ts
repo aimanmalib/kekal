@@ -29,7 +29,7 @@ export interface DemoSettings {
   reserve: string;
   termSecs: number;
   sharedShop: DemoShopConfig & { sellerFloat: string };
-  dyingShop: { windows: ShopWindows; sol: number };
+  dyingShop: { windows: ShopWindows; marginLamports: number };
   showcaseShop: DemoShopConfig & { warranties: number; sol: number };
 }
 
