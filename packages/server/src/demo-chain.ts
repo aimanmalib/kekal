@@ -32,6 +32,9 @@ export interface DemoShopSettings {
   termSecs: number;
   /** marginLamports: extra SOL for the throwaway owner on top of the rent it pays; 0, or at least the rent of an empty account. */
   dyingShop: { windows: ShopWindows; marginLamports: number };
+  /** depositAmount: kUSD the shared shop's owner moves from its own account into the shop when the shop's free balance
+   * cannot cover one more reserve (each paid card takes its reserve out for good). */
+  sharedShop: { depositAmount: string };
 }
 
 export interface DemoChain {
@@ -102,7 +105,16 @@ function demoParams(d: DemoChain, holder: PublicKey, label: string) {
   };
 }
 
-/** Issues one warranty from the shared demo shop to `holder`. A heartbeat rides in the same transaction. */
+/** kUSD to deposit into the shared shop before the next issue: 0 while its free balance covers one reserve, otherwise
+ * depositAmount (or the shortfall, if larger). */
+export function sharedShopTopUp(free: bigint, reserve: bigint, depositAmount: bigint): bigint {
+  if (free >= reserve) return 0n;
+  const shortfall = reserve - free;
+  return depositAmount > shortfall ? depositAmount : shortfall;
+}
+
+/** Issues one warranty from the shared demo shop to `holder`. A heartbeat rides in the same transaction, and a deposit
+ * from the owner's own account when the shop's free balance is short (sharedShopTopUp). */
 export function issueToHolder(d: DemoChain, holder: PublicKey): Promise<Issued> {
   const owner = d.seller.publicKey;
   const shop = shopPda(d.program.programId, owner);
@@ -110,12 +122,14 @@ export function issueToHolder(d: DemoChain, holder: PublicKey): Promise<Issued> 
     const state = await fetchShop(d.program, shop);
     if (!state) throw new DemoError("demo_shop_missing");
     const terms = demoParams(d, holder, "shared");
-    const issue = await ix.issueWarranty(d.program, {
-      owner,
-      warrantyId: state.nextWarrantyId,
-      params: terms.params,
-    });
-    const sig = await sendSigned(d.conn, d.seller, [await ix.heartbeat(d.program, { owner }), issue]);
+    const ixs = [await ix.heartbeat(d.program, { owner })];
+    const topUp = sharedShopTopUp(state.freeBalance, BigInt(d.settings.reserve), BigInt(d.settings.sharedShop.depositAmount));
+    if (topUp > 0n) {
+      const ownerToken = getAssociatedTokenAddressSync(d.mint, owner);
+      ixs.push(await ix.deposit(d.program, { owner, mint: d.mint, ownerToken, amount: topUp }));
+    }
+    ixs.push(await ix.issueWarranty(d.program, { owner, warrantyId: state.nextWarrantyId, params: terms.params }));
+    const sig = await sendSigned(d.conn, d.seller, ixs);
     return { shop, warranty: warrantyPda(d.program.programId, shop, state.nextWarrantyId), signatures: [sig], termsJson: terms.termsJson };
   });
 }

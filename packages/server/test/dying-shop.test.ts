@@ -39,6 +39,7 @@ function chain(conn: Connection, marginLamports = 0): DemoChain {
         windows: { responseSecs: 60, repairSecs: 60, disputeSecs: 60, heartbeatSecs: 60, graceSecs: 0 },
         marginLamports,
       },
+      sharedShop: { depositAmount: "200000000" },
     },
   };
 }

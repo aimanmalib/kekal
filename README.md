@@ -121,7 +121,7 @@ validator runs and the browser tests stay in `scripts/gerbang-ujian.sh` and `scr
 | Keeper tests (heartbeats, dormant shops, due settling steps, image bundle) | `apps/keeper/test/` | 10 | pass |
 | Deploy script tests (uptime alerts, image smoke test, proxy route template) | `scripts/test/deploy.test.sh` | 9 | pass |
 | Video cut tests (narration timing, subtitle splitting, cut file, explorer shots) | `scripts/video/test_cut.py` | 11 | pass |
-| Server package tests (store on SQLite, keys, RPC failover) | `packages/server/test/` | 14 | pass |
+| Server package tests (store on SQLite, keys, RPC failover, demo shop funding) | `packages/server/test/` | 22 | pass |
 | Store tests on a throwaway Postgres container | `scripts/test-postgres.sh` | 9 | pass |
 | Lifecycle paths A to E on a local validator | `scripts/lifecycle.ts` | 5 | pass |
 | Lifecycle paths A to E on devnet ([transactions](docs/MEASURED.md)) | `scripts/lifecycle.ts --cluster devnet` | 5 | pass |
