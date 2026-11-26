@@ -1,5 +1,6 @@
 // Devnet SOL left on the keys that pay for the public demo, for /api/health. Pure and cached so a busy health check
-// costs one RPC read per key per window.
+// costs one RPC read (both keys together) per window: the site shares its IP and the public endpoints' rate limit with
+// the demo and the keeper.
 export const FUND_ROLES = ["demoSeller", "relayer"] as const;
 export type FundRole = (typeof FUND_ROLES)[number];
 type PerRole<T> = Record<FundRole, T>;
@@ -15,8 +16,8 @@ export interface Funds {
 export interface FundsDeps {
   /** Address per role, or null when that key is not loaded. */
   addresses: () => PerRole<string | null>;
-  /** Balance in lamports; throws when no RPC endpoint answered. */
-  getBalance: (address: string) => Promise<number>;
+  /** Balances in lamports, in the order asked, in one RPC call; throws when no RPC endpoint answered. */
+  getBalances: (addresses: string[]) => Promise<number[]>;
   /** What one demo run costs each key, measured on devnet (docs/MEASURED.md). */
   runCostLamports: PerRole<number>;
   relayerMinLamports: number;
@@ -30,13 +31,15 @@ export const NO_FUNDS: Funds = {
   balancesSol: { demoSeller: null, relayer: null },
 };
 
-async function readBalance(deps: FundsDeps, role: FundRole, address: string | null): Promise<number | null> {
-  if (address === null) return null;
+async function readBalances(deps: FundsDeps, addresses: PerRole<string | null>): Promise<(number | null)[]> {
+  const known = FUND_ROLES.filter((r) => addresses[r] !== null);
+  if (known.length === 0) return FUND_ROLES.map(() => null);
   try {
-    return await deps.getBalance(address);
+    const got = await deps.getBalances(known.map((r) => addresses[r]!));
+    return FUND_ROLES.map((r) => (known.includes(r) ? (got[known.indexOf(r)] ?? null) : null));
   } catch (e) {
-    console.error(`health: ${role} balance`, (e as Error).message);
-    return null;
+    console.error("health: balances", (e as Error).message);
+    return FUND_ROLES.map(() => null);
   }
 }
 
@@ -46,8 +49,7 @@ export function fundsCheck(deps: FundsDeps): () => Promise<Funds> {
   return async () => {
     const t = now();
     if (cached && t - cached.at < deps.cacheMs) return cached.value;
-    const addresses = deps.addresses();
-    const lamports = await Promise.all(FUND_ROLES.map((r) => readBalance(deps, r, addresses[r])));
+    const lamports = await readBalances(deps, deps.addresses());
     const value: Funds = { relayerFunded: null, runsLeft: { ...NO_FUNDS.runsLeft }, balancesSol: { ...NO_FUNDS.balancesSol } };
     FUND_ROLES.forEach((role, i) => {
       const l = lamports[i];

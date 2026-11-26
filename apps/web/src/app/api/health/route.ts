@@ -26,10 +26,11 @@ function fundsFor(cluster: RuntimeCluster): () => Promise<Funds> {
   const h = webConfig.health;
   funds ??= fundsCheck({
     addresses: () => ({ demoSeller: demoSellerAddress(cluster), relayer: relayerAddress() }),
-    getBalance: (a) =>
-      failoverConnection({ urls: cluster.rpcUrls, timeoutMs: webConfig.rpc.timeoutMs, retryStatuses: webConfig.rpc.retryStatuses }).getBalance(
-        new PublicKey(a),
-      ),
+    getBalances: async (list) => {
+      const conn = failoverConnection({ urls: cluster.rpcUrls, timeoutMs: webConfig.rpc.timeoutMs, retryStatuses: webConfig.rpc.retryStatuses });
+      const infos = await conn.getMultipleAccountsInfo(list.map((a) => new PublicKey(a)));
+      return infos.map((i) => i?.lamports ?? 0);
+    },
     runCostLamports: { demoSeller: lamports(h.runCostSol.demoSeller), relayer: lamports(h.runCostSol.relayer) },
     relayerMinLamports: lamports(h.relayerMinSol),
     cacheMs: h.balanceCacheSecs * 1000,
