@@ -269,9 +269,11 @@
       "postgres": { "urlEnv": "SUPABASE_DB_URL", "maxConnections": 4, "connectTimeoutSecs": 10, "idleTimeoutSecs": 60, "ssl": "require", "prepare": false }
     },
     "health": {
-      "_doc": "GET /api/health. relayerFunded is true when the relay.keyRole key holds at least relayerMinSol, false below it, null when the key is not loaded or no RPC endpoint answered. The balance is read at most once per balanceCacheSecs per process. features lists the optional integrations live in this deployment (supabase when the data backend is Postgres).",
+      "_doc": "GET /api/health. relayerFunded is true when the relay.keyRole key holds at least relayerMinSol, false below it, null when the key is not loaded or no RPC endpoint answered. The balance is read at most once per balanceCacheSecs per process. features lists the optional integrations live in this deployment (supabase when the data backend is Postgres). runsLeft is each key's balance divided by runCostSol (devnet SOL one demo run costs that key: path C for the demo seller, the dearer of paths B and C for the relayer, measured in docs/MEASURED.md); balancesSol is the balance itself; both null when the key is not loaded or no RPC endpoint answered. deploy/uptime.sh warns once a day when either is below minRuns.",
       "relayerMinSol": 0.5,
-      "balanceCacheSecs": 60
+      "balanceCacheSecs": 60,
+      "minRuns": 50,
+      "runCostSol": { "demoSeller": 0.0072, "relayer": 0.01 }
     }
   }
 }

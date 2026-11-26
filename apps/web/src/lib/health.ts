@@ -1,4 +1,5 @@
 import type { RuntimeCluster } from "./config";
+import { NO_FUNDS, type Funds } from "./relay/funded";
 
 export interface Health {
   ok: boolean;
@@ -12,6 +13,9 @@ export interface Health {
   features: string[];
   /** Relayer balance at or above web.health.relayerMinSol; null when its key is not loaded or the RPC did not answer. */
   relayerFunded: boolean | null;
+  /** Demo runs the demo seller and the relayer can still pay for (web.health.runCostSol); null when unknown. */
+  runsLeft: Funds["runsLeft"];
+  balancesSol: Funds["balancesSol"];
   error?: string;
 }
 
@@ -25,14 +29,17 @@ export function liveFeatures(dataBackend: string): string[] {
 export async function buildHealth(
   cluster: RuntimeCluster,
   store: { backend: string; getConfig(key: string): Promise<string | null> } | Error,
-  relayerFunded: () => Promise<boolean | null> = async () => null,
+  funds: () => Promise<Funds> = async () => NO_FUNDS,
 ): Promise<Health> {
+  const { relayerFunded, runsLeft, balancesSol } = await funds();
   const base = {
     cluster: cluster.name,
     programId: cluster.programId,
     program: cluster.deployed ? ("deployed" as const) : ("not_deployed" as const),
     features: store instanceof Error ? [] : liveFeatures(store.backend),
-    relayerFunded: await relayerFunded(),
+    relayerFunded,
+    runsLeft,
+    balancesSol,
   };
   const down = { ok: false, ...base, dataBackend: null, keeperLastRun: null, error: "data store unavailable" };
   if (store instanceof Error) return down;

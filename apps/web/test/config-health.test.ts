@@ -44,11 +44,14 @@ describe("buildHealth", () => {
       dataBackend: "sqlite",
       keeperLastRun: 1700000000,
       relayerFunded: null,
+      runsLeft: { demoSeller: null, relayer: null },
+      balancesSol: { demoSeller: null, relayer: null },
     });
   });
-  it("passes the relayer funding check through", async () => {
-    expect((await buildHealth(cluster, store(null), async () => false)).relayerFunded).toBe(false);
-    expect((await buildHealth(cluster, new Error("x"), async () => true)).relayerFunded).toBe(true);
+  it("passes the funds check through, also when the store is down", async () => {
+    const funds = { relayerFunded: false, runsLeft: { demoSeller: 400, relayer: 49 }, balancesSol: { demoSeller: 2.9, relayer: 0.4 } };
+    expect(await buildHealth(cluster, store(null), async () => funds)).toMatchObject(funds);
+    expect(await buildHealth(cluster, new Error("x"), async () => funds)).toMatchObject({ ok: false, ...funds });
   });
   it("lists supabase as a live feature only on the Postgres backend", async () => {
     expect(liveFeatures("sqlite")).toEqual([]);
@@ -58,6 +61,9 @@ describe("buildHealth", () => {
   it("health limits are sane", () => {
     expect(app.web.health.relayerMinSol).toBeGreaterThan(0);
     expect(app.web.health.balanceCacheSecs).toBeGreaterThanOrEqual(1);
+    expect(Number.isInteger(app.web.health.minRuns) && app.web.health.minRuns > 0).toBe(true);
+    for (const v of Object.values(app.web.health.runCostSol)) expect(v).toBeGreaterThan(0);
+    expect(Object.keys(app.web.health.runCostSol).sort()).toEqual(["demoSeller", "relayer"]);
   });
   it("null keeper run when never written or garbage", async () => {
     expect((await buildHealth(cluster, store(null))).keeperLastRun).toBeNull();

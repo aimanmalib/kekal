@@ -82,6 +82,22 @@ run $((DAY + 1800)); run $((DAY + 2100))
 grep -q '/api/health=404' "$T/sent" || fail "missing health page not reported"
 pass "missing health page alerts"
 
+# Demo funds below web.health.minRuns: one warn a day naming the key; null and healthy counts stay quiet.
+MIN=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["web"]["health"]["minRuns"])' "$ROOT/config/app.json")
+health '{"ok":true}'; run $((DAY + 2400))
+before=$(alerts warn)
+health "{\"ok\":true,\"runsLeft\":{\"demoSeller\":$MIN,\"relayer\":null}}"
+run $((DAY + 2700))
+[ "$(alerts warn)" = "$before" ] || fail "warned with runs at the minimum or unknown"
+health "{\"ok\":true,\"runsLeft\":{\"demoSeller\":$((MIN - 1)),\"relayer\":$((MIN * 9))}}"
+run $((DAY + 3000)); run $((DAY + 3300))
+[ "$(alerts warn)" = $((before + 1)) ] || fail "low demo funds did not warn exactly once"
+grep -q 'demoSeller under' "$T/sent" || fail "low-funds warn does not name the key"
+grep 'demoSeller under' "$T/sent" | grep -q relayer && fail "low-funds warn names a key that is fine"
+run $((DAY + 86400))
+[ "$(alerts warn)" = $((before + 2)) ] || fail "low demo funds not repeated the next day"
+pass "low demo funds: one warn a day naming the key"
+
 # deploy/smoke.sh with a stand-in `docker` (logs its calls) and the static server playing the container.
 mkdir -p "$T/bin"
 printf '#!/bin/sh\necho "$*" >> "%s"\n[ "$1" = inspect ] && echo 127.0.0.1\nexit 0\n' "$T/docker.log" >"$T/bin/docker"
