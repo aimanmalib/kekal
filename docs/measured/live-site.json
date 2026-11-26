@@ -48,5 +48,41 @@
       "address": "DtecSzuDbwsTL2MzBJtvaz6bD8qJSKbcgiPoAR8ukDvu",
       "sol": 3.601068925
     }
+  },
+  "demoCost": {
+    "measuredAt": "2026-11-26T17:50:30Z",
+    "deployTag": "81e4226-202611261727",
+    "method": "one run per path on the live demo; lamports from transaction pre/post balances (path C) and balances read before and after (path B)",
+    "pathB": {
+      "demoSellerLamports": 1594800,
+      "relayerLamports": 3113800,
+      "window": "17:29:09 to 17:37:50 UTC, includes keeper heartbeats of the demo shop"
+    },
+    "pathC": {
+      "demoSellerLamports": 5257480,
+      "rentLamports": 5237480,
+      "feesLamports": 20000,
+      "throwawayOwnerEndLamports": 0,
+      "relayerLamports": 1503440,
+      "transactions": {
+        "createShop": "2MKyPmVXNs8RoqL1qLk5pFFSkHr9g3nM2UQJxVvTMRwG7jcKKrxH9qZv44rnxwvTT3TpH2FerYZgHsjCBN7yvj2a",
+        "depositIssueClose": "4XRzHu2EHfF433n7ayjdTsyzBADjza9zQFJ3wyJ3N82HrPiyqCgCKtPDegFpUPAo2o5NMpRqNVZrrxkMtVYnYwNY",
+        "claimOrphan": "3YkJZJZJNoznFUXfgc3XJh4CTFon2murXchWsFL9uzGZGatAbBxt2kMtgUSunfKsXyZEsdvJD16SMdFatPyKxgd"
+      }
+    },
+    "beforeChange": {
+      "pathCDemoSellerLamports": 30010000,
+      "strandedPerRunLamports": 24763000,
+      "source": "balance changes of a path C run on 26 Nov, before commit c11e2ed"
+    },
+    "transferToDemoSeller": {
+      "sol": 1,
+      "signature": "qu5z5iT32dr8v5LzKzFGd63jWwF7VpmWaqwXqhc53TKDkKjCJrpVYe4YN7iZzMd2R14mMLnm6rxgAi4f71W8ypM"
+    },
+    "balancesAfterSol": {
+      "deployer": 2.601063925,
+      "demoSeller": 2.45718312,
+      "relayer": 2.4519084
+    }
   }
 }

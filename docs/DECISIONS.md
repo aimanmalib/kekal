@@ -31,5 +31,6 @@ Index of the architecture decision records (ADRs) for Kekal; each record explain
 | [0024](decisions/0024-explorer-footage.md) | Explorer footage of the devnet run in the demo video | accepted |
 | [0025](decisions/0025-anchor-on-demand.md) | The warranty page loads the Anchor client on demand | accepted |
 | [0026](decisions/0026-public-ci.md) | Public CI runs the test gate without a local validator | accepted |
+| [0027](decisions/0027-demo-funding.md) | The public demo pays only rent it needs, and reports runs left | accepted |
 
 New decisions: add an ADR as `decisions/NNNN-short-title.md` and a line here.

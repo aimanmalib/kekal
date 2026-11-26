@@ -159,9 +159,28 @@ The limits live in [`config/app.json`](../config/app.json) and are read by the s
 | What | Limit |
 |---|---|
 | No-wallet demo sessions | 3 per IP per hour, 500 per day overall |
-| Dying shops for path C | 3 per IP per hour, 60 per day overall (0.03 SOL each from the demo shop key) |
+| Dying shops for path C | 3 per IP per hour, 60 per day overall (the rent of three accounts each from the demo shop key; see below) |
 | Demo seller and arbiter actions | 30 per IP per hour |
 | Fee relayer | 10 per holder per hour, 30 per IP per hour, 2,000 per day overall, 100 new token accounts per day |
+
+## Cost of one demo run (26 Nov 2026, UTC)
+
+Since commit `c11e2ed` a dying shop of path C is funded with the rent of the three accounts its throwaway owner pays for,
+and the owner's token account is closed back to the demo shop key ([ADR 0027](decisions/0027-demo-funding.md)).
+Before, each run sent the owner a fixed 0.03 SOL and about 0.025 SOL of it stayed on a key nobody holds. Measured on
+the live site (tag `81e4226-202611261727`), one run of each path, from the balance changes in the transactions and the
+balances read before and after. Raw numbers: [`measured/live-site.json`](measured/live-site.json) (`demoCost`).
+
+| Path | Demo shop key `DmxxbJiD…` | Fee relayer `5iAiugNu…` |
+|---|---|---|
+| B: claim filed, shop silent, paid | 0.0015948 SOL (balance 17:29 to 17:37, includes the keeper's heartbeats of the demo shop) | 0.0031138 SOL (same window) |
+| C: dying shop set up, marked dormant, paid | 0.00525748 SOL (rent 0.00523748 for shop, vault and warranty, plus two fees of 0.00001) | 0.0014984 SOL for `claim_orphan` (holder token account rent and fee) plus 0.000005 for `declare_dormant` |
+
+After the run the throwaway owner of path C holds 0 SOL. `/api/health` divides each key's balance by
+`web.health.runCostSol` in [`config/app.json`](../config/app.json) (0.0053 SOL for the demo shop key, path C; 0.0032 SOL
+for the fee relayer, path B) and reports `runsLeft`; `deploy/uptime.sh` warns once a day below `web.health.minRuns` (50).
+During the path B run the host's own browser test made the public endpoints answer 429 for several minutes, so the keeper
+paid out later than the 75 s measured on 25 Nov; the health check now reads both balances in one call every 5 minutes.
 
 ## Compute units per instruction (devnet, from the transactions above)
 
@@ -194,6 +213,7 @@ Command: `pnpm --filter @kekal/scripts measure-cu --cluster devnet --report <lif
 | After sending 0.6 SOL to the demo shop key, 0.5 to the fee relayer and 0.1 to the arbiter | 6.748621125 SOL |
 | After two lifecycle runs (the first stopped on the public endpoint's rate limit; fresh dying-shop owners, token accounts, minting) | 6.684105805 SOL |
 | After the showcase shop (`seed-demo`, 0.05 SOL to its owner), a third lifecycle run for `/contoh`, and sending 2 SOL to the fee relayer and 1 SOL to the demo shop key before the site went live | 3.601068925 SOL (relayer 2.46, demo shop key 1.51, after the four live demo runs) |
+| 26 Nov 17:50 UTC, after sending 1 SOL to the demo shop key (`qu5z5iT3…`) | 2.601063925 SOL (demo shop key 2.457, fee relayer 2.452) |
 
 Balances read again at 17:22 UTC the same day were unchanged: fee relayer `5iAiugNu…` 2.46 SOL, demo shop key `DmxxbJiD…`
 1.51 SOL, arbiter 0.1 SOL ([`measured/live-site.json`](measured/live-site.json)).

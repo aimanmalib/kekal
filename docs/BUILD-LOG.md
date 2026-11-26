@@ -58,3 +58,4 @@ One line per step, newest last. Dates are UTC.
 - 2026-11-25: Repository hygiene before going public: the build-guard config note no longer names a host path.
 - 2026-11-25: The repository is public; the home page links to the source code.
 - 2026-11-25: Public CI on GitHub Actions (program build, clippy and tests; app lint, tests, Postgres store tests and web build); first run green, README badge.
+- 2026-11-26: Demo funding: a dying demo shop gets only the rent it pays and returns its token account; /api/health reports runs left for the demo shop key and the fee relayer (one RPC read every 5 minutes); uptime warns below 50 runs; cost per run measured on devnet; 1 devnet SOL moved from the deploy key to the demo shop key (ADR 0027).
