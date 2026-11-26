@@ -350,5 +350,8 @@
   "home.limits.admin": "Pemanggil pertama langkah persediaan menjadi pentadbir. Ia belum diikat kepada kunci naik taraf program; skrip deploy memanggilnya sejurus selepas deploy dan berhenti jika kunci deploy bukan pentadbir.",
   "home.limits.keeper": "Seseorang perlu menghantar transaksi penyelesaian. Tandatangan kedai atau pembeli tidak diperlukan, tetapi jika tiada penjaga automatik atau orang yang menghantarnya, wang menunggu sehingga ada yang menghantar.",
   "home.limits.capital": "Kedai mesti memegang stablecoin dan mengunci modal. Itu kos sebenar bagi kedai kecil, dan rizab bagi setiap jualan ialah keputusan kedai.",
-  "home.limits.bearer": "Kad QR ialah kunci pembawa. Sesiapa yang memegang kad boleh menuntut. Kad yang hilang boleh dipindah ke kunci baharu hanya selagi kunci lama masih ada di tangan."
+  "home.limits.bearer": "Kad QR ialah kunci pembawa. Sesiapa yang memegang kad boleh menuntut. Kad yang hilang boleh dipindah ke kunci baharu hanya selagi kunci lama masih ada di tangan.",
+  "gallery.paid": "Kedai berdiam diri terhadap tuntutan, jadi pembeli dibayar.",
+  "gallery.card": "Setiap kad disokong wang yang kedai tidak boleh tarik balik sehingga waranti tamat.",
+  "gallery.examples": "Setiap pengakhiran sudah berjalan di Solana devnet, dan setiap langkah memaut ke rekod awamnya."
 }

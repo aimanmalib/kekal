@@ -1,7 +1,7 @@
 // Draws the link-preview card (apps/web/src/app/opengraph-image.png) from the real stylesheet, fonts and English text.
 // Run from the repo root after `pnpm install`: node brand/render-og.mjs   (needs Playwright with Chromium)
-// With --banner <file.png> it draws the same card at web.site.gallery.bannerScale times the size, as the banner image
-// for the hackathon form, and skips the link-preview byte limit.
+// With --banner <file.png> it draws the same content in one row at web.site.banner size (CSS px times scale; the
+// hackathon form wants 3:1 or 4:1) as the banner image for the form, checked against banner.maxBytes.
 // Colours, fonts and the card markup come from apps/web (globals.css tokens, WarrantyCard classes); copy from
 // locales/en.json; size and byte limit from config/app.json web.site.ogImage.
 /* global console, document, innerWidth, innerHeight, process */
@@ -18,11 +18,10 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const web = resolve(root, "apps/web");
 const app = JSON.parse(readFileSync(resolve(root, "config/app.json"), "utf8"));
 const en = JSON.parse(readFileSync(resolve(root, "locales/en.json"), "utf8"));
-const { width, height, maxBytes } = app.web.site.ogImage;
 const bannerAt = process.argv.indexOf("--banner");
 const banner = bannerAt > 0 ? resolve(process.argv[bannerAt + 1] ?? "") : null;
+const { width, height, maxBytes, scale = 1 } = banner ? app.web.site.banner : app.web.site.ogImage;
 const out = banner ?? resolve(web, "src/app/opengraph-image.png");
-const scale = banner ? app.web.site.gallery.bannerScale : 1;
 
 const cluster = app.clusters[app.defaultCluster];
 const reserve = (Number(BigInt(cluster.lifecycle.reserve)) / 10 ** cluster.tokenDecimals).toFixed(2);
@@ -67,15 +66,29 @@ ${css("src/app/globals.css")}
   .og .card-fields { gap: 12px; font-size: 19px; }
   .og .card-fields dt { font-size: 16px; }
   .og .num { font-size: 24px; }
+  /* Banner: the same three parts in one row, title | rules | card. */
+  .og.banner { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr) 320px; gap: 40px; padding: 30px 56px 34px;
+               border-top-width: 10px; }
+  .og.banner .wordmark { font-size: 26px; }
+  .og.banner h1 { font-size: 50px; margin: 14px 0 0; }
+  .og.banner .rules { font-size: 18px; }
+  .og.banner .rules li { padding: 10px 0; text-wrap: balance; }
+  .og.banner .guilloche { height: 34px; }
+  .og.banner .card-body { padding-top: 14px; padding-bottom: 14px; }
+  .og.banner .card-title { font-size: 24px; }
+  .og.banner .card-fields { gap: 6px; font-size: 16px; }
+  .og.banner .card-fields dt { font-size: 13px; }
+  .og.banner .num { font-size: 20px; }
 </style></head><body>
-<div class="og">
+<div class="og${banner ? " banner" : ""}">
   <section>
     <span class="wordmark">${esc(en["app.name"])}</span>
     <h1>${esc(en["home.title"])}</h1>
+  ${banner ? "</section>\n  <section>" : ""}
     <ul class="rules">${["home.rule.silent", "home.rule.gone", "home.rule.expired"].map((k) => `<li>${esc(en[k])}</li>`).join("")}</ul>
   </section>
   <figure class="card">
-    ${band(400, 52, 9, 6)}
+    ${banner ? band(320, 34, 9, 5) : band(400, 52, 9, 6)}
     <div class="card-body">
       <p class="card-title">${esc(en["card.title"])}</p>
       <dl class="card-fields">
@@ -105,5 +118,5 @@ try {
   rmSync(tmp, { recursive: true, force: true });
 }
 const bytes = statSync(out).size;
-if (!banner && bytes > maxBytes) throw new Error(`${out}: ${bytes} bytes > ${maxBytes}`);
+if (bytes > maxBytes) throw new Error(`${out}: ${bytes} bytes > ${maxBytes}`);
 console.log(`wrote ${out}: ${width * scale}x${height * scale} ${bytes} bytes`);

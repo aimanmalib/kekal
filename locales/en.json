@@ -350,5 +350,8 @@
   "home.limits.admin": "The first caller of the setup step becomes the admin. It is not yet tied to the program's upgrade key; the deploy script calls it right after the deploy and stops unless the deploy key is the admin.",
   "home.limits.keeper": "Someone has to send the settling transactions. No signature from the shop or the buyer is needed, but if no keeper or person sends them, the money waits until someone does.",
   "home.limits.capital": "The shop must hold a stablecoin and lock capital. That is a real cost for a small shop, and the reserve per sale is the shop's decision.",
-  "home.limits.bearer": "The QR card is a bearer key. Whoever holds the card can claim. A lost card can be moved to a new key only while the old one is still at hand."
+  "home.limits.bearer": "The QR card is a bearer key. Whoever holds the card can claim. A lost card can be moved to a new key only while the old one is still at hand.",
+  "gallery.paid": "The shop stayed silent on the claim, so the buyer was paid.",
+  "gallery.card": "Every card is backed by money the shop cannot take back until the warranty ends.",
+  "gallery.examples": "Every ending already ran on Solana devnet, and each step links to its public record."
 }

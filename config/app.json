@@ -182,7 +182,7 @@
       ]
     },
     "site": {
-      "_doc": "Public address and link previews. KEKAL_SITE_URL overrides url. robots.txt lets every crawler read pages but not /api/; previewBots get their own group so chat and social link previews keep working if the default group is ever narrowed. The OG card is apps/web/src/app/opengraph-image.png, drawn by brand/render-og.mjs; its alt text is meta.ogAlt in the locale files. The favicon is apps/web/src/app/icon.svg (the brand/logo.svg mark redrawn on a 32 px grid, K as a path so no font is needed); apple-icon.png is drawn from it by brand/render-icons.mjs at appleIcon.size, full bleed on an opaque square because iOS rounds the corners itself. themeColor is the browser bar colour and must equal the --paper token in globals.css (a test checks).",
+      "_doc": "Public address and link previews. KEKAL_SITE_URL overrides url. robots.txt lets every crawler read pages but not /api/; previewBots get their own group so chat and social link previews keep working if the default group is ever narrowed. The OG card is apps/web/src/app/opengraph-image.png, drawn by brand/render-og.mjs; its alt text is meta.ogAlt in the locale files. The favicon is apps/web/src/app/icon.svg (the brand/logo.svg mark redrawn on a 32 px grid, K as a path so no font is needed); apple-icon.png is drawn from it by brand/render-icons.mjs at appleIcon.size, full bleed on an opaque square because iOS rounds the corners itself. banner (CSS px times scale; the hackathon form wants 3:1 or 4:1) and gallery (one phone screen of phoneScreen CSS px beside one sentence) are the form images drawn by brand/render-og.mjs --banner and brand/render-gallery.mjs, each at most maxBytes. themeColor is the browser bar colour and must equal the --paper token in globals.css (a test checks).",
       "url": "https://kekal.sasateguh.com",
       "disallow": ["/api/"],
       "previewBots": [
@@ -192,7 +192,8 @@
       "ogImage": { "width": 1200, "height": 630, "maxBytes": 307200, "altMaxChars": 300 },
       "themeColor": "#faf8f1",
       "appleIcon": { "size": 180 },
-      "gallery": { "width": 1280, "height": 800, "bannerScale": 2 }
+      "gallery": { "width": 1280, "height": 800, "phoneScreen": { "width": 390, "height": 844 }, "maxBytes": 1000000 },
+      "banner": { "width": 1200, "height": 400, "scale": 2, "maxBytes": 1000000 }
     },
     "warrantyPage": {
       "_doc": "/w/[pda] and /semak. The card key travels in the URL fragment (#<keyFragment>=<base58 seed>) and never reaches the server; after activation the new key stays in this browser under storagePrefix + warranty address; it is written there as pending (suffix .pending, at most pendingKeysMax keys) before the activation is sent and promoted once the chain shows it as holder. After a failed or unconfirmed activation send the holder is read activationRecheck.tries times, waitMs apart, before the page says the result is not known yet. The timeline lists the latest timelineLimit transactions of the warranty; decoded events are cached per signature in memory (eventCacheSize). issueTypes are the claim categories offered to the buyer (labels: claim.issue.<type> in locales).",

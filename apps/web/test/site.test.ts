@@ -104,17 +104,21 @@ describe("icons and theme colour", () => {
 });
 
 describe("hackathon form images in docs/media", () => {
-  const g = app.web.site.gallery;
+  const { gallery: g, banner: b } = app.web.site;
   const media = (name: string) => readFileSync(new URL(`../../../docs/media/${name}`, import.meta.url));
   const size = (png: Buffer) => [png.readUInt32BE(16), png.readUInt32BE(20)];
-  it("gallery images are PNGs of the configured size", () => {
-    for (const name of ["gallery-buyer.png", "gallery-shop.png", "gallery-states.png"]) {
+  it("gallery images are PNGs of the configured size, within the byte limit", () => {
+    for (const name of ["gallery-paid.png", "gallery-card.png", "gallery-examples.png"]) {
       const png = media(name);
       expect(png.subarray(1, 4).toString("latin1"), name).toBe("PNG");
       expect(size(png), name).toEqual([g.width, g.height]);
+      expect(png.length, name).toBeLessThanOrEqual(g.maxBytes);
     }
   });
-  it("the banner is the link-preview card drawn at the banner scale", () => {
-    expect(size(media("banner.png"))).toEqual([og.width * g.bannerScale, og.height * g.bannerScale]);
+  it("the banner is drawn at the banner size, 3:1 or 4:1 as the form asks, within the byte limit", () => {
+    const png = media("banner.png");
+    expect(size(png)).toEqual([b.width * b.scale, b.height * b.scale]);
+    expect([3, 4]).toContain(b.width / b.height);
+    expect(png.length).toBeLessThanOrEqual(b.maxBytes);
   });
 });
