@@ -83,6 +83,19 @@
       "deployer": 2.601063925,
       "demoSeller": 2.45718312,
       "relayer": 2.4519084
+    },
+    "healthAfter": {
+      "readAt": "2026-11-26T17:52Z",
+      "deployTag": "21b633b-202611261751",
+      "runsLeft": {
+        "demoSeller": 463,
+        "relayer": 766
+      },
+      "balancesSol": {
+        "demoSeller": 2.457168,
+        "relayer": 2.451908
+      },
+      "relayerFunded": true
     }
   }
 }
