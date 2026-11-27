@@ -15,11 +15,12 @@ export function LangSwitch({ current, options, label, cookie, maxAgeDays }: Prop
   const router = useRouter();
   const choose = (value: string) => {
     document.cookie = `${cookie}=${value}; path=/; max-age=${maxAgeDays * 86400}; samesite=lax`;
-    // A ?lang= in the address would override the new choice, so drop it; otherwise just re-render.
+    // A ?lang= in the address would override the new choice, so load the address without it (a full load: the
+    // client router would reuse the page it rendered in the old language); otherwise just re-render.
     const { pathname, search, hash } = window.location;
     const next = withoutLangParam(pathname, search);
     if (next === pathname + search) router.refresh();
-    else router.replace(next + hash);
+    else window.location.replace(next + hash);
   };
   return (
     <div className="lang" role="group" aria-label={label}>
