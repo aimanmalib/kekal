@@ -63,7 +63,7 @@ async function main() {
     cards.push({ warranty: issued.warranty.toBase58(), fragment: `#k=${base58.encode(seed)}` });
   }
   await store.close();
-  writeFileSync(join(dir, "fixtures.json"), JSON.stringify({ mint: mint.toBase58(), programId: program.programId.toBase58(), wallet: wallets[0]?.publicKey.toBase58() ?? null, wallets: wallets.map((w) => w.publicKey.toBase58()), cards }, null, 2));
+  writeFileSync(join(dir, "fixtures.json"), JSON.stringify({ mint: mint.toBase58(), programId: program.programId.toBase58(), shopOwner: roles.seller.publicKey.toBase58(), wallet: wallets[0]?.publicKey.toBase58() ?? null, wallets: wallets.map((w) => w.publicKey.toBase58()), cards }, null, 2));
   console.log(`page-fixtures: ${cards.length} warranties, mint ${mint.toBase58()}`);
 }
 

@@ -57,6 +57,8 @@ export function pattern(lang: Lang, key: string, vars: Record<string, string | n
 export interface Fixtures {
   mint: string;
   programId: string;
+  /** Owner of the demo shop seeded with the cards: its public page is /kedai/<shopOwner>. */
+  shopOwner: string;
   wallets: string[];
   cards: { warranty: string; fragment: string }[];
 }
