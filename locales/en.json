@@ -158,6 +158,7 @@
   "demo.noWait": "Short of time?",
   "demo.examplesLink": "See finished examples of every path",
   "demo.reading": "Reading the warranty…",
+  "demo.checking": "Checking the chain again. The network is busy, so this can take a few seconds; the page updates by itself.",
   "demo.silent.title": "The shop goes silent on your claim",
   "demo.silent.lede": "The demo shop issues you a card and never answers claims. File one, and when its answer window runs out the money the shop locked for you is paid to your card.",
   "demo.silent.start": "Get a card from the silent shop",

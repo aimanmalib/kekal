@@ -27,6 +27,7 @@ export default async function DemoPage() {
     storageKey: d.storageKey,
     storagePrefix: w.storagePrefix,
     pollMs: d.pollMs,
+    recheckMs: d.recheckMs,
     claimIssue: d.claimIssue,
     issueTypes: w.issueTypes,
     claimMaxChars: w.claimMaxChars,

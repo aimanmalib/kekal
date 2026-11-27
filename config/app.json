@@ -205,6 +205,15 @@
       "activationRecheck": { "tries": 6, "waitMs": 2500 },
       "timelineLimit": 12,
       "eventCacheSize": 1000,
+      "readCache": {
+        "_doc": "Reads of one warranty are shared: a finished read is reused for ttlMs by every visitor, and a read already on its way is joined rather than repeated (at most maxEntries warranties kept, oldest dropped first; failed reads are never kept). The warranty's shop address and claim count are remembered so a repeat read is one getMultipleAccounts plus one getSignaturesForAddress. The chain clock offset is re-read every clockSecs and the program config every configSecs. When every RPC endpoint answers 429 the read waits a random rateRetryMs[0]..rateRetryMs[1] ms and tries once more; still limited, the route answers 503 with Retry-After: retryAfterSecs.",
+        "ttlMs": 2000,
+        "maxEntries": 500,
+        "clockSecs": 60,
+        "configSecs": 300,
+        "rateRetryMs": [150, 600],
+        "retryAfterSecs": 3
+      },
       "confirmPollMs": 1500,
       "confirmTimeoutMs": 45000,
       "claimMaxChars": 500,
@@ -217,9 +226,10 @@
       "perUnit": 4.4
     },
     "demoPage": {
-      "_doc": "/demo: the browser makes a throwaway card key, asks /api/demo/session (the shop goes silent) or /api/demo/dying-shop (the shop closes) for a warranty to it, keeps the warranty address under storageKey and the key under warrantyPage.storagePrefix (so /w/[pda] knows it), and reads /api/warranty/[pda] every pollMs while a deadline runs. claimIssue is the issue type the claim form starts on.",
+      "_doc": "/demo: the browser makes a throwaway card key, asks /api/demo/session (the shop goes silent) or /api/demo/dying-shop (the shop closes) for a warranty to it, keeps the warranty address under storageKey and the key under warrantyPage.storagePrefix (so /w/[pda] knows it), and reads /api/warranty/[pda] every pollMs while a deadline runs. When a read after a step fails, the scene keeps saying it is checking and reads again after each recheckMs delay (or the server's Retry-After, if longer), then every pollMs until the read succeeds. claimIssue is the issue type the claim form starts on.",
       "storageKey": "kekal.demo",
       "pollMs": 5000,
+      "recheckMs": [1000, 2000, 4000, 8000],
       "claimIssue": "not_working"
     },
     "examples": {

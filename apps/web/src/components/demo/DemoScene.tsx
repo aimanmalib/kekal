@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Keypair, PublicKey, type TransactionInstruction } from "@solana/web3.js";
 import { fill, translator, type Lang, type MessageKey } from "@/lib/i18n";
+import { readView, recheckDelay, scenePanel } from "@/lib/demo/follow";
 import { readRemembered, SCENE_ROUTE, sceneSteps, scenePhase, type SceneKind } from "@/lib/demo/scene";
 import { evidenceHash, fileClaimIxs, settleIxs } from "@/lib/warranty/actions";
 import { clientProgram } from "@/lib/warranty/program";
@@ -18,6 +19,7 @@ export interface DemoSettings {
   storageKey: string;
   storagePrefix: string;
   pollMs: number;
+  recheckMs: number[];
   claimIssue: string;
   issueTypes: string[];
   claimMaxChars: number;
@@ -49,17 +51,24 @@ export function DemoScene({ kind, lang, relayer, settings: s }: Props) {
   const [now, setNow] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // A read that failed after a step: the last view is out of date, so the scene says it is checking and reads again.
+  const [checking, setChecking] = useState(false);
+  const recheck = useRef<{ retryAfterMs: number | null; error: string | null }>({ retryAfterMs: null, error: null });
 
   const refresh = useCallback(async (address: string): Promise<WarrantyView | null> => {
-    try {
-      const res = await fetch(`/api/warranty/${address}`, { cache: "no-store" });
-      if (!res.ok) return null;
-      const next = (await res.json()) as WarrantyView;
-      setView(next);
-      return next;
-    } catch {
-      return null;
+    const r = await readView(address);
+    if (r.ok) {
+      setView(r.view);
+      return r.view;
     }
+    recheck.current.retryAfterMs = r.retryAfterMs;
+    return null;
+  }, []);
+
+  /** Keep checking instead of showing the old form; `failed` is reported only if the chain shows no payout. */
+  const startChecking = useCallback((failed: string | null) => {
+    recheck.current.error = failed;
+    setChecking(true);
   }, []);
 
   // Resume a scene this browser started earlier (the warranty address and its key are both kept here).
@@ -70,9 +79,9 @@ export function DemoScene({ kind, lang, relayer, settings: s }: Props) {
     if (address && seed) {
       setPda(address);
       setKey(keypairFromSeed(seed));
-      void refresh(address);
+      void refresh(address).then((v) => (v ? undefined : startChecking(null)));
     }
-  }, [kind, s.storageKey, s.storagePrefix, refresh]);
+  }, [kind, s.storageKey, s.storagePrefix, refresh, startChecking]);
 
   const skew = view?.clockSkew ?? 0;
   useEffect(() => {
@@ -87,10 +96,37 @@ export function DemoScene({ kind, lang, relayer, settings: s }: Props) {
 
   // While a deadline runs, read the warranty again: the keeper may send the step first.
   useEffect(() => {
-    if (!pda || !following || busy) return;
+    if (!pda || !following || busy || checking) return;
     const id = window.setInterval(() => void refresh(pda), s.pollMs);
     return () => window.clearInterval(id);
-  }, [pda, following, busy, s.pollMs, refresh]);
+  }, [pda, following, busy, checking, s.pollMs, refresh]);
+
+  // After a failed read: re-read with back-off (recheckMs, or longer when the server sends Retry-After), then every
+  // pollMs, for as long as the scene is open. Never falls back to the old form in silence.
+  useEffect(() => {
+    if (!pda || !checking) return;
+    let stopped = false;
+    let attempt = 0;
+    let timer: number | undefined;
+    const run = async () => {
+      const r = await readView(pda);
+      if (stopped) return;
+      if (r.ok) {
+        setView(r.view);
+        setError(r.view.payout ? null : recheck.current.error);
+        recheck.current = { retryAfterMs: null, error: null };
+        setChecking(false);
+        return;
+      }
+      attempt += 1;
+      timer = window.setTimeout(() => void run(), recheckDelay(attempt, r.retryAfterMs, s.recheckMs, s.pollMs));
+    };
+    timer = window.setTimeout(() => void run(), recheckDelay(0, recheck.current.retryAfterMs, s.recheckMs, s.pollMs));
+    return () => {
+      stopped = true;
+      window.clearTimeout(timer);
+    };
+  }, [pda, checking, s.recheckMs, s.pollMs]);
 
   function remember(address: string | null) {
     const all = readRemembered(window.localStorage.getItem(s.storageKey));
@@ -117,7 +153,7 @@ export function DemoScene({ kind, lang, relayer, settings: s }: Props) {
       remember(body.warranty);
       setKey(holder);
       setPda(body.warranty);
-      if (!(await refresh(body.warranty))) setError("network");
+      if (!(await refresh(body.warranty))) startChecking(null);
     } catch (e) {
       setError(e instanceof ActionError ? e.code : "network");
     } finally {
@@ -137,7 +173,8 @@ export function DemoScene({ kind, lang, relayer, settings: s }: Props) {
     }
     // A step the keeper sent first fails here, but the warranty is paid all the same: then there is nothing to report.
     const after = await refresh(pda);
-    setError(after?.payout ? null : failed);
+    if (after) setError(after.payout ? null : failed);
+    else startChecking(failed);
     setBusy(false);
   }
 
@@ -147,11 +184,14 @@ export function DemoScene({ kind, lang, relayer, settings: s }: Props) {
     setKey(null);
     setView(null);
     setError(null);
+    setChecking(false);
+    recheck.current = { retryAfterMs: null, error: null };
   }
 
   const program = () => clientProgram(view!.programId);
   const relayerKey = () => new PublicKey(relayer!);
   const steps = view ? sceneSteps(view) : [];
+  const panel = scenePanel(phase?.kind ?? null, checking);
   const terms = view ? readTerms(view.terms.json, lang, webConfig.locales.fallback) : null;
 
   return (
@@ -164,7 +204,7 @@ export function DemoScene({ kind, lang, relayer, settings: s }: Props) {
             {t(`demo.${kind}.start`)}
           </button>
         ) : null}
-        {pda && !view && !error ? <p className="note">{t("demo.reading")}</p> : null}
+        {pda && !view && !error && !checking ? <p className="note">{t("demo.reading")}</p> : null}
 
         {steps.length > 0 ? (
           <ol className="steps">
@@ -179,7 +219,12 @@ export function DemoScene({ kind, lang, relayer, settings: s }: Props) {
           </ol>
         ) : null}
 
-        {phase?.kind === "claim" && key ? (
+        {panel === "checking" ? (
+          <p className="note" role="status">
+            {t("demo.checking")}
+          </p>
+        ) : null}
+        {panel === "claim" && key ? (
           <>
             <p className="next">{t("demo.silent.claimHint")}</p>
             <ClaimForm
@@ -193,12 +238,12 @@ export function DemoScene({ kind, lang, relayer, settings: s }: Props) {
             />
           </>
         ) : null}
-        {phase?.kind === "wait" && now !== null ? (
+        {phase?.kind === "wait" && panel === "wait" && now !== null ? (
           <p className="countdown" role="timer">
             {fill(t(`demo.wait.${phase.action}` as MessageKey), { left: clock(phase.dueAt - now) })}
           </p>
         ) : null}
-        {phase?.kind === "due" && key ? (
+        {phase?.kind === "due" && panel === "due" && key ? (
           <div className="panel-block">
             <p>{t(`settle.${phase.action}.body` as MessageKey)}</p>
             <button
@@ -211,7 +256,7 @@ export function DemoScene({ kind, lang, relayer, settings: s }: Props) {
             </button>
           </div>
         ) : null}
-        {phase?.kind === "paid" ? <p className="ok">{fill(t("demo.paid"), { amount: formatUnits(phase.amount, view!.decimals), currency: s.currency })}</p> : null}
+        {phase?.kind === "paid" && panel === "paid" ? <p className="ok">{fill(t("demo.paid"), { amount: formatUnits(phase.amount, view!.decimals), currency: s.currency })}</p> : null}
 
         {!relayer && pda ? <p className="warn">{t("error.relayer_unavailable")}</p> : null}
         {busy && pda ? <p className="note">{t("panel.sending")}</p> : null}
