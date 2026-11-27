@@ -317,7 +317,7 @@
   "home.how.paid.title": "The shop goes quiet, the buyer is paid",
   "home.how.paid.body": "If the shop lets the deadline pass, anyone can send the payout and the reserve moves to the card. Nobody has to approve it. If the shop answers and fixes the fault, nothing is paid and the warranty continues.",
   "home.how.paid.alt": "The no-wallet demo on a phone after the payout: the last steps with their public records and the card stamped Paid",
-  "home.how.note": "Screens from the browser tests on an iPhone 13 screen, run on a local test validator.",
+  "home.how.note": "Screens from browser tests on an iPhone 13 screen, run on this site on Solana devnet.",
   "home.see.title": "See it happen",
   "home.see.lede": "Five ways a warranty can end, each run from start to end on {network}. The link opens the public record of the step that settled it.",
   "home.see.ledePending": "Five ways a warranty can end. Once the program is live on {network} for this site, each one is run from start to end and its public record is linked here.",

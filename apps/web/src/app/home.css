@@ -295,6 +295,16 @@
   overflow-wrap: anywhere;
 }
 
+/* Links in See it happen sit on their own line with a full touch target (they were 19px inline text). */
+.see-link {
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  max-width: 100%;
+  min-height: var(--tap);
+  text-underline-offset: 0.2em;
+}
+
 /* Why: reading text in the serif. */
 .why p {
   margin: 0 0 var(--space-2);

@@ -24,7 +24,7 @@ export function SeeItHappen({ t, examples, order, network, videoUrl }: Props) {
       <p className="section-lede">{fill(t(examples ? "home.see.lede" : "home.see.ledePending"), { network })}</p>
       {videoUrl ? (
         <p>
-          <a href={videoUrl}>{t("home.see.video")}</a>
+          <a className="see-link" href={videoUrl}>{t("home.see.video")}</a>
         </p>
       ) : null}
       <dl className="paths">
@@ -36,12 +36,9 @@ export function SeeItHappen({ t, examples, order, network, videoUrl }: Props) {
               <dd>
                 {t(`examples.path.${id}.body` as MessageKey)}
                 {record ? (
-                  <>
-                    {" "}
-                    <a href={record} target="_blank" rel="noopener noreferrer">
-                      {t("home.see.record")}
-                    </a>
-                  </>
+                  <a className="see-link" href={record} target="_blank" rel="noopener noreferrer">
+                    {t("home.see.record")}
+                  </a>
                 ) : null}
               </dd>
             </div>
@@ -50,7 +47,7 @@ export function SeeItHappen({ t, examples, order, network, videoUrl }: Props) {
       </dl>
       {examples ? (
         <p>
-          <Link href="/contoh">{t("home.see.all")}</Link>
+          <Link className="see-link" href="/contoh">{t("home.see.all")}</Link>
         </p>
       ) : null}
     </section>
