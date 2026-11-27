@@ -70,3 +70,4 @@ One line per step, newest last. Dates are UTC.
 - 2026-11-27: Built during the hackathon: public shop page `/kedai/<owner>` (reserve, live warranties, check-ins, claim windows, arbiter, each figure linked to the explorer; cached; designed 404; printable QR slip), linked from `/w` and `/kedai`; deployed and measured on the live site (ADR 0032).
 - 2026-11-27: Built during the hackathon: shared warranty reads (single-flight, 2 s reuse, two RPC calls per repeat read), 503 + Retry-After when the RPC rate limits, /demo keeps checking after a failed read; measured live once: 8 simultaneous reads 8 × 200, two demo runs at once both paid (ADR 0033).
 - 2026-11-27: Test hygiene: slow module loads moved out of single-test timers (warranty card store, session nonce route) after one timed out on a busy host.
+- 2026-11-27: Hackathon tracks recorded: Best App Overall and Best DeFi with code links; no partner track, since `/api/health` lists no live integration (ADR 0034).
