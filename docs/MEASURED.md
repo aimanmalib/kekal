@@ -223,3 +223,17 @@ Balances read again at 17:22 UTC the same day were unchanged: fee relayer `5iAiu
 The second cut of the demo video is 135.17 s long (`ffprobe -show_entries format=duration`). It shows the web app (home page
 filmed on the live site, the demo paths on a local validator), the devnet explorer and a replay of real `cargo test`
 output. It has not been published yet.
+
+## Public shop page (27 Nov 2026, UTC)
+
+Measured on the live site after deploy `93d656a-202611271621`, showcase shop owner
+`HL5rXKX63SEPURLxuWhjvwZFjuiEamqFsdRciqGaMhm8` (shop account `6h8WUpw7…`).
+
+| Check | Result |
+|-------|--------|
+| `GET /kedai/HL5rXKX6…` (English) and `?lang=ms` | 200, `<html lang="ms">` for the second |
+| Figures shown | 75.00 kUSD locked, 125.00 kUSD free, 3 live warranties of 3 issued, 0.00 kUSD paid, windows 7 / 21 / 14 / 30 / 14 days |
+| Explorer links in the page | shop account, vault, mint, arbiter, owner and program addresses |
+| `GET /kedai/notanaddress`, `GET /kedai/<program id>` (no shop) | 404, 404 |
+| Response time, cached read (`curl -w %{time_total}`) | 0.16 to 0.36 s |
+| WebKit iPhone 13 at 390 and 320 px, English and Malay, after scrolling with technical details open | `scrollWidth` = `clientWidth` in all four |

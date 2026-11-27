@@ -64,6 +64,8 @@ The parts around the program (web app, fee relayer, keeper) and the money flow a
   from a devnet run, each step linked to its transaction.
 - **Video:** a 135-second cut is recorded (the web app, the devnet explorer and a replay of the program tests); it is not
   published yet.
+- **Built during the hackathon:** a public page for each shop, [`/kedai/<owner>`](https://kekal.sasateguh.com/kedai/HL5rXKX63SEPURLxuWhjvwZFjuiEamqFsdRciqGaMhm8)
+  (see the table under [Built during the hackathon](#built-during-the-hackathon)).
 - **Integrations:** none. The site runs on its own SQLite store; a Postgres store is written and tested
   (see Tests) but not switched on.
 
@@ -116,7 +118,7 @@ validator runs and the browser tests stay in `scripts/gerbang-ujian.sh` and `scr
 |-------|-------|-------|--------|
 | Program tests (LiteSVM, fixed clock, no sleeps) | `programs/kekal/tests/` | 72 | pass |
 | SDK tests (PDAs, instruction builders, decoders, hashing vectors) | `packages/sdk/test/` | 55 | pass |
-| Web app tests (RPC proxy, fee relayer, sessions, request limits, demo, warranty page, shop board, cards, locales, program status, home page, form images) | `apps/web/test/` | 269 | pass |
+| Web app tests (RPC proxy, fee relayer, sessions, request limits, demo, warranty page, shop board, cards, locales, program status, home page, form images, public shop page) | `apps/web/test/` | 278 | pass |
 | Script tests (cluster config, locales, how warranties are issued, deploy checks, RPC pacing) | `scripts/test/` | 22 | pass |
 | Keeper tests (heartbeats, dormant shops, due settling steps, image bundle) | `apps/keeper/test/` | 10 | pass |
 | Deploy script tests (uptime alerts, image smoke test, proxy route template) | `scripts/test/deploy.test.sh` | 9 | pass |
@@ -125,7 +127,7 @@ validator runs and the browser tests stay in `scripts/gerbang-ujian.sh` and `scr
 | Store tests on a throwaway Postgres container | `scripts/test-postgres.sh` | 9 | pass |
 | Lifecycle paths A to E on a local validator | `scripts/lifecycle.ts` | 5 | pass |
 | Lifecycle paths A to E on devnet ([transactions](docs/MEASURED.md)) | `scripts/lifecycle.ts --cluster devnet` | 5 | pass |
-| Browser tests (Playwright: Chromium desktop and WebKit iPhone 13) | `e2e/tests/` | 5 per browser | pass |
+| Browser tests (Playwright: Chromium desktop and WebKit iPhone 13) | `e2e/tests/` | 7 per browser | pass |
 
 The program tests set the clock directly, so every deadline is checked on both sides of its edge: answering at the last
 second of the window passes, one second later fails, and settling for silence fails at that same last second and passes one
@@ -212,7 +214,9 @@ Kick Off was on 27 Nov 2026 at 15:00 UTC. The tag
 [`hackathon-start`](https://github.com/aimanmalib/kekal/tree/hackathon-start) marks the last commit before it;
 `git log hackathon-start..main` lists everything below.
 
-Work during the event starts here.
+| Date (2026) | What | Commits |
+|-------------|------|---------|
+| 27 Nov | Public shop page [`/kedai/<owner>`](https://kekal.sasateguh.com/kedai/HL5rXKX63SEPURLxuWhjvwZFjuiEamqFsdRciqGaMhm8): before buying, anyone sees the reserve a shop has locked, its live warranties, its last and next check-in, the claim windows and the arbiter, each figure linked to the explorer, with a QR slip to print on a quote. Linked from the warranty page and the shop board; no program change | `114a049`, `93d656a` |
 
 ## Related work
 

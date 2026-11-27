@@ -11,6 +11,7 @@ stamp**: paper, ink, a fine engraved band, and a rubber stamp when money arrives
 | `/w/[pda]` | buyer, phone, often outside a shop | see the reserve, the deadline and what to do next |
 | `/demo`, `/contoh` | judge, laptop | watch a claim get paid without a wallet |
 | `/kedai`, `/timbang` | seller, arbiter, wallet on desktop | manage reserve, issue cards, answer claims |
+| `/kedai/<owner>` | buyer before paying, phone, from a QR on a quote | see what the shop has locked and whether it still checks in |
 | `/` | anyone | understand the three rules in ten seconds |
 
 ## Tokens (`apps/web/src/app/globals.css`)
@@ -44,6 +45,7 @@ clamp(2, 3.25) rem. Serif reading text gets 1.55 line height; lines stay under 3
 - Outcome: a round copper stamp, slightly rotated, with the paid status word. It appears only when money has moved.
 - Printed card (`/kedai`): the same band, frame and fields on an A6 page per language, with the QR code centred; the
   PNG and PDF read the colour tokens from the page at download time, so they never drift from the CSS.
+- Quote slip (`/kedai/<owner>`): the card's band and double frame around the page's QR code; printing keeps only the slip.
 - Boards (`/kedai`, `/timbang`): sections separated by hairlines, figures as label over a mono number in a hairline
   grid, the newly issued card in the double frame. No cards-in-cards, no tinted panels.
 
