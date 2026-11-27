@@ -1,0 +1,179 @@
+/* /kedai/[owner], the public record of one shop. Tokens only (globals.css); see docs/DESIGN.md. */
+.shop-record {
+  display: grid;
+  gap: var(--space-4);
+  padding-top: var(--space-4);
+  max-width: 44rem;
+}
+
+.shop-record > *,
+.shop-record .board-section > * {
+  min-width: 0;
+}
+
+.shop-record h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--step-3);
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  max-width: 18ch;
+  text-wrap: balance;
+}
+
+.shop-record h2 {
+  margin: 0 0 var(--space-1);
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  font-weight: 500;
+}
+
+.shop-state {
+  max-width: var(--measure);
+  margin: var(--space-3) 0 0;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--rule);
+  font-weight: 600;
+}
+
+.shop-state-alert {
+  color: var(--copper);
+}
+
+/* Every figure is a link to its public record: ink text, hairline underline, a full tap target. */
+.fig-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  max-width: 100%;
+  color: var(--ink);
+  text-decoration-color: var(--rule);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+  overflow-wrap: anywhere;
+}
+
+.fig-link:hover {
+  text-decoration-color: var(--ink);
+}
+
+.figures .fig-sub {
+  display: block;
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}
+
+.shop-windows {
+  display: grid;
+  margin: 0;
+  border-top: 1px solid var(--rule);
+}
+
+.shop-windows > div {
+  min-width: 0;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.shop-windows dt {
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}
+
+.shop-windows dd {
+  margin: 0;
+  min-width: 0;
+}
+
+.shop-windows .mono.fig-link {
+  font-size: var(--step--1);
+}
+
+@media (min-width: 36rem) {
+  .shop-windows > div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, auto);
+    gap: var(--space-2);
+    align-items: center;
+  }
+
+  .shop-windows dd {
+    text-align: right;
+  }
+}
+
+/* The quote slip: the card's engraved band and double frame around the QR code. */
+.shop-slip {
+  margin: 0 0 var(--space-2);
+  width: 100%;
+  max-width: 20rem;
+}
+
+.shop-slip > .guilloche,
+.shop-slip-body {
+  border: 1px solid var(--ink);
+}
+
+.shop-slip-body {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  border-top: 0;
+  border-radius: 0 0 var(--card-radius) var(--card-radius);
+  box-shadow: inset 0 0 0 4px var(--paper), inset 0 0 0 5px var(--rule);
+  background: var(--paper);
+}
+
+.shop-slip-qr {
+  width: min(12rem, 100%);
+  height: auto;
+}
+
+.shop-slip figcaption {
+  display: grid;
+  gap: 0.25rem;
+  max-width: 100%;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+}
+
+.shop-slip figcaption .mono {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+  overflow-wrap: anywhere;
+}
+
+.shop-link {
+  margin: var(--space-1) 0 0;
+  max-width: var(--measure);
+}
+
+.shop-link a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+}
+
+.shop-check {
+  margin: 0;
+}
+
+@media print {
+  .masthead,
+  .foot,
+  .program-notice,
+  .shop-record > :not(.shop-slip-section),
+  .shop-slip-section > :not(.shop-slip) {
+    display: none;
+  }
+
+  .shop-record,
+  .shop-slip-section {
+    padding: 0;
+    border: 0;
+  }
+}

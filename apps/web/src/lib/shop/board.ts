@@ -10,6 +10,7 @@ export interface ShopSummary {
   locked: string;
   status: number;
   lastSeen: number;
+  dormantAt: number;
   /** The moment anyone may mark the shop silent if it sends no heartbeat before then. */
   silentAt: number;
   windows: { responseSecs: number; repairSecs: number; disputeSecs: number; heartbeatSecs: number; graceSecs: number };
@@ -63,6 +64,7 @@ export function shopSummary(address: string, s: ShopAccount): ShopSummary {
     locked: s.lockedBalance.toString(),
     status: s.status,
     lastSeen: s.lastSeen,
+    dormantAt: s.dormantAt,
     silentAt: s.lastSeen + s.heartbeatSecs + s.graceSecs,
     windows: { responseSecs: s.responseSecs, repairSecs: s.repairSecs, disputeSecs: s.disputeSecs, heartbeatSecs: s.heartbeatSecs, graceSecs: s.graceSecs },
     nextWarrantyId: s.nextWarrantyId.toString(),

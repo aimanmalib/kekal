@@ -65,3 +65,16 @@ export function clock(secondsLeft: number): string {
   const ss = String(s % 60).padStart(2, "0");
   return h > 0 ? `${h}:${String(m).padStart(2, "0")}:${ss}` : `${m}:${ss}`;
 }
+
+const SPAN_UNITS: [string, number][] = [
+  ["day", 86_400],
+  ["hour", 3_600],
+  ["minute", 60],
+  ["second", 1],
+];
+
+/** A window length in its largest whole unit, in the page language: 604800 → "7 days", 90 → "90 seconds". */
+export function formatSpan(secs: number, lang: Lang): string {
+  const [unit, size] = SPAN_UNITS.find(([, s]) => secs >= s && secs % s === 0) ?? ["second", 1];
+  return new Intl.NumberFormat(tag(lang), { style: "unit", unit, unitDisplay: "long" }).format(secs / size);
+}

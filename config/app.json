@@ -241,6 +241,12 @@
       "maxBytes": 4096,
       "perIpPerHour": 60
     },
+    "shopPage": {
+      "_doc": "/kedai/[owner], the public page of one shop. A read is reused for cacheSecs for every visitor (a valid address with no shop too, so random addresses cannot drain the public RPC); at most cacheMax owners are kept, oldest dropped first. band is the guilloche strip on the printable quote slip (same drawing as the warranty card).",
+      "cacheSecs": 60,
+      "cacheMax": 200,
+      "band": { "width": 360, "height": 44, "lines": 9, "waves": 6 }
+    },
     "shopBoard": {
       "_doc": "/kedai and /timbang. windows = the claim windows a new shop starts with (fixed at creation, checked on chain against the cluster limits). termMonths are the warranty lengths offered (secsPerMonth each); reserve is the starting reserve per card in whole units. The boards re-read the chain every pollMs. card = the A6 PDF page in points and the PNG card in pixels.",
       "windows": { "responseSecs": 604800, "repairSecs": 1814400, "disputeSecs": 1209600, "heartbeatSecs": 2592000, "graceSecs": 1209600 },

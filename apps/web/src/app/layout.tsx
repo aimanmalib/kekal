@@ -9,6 +9,7 @@ import "./warranty.css";
 import "./demo.css";
 import "./board.css";
 import "./home.css";
+import "./shop-record.css";
 import { localeMetadata } from "@/lib/page-metadata";
 import { requestLang } from "@/lib/request-lang";
 import { siteViewport } from "@/lib/site";

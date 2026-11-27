@@ -178,6 +178,9 @@ export function ShopBoard({ lang, settings: s }: { lang: Lang; settings: BoardSe
 
       {shop ? (
         <>
+          <p className="shop-link">
+            <a href={`/kedai/${board!.owner}`}>{t("shopPage.boardLink")}</a> <span className="note">{t("shopPage.boardLinkNote")}</span>
+          </p>
           <section className="board-section board-reserve">
             <h2>{t("kedai.reserve.heading")}</h2>
             <dl className="figures">

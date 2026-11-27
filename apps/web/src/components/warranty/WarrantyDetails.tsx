@@ -56,6 +56,9 @@ export function WarrantyDetails({ view: v, lang, t, now, children }: Props) {
             ? fill(t("warranty.shopActive"), { ago: relativeTime(v.shop.lastSeen, now, lang) })
             : fill(t("warranty.shopSilent"), { date: formatDate(v.shop.dormantAt, lang) })}
         </p>
+        <p className="shop-link">
+          <a href={`/kedai/${v.shop.owner}`}>{t("warranty.shopLink")}</a>
+        </p>
         {act === "activated" && v.activatedAt !== null ? (
           <p className="note">{fill(t("warranty.activatedOn"), { date: formatDateTime(v.activatedAt, lang) })}</p>
         ) : act === "not_yet" ? (
