@@ -204,8 +204,15 @@ repository at the end of this table.
 | 25 Nov | README v2 and a measurement for every public number | `50b63e8` |
 | 25 Nov | Health check reports the fee relayer's balance and live integrations | `ed170e4` to `bf9968e` |
 | 25 Nov | Phone audit of every page in both languages, 44 px record link, Anchor client loaded on demand on `/w` | `f2a4e8c` to `653426e` |
+| 25–27 Nov | Public source link, CI, form images, demo video cut, demo funding, fixes | `985d6f8` to `506facb` |
 
-Work done during the event will be added to its own table with its commits; `git log pre-hackathon..main` lists it.
+## Built during the hackathon
+
+Kick Off was on 27 Nov 2026 at 15:00 UTC. The tag
+[`hackathon-start`](https://github.com/aimanmalib/kekal/tree/hackathon-start) marks the last commit before it;
+`git log hackathon-start..main` lists everything below.
+
+Work during the event starts here.
 
 ## Related work
 
