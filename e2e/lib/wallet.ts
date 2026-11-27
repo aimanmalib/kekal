@@ -3,7 +3,7 @@
 import { createPrivateKey, sign } from "node:crypto";
 import type { Browser, BrowserContext, BrowserContextOptions } from "@playwright/test";
 import { join } from "node:path";
-import { LANG_COOKIE, secretKey, videoDir, videoScale, type Lang } from "./env";
+import { LANG_COOKIE, secretKey, videoDir, videoScale, walletChain, type Lang } from "./env";
 
 export const TEST_WALLET_NAME = "Kekal Test Wallet";
 
@@ -25,16 +25,16 @@ export function base58(bytes: Uint8Array): string {
 const PKCS8_ED25519 = Buffer.from("302e020100300506032b657004220420", "hex");
 
 /** Registers the wallet before any page script runs; the page calls window.kekalSign(hex message) for each signature. */
-function walletScript({ address, publicKey, name }: { address: string; publicKey: number[]; name: string }): void {
+function walletScript({ address, publicKey, name, chain }: { address: string; publicKey: number[]; name: string; chain: string }): void {
   const pk = new Uint8Array(publicKey);
-  const account = { address, publicKey: pk, chains: ["solana:localnet"], features: ["solana:signTransaction"] };
+  const account = { address, publicKey: pk, chains: [chain], features: ["solana:signTransaction"] };
   const signer = (hexMessage: string) => (window as unknown as { kekalSign: (hex: string) => Promise<string> }).kekalSign(hexMessage);
   const hex = (b: Uint8Array) => Array.from(b, (x) => x.toString(16).padStart(2, "0")).join("");
   const wallet = {
     version: "1.0.0",
     name,
     icon: "data:image/svg+xml;base64," + btoa('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><rect width="24" height="24"/></svg>'),
-    chains: ["solana:localnet"],
+    chains: [chain],
     accounts: [] as (typeof account)[],
     features: {
       "standard:connect": { version: "1.0.0", connect: async () => { wallet.accounts = [account]; return { accounts: [account] }; } },
@@ -92,6 +92,6 @@ export async function newContext(
   const publicKey = sk.slice(32);
   const address = base58(publicKey);
   await context.exposeFunction("kekalSign", (hexMessage: string) => sign(null, Buffer.from(hexMessage, "hex"), key).toString("hex"));
-  await context.addInitScript(walletScript, { address, publicKey: Array.from(publicKey), name: TEST_WALLET_NAME });
+  await context.addInitScript(walletScript, { address, publicKey: Array.from(publicKey), name: TEST_WALLET_NAME, chain: walletChain() });
   return { context, address };
 }

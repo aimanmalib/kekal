@@ -81,3 +81,7 @@ export const shotDir = (): string | null => process.env.E2E_SHOTS || null;
  * E2E_VIDEO_SCALE (default 2) multiplies the viewport for the recorded frame size in WebKit. Used to film the demo video. */
 export const videoDir = (): string | null => process.env.E2E_VIDEO || null;
 export const videoScale = (): number => Number(process.env.E2E_VIDEO_SCALE || 2);
+
+/** The Wallet Standard chain the test wallet offers: the local validator unless E2E_WALLET_CHAIN names another (e.g.
+ * "solana:devnet" when filming the shop board on the public site with a devnet test key in E2E_KEYS). */
+export const walletChain = (): string => process.env.E2E_WALLET_CHAIN || "solana:localnet";

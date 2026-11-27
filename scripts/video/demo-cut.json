@@ -11,9 +11,21 @@
   },
   "subtitle": { "size": 40, "bottom": 34, "padX": 28, "padY": 14, "radius": 14 },
   "label": { "size": 28, "margin": 48, "padX": 18, "padY": 10 },
+  "liveFootage": {
+    "_doc": "Footage filmed on the public site by e2e/tests/film-live.spec.ts (E2E_VIDEO + E2E_FILM_LIVE, English UI). typeDelayMs = pause between typed keys; holdSecs = seconds held on each moment so the cut has room; examplePaths = the finished /contoh paths shown, the last one has its first public record opened; countdownFromTop = where the demo countdown is held, as a share of the screen height from the top. live-run.json in the footage folder keeps the card link and the demo transactions for the explorer shots (explorerFootage.liveShots).",
+    "typeDelayMs": 45,
+    "holdSecs": { "open": 3, "step": 2, "button": 2.5, "paid": 5, "steps": 4, "example": 4, "record": 6, "card": 4 },
+    "examplePaths": ["A", "D"],
+    "countdownFromTop": 0.45
+  },
   "explorerFootage": {
     "_doc": "Explorer footage filmed by e2e/tests/film-explorer.spec.ts (E2E_VIDEO + E2E_EXPLORER, Chromium project) from the run in config/examples.json. tx = [path, step] in that file; address = a key of that file. Each stop scrolls to the heading with exactly that name ('heading') or the first element containing that text ('text'); neither = stay where the page is; the target lands marginPx below the top, clear of the explorer's sticky tab bar. Then it holds for 'hold' seconds.",
     "viewport": { "width": 1280, "height": 720 },
+    "liveShots": [
+      { "id": "explorer-live-payout", "run": "demo-silent", "step": -1, "like": "explorer-payout" },
+      { "id": "explorer-live-dormant", "run": "demo-closed", "step": -1, "like": "explorer-payout" }
+    ],
+    "_liveShotsDoc": "liveShots film transactions from the last live recording (<E2E_VIDEO>/live-run.json from film-live.spec.ts): run = which demo scene, step = index into its steps (-1 = the payout, the last one), like = the shot whose stops it reuses. Skipped when that file is absent.",
     "loadSecs": 6,
     "marginPx": 110,
     "shots": [
