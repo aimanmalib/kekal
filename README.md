@@ -116,7 +116,7 @@ validator runs and the browser tests stay in `scripts/gerbang-ujian.sh` and `scr
 |-------|-------|-------|--------|
 | Program tests (LiteSVM, fixed clock, no sleeps) | `programs/kekal/tests/` | 72 | pass |
 | SDK tests (PDAs, instruction builders, decoders, hashing vectors) | `packages/sdk/test/` | 55 | pass |
-| Web app tests (RPC proxy, fee relayer, sessions, request limits, demo, warranty page, shop board, cards, locales, program status, home page, form images) | `apps/web/test/` | 258 | pass |
+| Web app tests (RPC proxy, fee relayer, sessions, request limits, demo, warranty page, shop board, cards, locales, program status, home page, form images) | `apps/web/test/` | 269 | pass |
 | Script tests (cluster config, locales, how warranties are issued, deploy checks, RPC pacing) | `scripts/test/` | 22 | pass |
 | Keeper tests (heartbeats, dormant shops, due settling steps, image bundle) | `apps/keeper/test/` | 10 | pass |
 | Deploy script tests (uptime alerts, image smoke test, proxy route template) | `scripts/test/deploy.test.sh` | 9 | pass |

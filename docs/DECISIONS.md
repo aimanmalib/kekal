@@ -35,5 +35,6 @@ Index of the architecture decision records (ADRs) for Kekal; each record explain
 | [0028](decisions/0028-live-footage.md) | Demo footage is filmed on the public devnet site, in English | accepted |
 | [0029](decisions/0029-video-v3-cut.md) | Third video cut: zoomed product panels, measured silence and frozen frames | accepted |
 | [0030](decisions/0030-language-link-and-public-polish.md) | `?lang=` picks the language, home screens from the live site, favicon.ico | accepted |
+| [0031](decisions/0031-home-first-screen.md) | Home first screen: title, one sentence, demo button, the printed card beside the paid phone | accepted |
 
 New decisions: add an ADR as `decisions/NNNN-short-title.md` and a line here.

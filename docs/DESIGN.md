@@ -50,12 +50,13 @@ clamp(2, 3.25) rem. Serif reading text gets 1.55 line height; lines stay under 3
 ## Layout
 
 Mobile first at 390 px (checked down to 320 px). Home page, one column: masthead with the mark, reviewer links (video,
-source code, program; each shown only once it exists), title, the sample card on a drawn phone, lede, the three rules.
-On an iPhone 13 the paid stamp sits inside the first screen. Below it, in this order: how it works (three steps, each with a real phone screen from
+source code, program; each shown only once it exists), title, one sentence of story, the demo button, the printed A6
+card (the real card layout drawn as SVG, set down slightly askew), the sample card on a drawn phone, lede, the three
+rules. On an iPhone 13 the button and the top of the printed card sit inside the first screen. Below it, in this order: how it works (three steps, each with a real phone screen from
 the browser tests in the page's language), see it happen (the five endings, each linking its public record once
 recorded), why, questions (all open, no accordion) and limits. Each of these sections opens on a double ink rule, the
 card frame's line; lists inside them use hairlines. From 56 rem the text takes the left column and the phone
-the right, text left-aligned. The phone is an ink body around a paper screen, borders only, no shadow and no image.
+the right, with the printed card behind the phone's left edge; text left-aligned. The phone is an ink body around a paper screen, borders only, no shadow and no image.
 The mark (`brand/logo.svg`, simplified) is drawn inline in the page tokens, in the masthead and the footer. Grid children carry
 `min-width: 0`; flex children that hold long values (addresses, hashes) carry `max-width: 100%` and break with
 `overflow-wrap: anywhere`.
