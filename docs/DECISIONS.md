@@ -37,5 +37,6 @@ Index of the architecture decision records (ADRs) for Kekal; each record explain
 | [0030](decisions/0030-language-link-and-public-polish.md) | `?lang=` picks the language, home screens from the live site, favicon.ico | accepted |
 | [0031](decisions/0031-home-first-screen.md) | Home first screen: title, one sentence, demo button, the printed card beside the paid phone | accepted |
 | [0032](decisions/0032-public-shop-page.md) | Public shop page `/kedai/<owner>`: reserve, check-ins and claim windows linked to the explorer, cached, printable QR slip | accepted |
+| [0033](decisions/0033-shared-warranty-reads.md) | Shared warranty reads (single-flight, 2 s reuse, two RPC calls per repeat read), 503 + Retry-After on rate limits, `/demo` keeps checking after a failed read | accepted |
 
 New decisions: add an ADR as `decisions/NNNN-short-title.md` and a line here.
