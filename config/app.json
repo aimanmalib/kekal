@@ -118,7 +118,8 @@
   "web": {
     "_doc": "Web app values. /api/rpc forwards only allowedMethods (never sendTransaction: signed transactions go through the relayer); programScopedMethods must name the Kekal program. DATA_BACKEND picks the store; KEKAL_SQLITE_PATH and KEKAL_MIGRATIONS_DIR override the paths below.",
     "locales": {
-      "supported": ["en", "ms"], "fallback": "en", "cookie": "kekal_lang", "cookieMaxAgeDays": 365,
+      "_doc": "A valid ?<queryParam>=<lang> on any page wins for that request and is saved in the cookie; otherwise the cookie, then Accept-Language, then fallback.",
+      "supported": ["en", "ms"], "fallback": "en", "cookie": "kekal_lang", "cookieMaxAgeDays": 365, "queryParam": "lang",
       "intl": { "en": "en-GB", "ms": "ms-MY" }
     },
     "rpc": {
@@ -192,6 +193,7 @@
       "ogImage": { "width": 1200, "height": 630, "maxBytes": 307200, "altMaxChars": 300 },
       "themeColor": "#faf8f1",
       "appleIcon": { "size": 180 },
+      "faviconIco": { "sizes": [16, 32, 48] },
       "gallery": { "width": 1280, "height": 800, "phoneScreen": { "width": 390, "height": 844 }, "maxBytes": 1000000 },
       "banner": { "width": 1200, "height": 400, "scale": 2, "maxBytes": 1000000 }
     },
