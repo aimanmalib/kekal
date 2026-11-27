@@ -237,3 +237,18 @@ Measured on the live site after deploy `93d656a-202611271621`, showcase shop own
 | `GET /kedai/notanaddress`, `GET /kedai/<program id>` (no shop) | 404, 404 |
 | Response time, cached read (`curl -w %{time_total}`) | 0.16 to 0.36 s |
 | WebKit iPhone 13 at 390 and 320 px, English and Malay, after scrolling with technical details open | `scrollWidth` = `clientWidth` in all four |
+
+## Concurrent readers (27 Nov 2026, UTC)
+
+Measured once on the live site after deploy `cd37d93-202611271856` (ADR 0033). Before the change, eight
+simultaneous reads of one warranty were answered 502 (the public RPC endpoints rate limited them) and a `/demo` run
+whose read after "Send the claim" failed showed the claim form again.
+
+| Check | Before | After |
+|-------|--------|-------|
+| RPC calls per warranty read (from the code; unit tests count them on a fake RPC) | 7, plus one `getTransaction` per recent step, on every read | 2 on a repeat read (`getMultipleAccounts`, `getSignaturesForAddress`); a read reused within 2 s costs none |
+| 8 simultaneous `GET /api/warranty/JcAknYgu…` at 18:57:26 | 502 | 8 × 200, each 2.17 s (one shared read) |
+| RPC keeps answering 429 | 502, `/demo` back to the claim form | 503 with `Retry-After: 3`; `/demo` says it is checking and reads again after 1, 2, 4, 8 s |
+| Two demo runs at the same time, 18:57:34 to 18:58:52 | path B stopped after "Send the claim" | path B (WebKit, iPhone 13, English): paid, first click to paid 68.7 s; path C (Chromium, Malay): paid, 71.6 s |
+
+After both runs `/api/health` answered `ok: true`, `relayerFunded: true`, runs left 455 (demo seller) and 755 (relayer).

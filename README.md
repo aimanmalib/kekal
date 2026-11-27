@@ -217,6 +217,7 @@ Kick Off was on 27 Nov 2026 at 15:00 UTC. The tag
 | Date (2026) | What | Commits |
 |-------------|------|---------|
 | 27 Nov | Public shop page [`/kedai/<owner>`](https://kekal.sasateguh.com/kedai/HL5rXKX63SEPURLxuWhjvwZFjuiEamqFsdRciqGaMhm8): before buying, anyone sees the reserve a shop has locked, its live warranties, its last and next check-in, the claim windows and the arbiter, each figure linked to the explorer, with a QR slip to print on a quote. Linked from the warranty page and the shop board; no program change | `114a049`, `93d656a` |
+| 27 Nov | The live demo holds up when several people use it at once: reads of one warranty are shared and reused for two seconds (two RPC calls per repeat read instead of seven or more), a rate-limited RPC gives 503 with Retry-After instead of 502, and `/demo` keeps checking after a failed read instead of showing the claim form again. Eight simultaneous reads: 8 × 200; two demo runs at once both paid. No program change | `d98dca8`, `cd37d93` |
 
 ## Related work
 
