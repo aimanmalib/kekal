@@ -6,8 +6,11 @@
 
   build: uv run scripts/video/assemble.py build --src <footage> --voice <footage>/voice-af_heart --out demo.mp4
          Writes demo.mp4 and demo.srt (English subtitles, also burned into the picture), then runs `measure`.
+  preview: uv run scripts/video/assemble.py preview --src <footage> --out <folder> [--at 0.9] [--only <scene id> ...]
+         One still per scene, to check crops, labels and side sentences before the long build.
   measure: uv run scripts/video/assemble.py measure demo.mp4
-         Length, audio track, audio length against video length, mean and peak loudness, against the cut file's rules.
+         Length, audio track, audio length against video length, mean and peak loudness, silences (silencedetect) and
+         frozen pictures (freezedetect), against the cut file's rules.
 
 The scene list, label text, sizes and loudness targets live in scripts/video/demo-cut.json. Colours come from the
 site's tokens and the text uses the site's fonts. Needs ffmpeg and ffprobe on PATH.
@@ -66,39 +69,79 @@ def chip(text: str, f, pad: tuple[int, int], radius: int, fill, ink, border=None
     return img
 
 
-def phone_layers(cfg: dict, clip_w: int, work: Path) -> tuple[Path, Path, int]:
-    """Paper background and a bezel with a rounded screen hole; returns their paths and the screen's left edge."""
+def wrap(text: str, f, width: int) -> list[str]:
+    """Greedy word wrap to a pixel width."""
+    lines: list[str] = []
+    for word in text.split():
+        trial = f"{lines[-1]} {word}" if lines else word
+        if lines and f.getlength(trial) <= width:
+            lines[-1] = trial
+        else:
+            lines.append(word)
+    return lines
+
+
+def panel_layout(cfg: dict, scene: dict) -> tuple[int, int, int, int, int]:
+    """Panel width, height, x, y, and the left edge of the text column."""
+    z, v = cfg["zoom"], cfg["video"]
+    w, h = cut.panel_size(scene["crop"], z)
+    y = z["top"] + (z["maxHeight"] - h) // 2
+    if scene.get("panel", "left") == "left":
+        x = z["margin"]
+        text_x = x + w + z["margin"]
+    else:
+        x = v["width"] - z["margin"] - w
+        text_x = z["margin"]
+    return w, h, x, y, text_x
+
+
+def panel_overlay(cfg: dict, scene: dict, path: Path) -> tuple[int, int, int, int]:
+    """Frame around the panel, the side sentence and the label, on a transparent layer; returns the panel box."""
     from PIL import Image, ImageDraw
 
-    v, p = cfg["video"], cfg["phone"]
-    x = (v["width"] - clip_w) // 2
-    bg = Image.new("RGBA", (v["width"], v["height"]), rgb("paper"))
-    bezel = Image.new("RGBA", (v["width"], v["height"]), (0, 0, 0, 0))
-    d = ImageDraw.Draw(bezel)
-    b, top, h = p["bezel"], p["top"], p["height"]
-    d.rounded_rectangle([x - b, top - b, x + clip_w + b, top + h + b], radius=p["radius"], fill=rgb("ink"))
-    d.rounded_rectangle([x, top, x + clip_w, top + h], radius=p["radius"] - b, fill=(0, 0, 0, 0))
-    bg.save(work / "phone-bg.png")
-    bezel.save(work / "phone-bezel.png")
-    return work / "phone-bg.png", work / "phone-bezel.png", x
+    z, v, lab = cfg["zoom"], cfg["video"], cfg["label"]
+    w, h, x, y, text_x = panel_layout(cfg, scene)
+    img = Image.new("RGBA", (v["width"], v["height"]), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    b, r = z["border"], z["radius"]
+    d.rounded_rectangle([x - b, y - b, x + w + b, y + h + b], radius=r + b, fill=rgb("ink"))
+    d.rounded_rectangle([x, y, x + w, y + h], radius=r, fill=(0, 0, 0, 0))
+    col_w = v["width"] - z["margin"] - text_x if scene.get("panel", "left") == "left" else x - 2 * z["margin"]
+    top = z["top"]
+    if scene.get("label"):
+        chip_img = chip(scene["label"], font(cfg, "sans", lab["size"], 500), (lab["padX"], lab["padY"]), 10,
+                        rgb("paper-band", 240), rgb("ink"), rgb("ink"))
+        if chip_img.width > col_w:
+            raise SystemExit(f"{scene['id']}: label is {chip_img.width}px, the text column is {col_w}px")
+        img.alpha_composite(chip_img, (text_x, top))
+    if scene.get("side"):
+        f = font(cfg, "serif", z["sideSize"], 500)
+        lines = wrap(scene["side"], f, col_w)
+        step = int(z["sideSize"] * z["sideLineGap"])
+        ty = y + (h - step * len(lines)) // 2
+        d.rectangle([text_x, ty - 40, text_x + 96, ty - 36], fill=rgb("copper"))
+        for i, line in enumerate(lines):
+            d.text((text_x, ty + i * step), line, font=f, fill=rgb("ink"))
+    img.save(path)
+    return w, h, x, y
 
 
-def program_card(cfg: dict, scene: dict, path: Path) -> None:
-    """Still of the program's address on the cluster, from config/app.json."""
+def closing_card(cfg: dict, path: Path) -> None:
+    """Closing still: name, tagline, the demo and source links from config/app.json, and the honest note."""
     from PIL import Image, ImageDraw
 
     app = json.loads((ROOT / "config/app.json").read_text(encoding="utf-8"))
-    cl = app["clusters"][scene["cluster"]]
-    address = cl["programId"]
-    url = cl["explorerAddress"].replace("{address}", address).replace("https://", "")
-    v = cfg["video"]
+    c, v = cfg["closing"], cfg["video"]
+    links = [app["web"]["site"]["url"] + c["demoPath"], app["web"]["home"]["repoUrl"]]
     img = Image.new("RGBA", (v["width"], v["height"]), rgb("paper"))
     d = ImageDraw.Draw(img)
-    x, y = 160, 360
-    d.text((x, y), scene["title"], font=font(cfg, "serif", 76, 500), fill=rgb("ink"))
-    d.rectangle([x, y + 120, x + 120, y + 124], fill=rgb("copper"))
-    d.text((x, y + 160), address, font=font(cfg, "mono", 44), fill=rgb("ink"))
-    d.text((x, y + 240), url, font=font(cfg, "sans", 30, 400), fill=rgb("ink-soft"))
+    x, y = 220, 250
+    d.text((x, y), c["title"], font=font(cfg, "serif", 150, 500), fill=rgb("ink"))
+    d.text((x, y + 200), c["tagline"], font=font(cfg, "serif", 64, 400), fill=rgb("ink"))
+    d.rectangle([x, y + 310, x + 140, y + 315], fill=rgb("copper"))
+    for i, link in enumerate(links):
+        d.text((x, y + 360 + i * 64), link.replace("https://", ""), font=font(cfg, "mono", 44), fill=rgb("ink"))
+    d.text((x, y + 520), c["note"], font=font(cfg, "sans", 36, 500), fill=rgb("ink-soft"))
     img.save(path)
 
 
@@ -109,48 +152,78 @@ def clip_height(path: Path) -> tuple[int, int]:
     return int(w), int(h)
 
 
+ZOOM_OVERSAMPLE = 2
+
+
+def oversample(src: Path, crop: list | None, size: tuple[int, int], out: Path) -> Path:
+    """The still cropped and enlarged once, so the slow zoom has sub-pixel room without rescaling every frame."""
+    from PIL import Image
+
+    img = Image.open(src).convert("RGB")
+    if crop:
+        cw, ch, cx, cy = crop
+        img = img.crop((cx, cy, cx + cw, cy + ch))
+    img.resize((size[0] * ZOOM_OVERSAMPLE, size[1] * ZOOM_OVERSAMPLE), Image.LANCZOS).save(out)
+    return out
+
+
+def slow_zoom(size: tuple[int, int], frames: int, zoom_to: float, focus: list, fps: int) -> str:
+    """zoompan from 1 to zoom_to over the scene, centred on focus, from an oversampled still."""
+    fx, fy = focus
+    z = f"1+{zoom_to - 1:.4f}*on/{max(frames - 1, 1)}"
+    return f"zoompan=z='{z}':x='(iw-iw/zoom)*{fx}':y='(ih-ih/zoom)*{fy}':d=1:s={size[0]}x{size[1]}:fps={fps}"
+
+
 def segment(cfg: dict, scene: dict, src: Path, work: Path, out: Path) -> None:
     v = cfg["video"]
     dur = float(scene["dur"])
+    fps = v["fps"]
+    frames = int(round(dur * fps))
     lab = cfg["label"]
-    inputs: list[str] = []
-    if scene["kind"] == "card":
-        program_card(cfg, scene, work / f"{scene['id']}.png")
-        inputs = ["-loop", "1", "-t", str(dur), "-i", str(work / f"{scene['id']}.png")]
-        graph = f"[0:v]fps={v['fps']},format=yuv420p[out]"
+    sid = scene["id"]
+    if scene["kind"] == "title":
+        closing_card(cfg, work / f"{sid}.png")
+        size = (v["width"], v["height"])
+        big = oversample(work / f"{sid}.png", None, size, work / f"{sid}-big.png")
+        inputs = ["-framerate", str(fps), "-loop", "1", "-t", str(dur), "-i", str(big)]
+        graph = f"[0:v]{slow_zoom(size, frames, cfg['closing']['zoomTo'], [0.3, 0.5], fps)},format=yuv420p[out]"
+    elif scene["kind"] in ("zoom", "still"):
+        w, h, x, y = panel_overlay(cfg, scene, work / f"{sid}-overlay.png")
+        cw, ch, cx, cy = scene["crop"]
+        if scene["kind"] == "still":
+            big = oversample(src / scene["image"], scene["crop"], (w, h), work / f"{sid}-big.png")
+            inputs = ["-framerate", str(fps), "-loop", "1", "-t", str(dur), "-i", str(big)]
+            zoom = slow_zoom((w, h), frames, float(scene["zoomTo"]), scene.get("focus", [0.5, 0.5]), fps)
+            body = f"[0:v]{zoom},setpts=PTS-STARTPTS[v]"
+        else:
+            speed = float(scene.get("speed", 1))
+            span = float(scene["out"]) - float(scene["in"])
+            inputs = ["-ss", str(scene["in"]), "-t", f"{span:.3f}", "-i", str(src / scene["clip"])]
+            body = (f"[0:v]setpts=(PTS-STARTPTS)/{speed},fps={fps},crop={cw}:{ch}:{cx}:{cy},scale={w}:{h}:flags=lanczos,"
+                    f"tpad=stop_mode=clone:stop_duration={dur},trim=duration={dur},setpts=PTS-STARTPTS[v]")
+        inputs += ["-f", "lavfi", "-t", str(dur), "-i", f"color=c={token('paper')}:s={v['width']}x{v['height']}:r={fps}",
+                   "-loop", "1", "-t", str(dur), "-i", str(work / f"{sid}-overlay.png")]
+        graph = f"{body};[1:v][v]overlay={x}:{y}:shortest=1[a];[a][2:v]overlay=0:0,format=yuv420p[out]"
     else:
         clip = src / scene["clip"]
         speed = float(scene.get("speed", 1))
         span = float(scene["out"]) - float(scene["in"])
-        base = f"[0:v]setpts=(PTS-STARTPTS)/{speed},fps={v['fps']},"
         pad = f"tpad=stop_mode=clone:stop_duration={dur},trim=duration={dur},setpts=PTS-STARTPTS"
         inputs = ["-ss", str(scene["in"]), "-t", f"{span:.3f}", "-i", str(clip)]
-        if scene["kind"] == "phone":
-            ph = cfg["phone"]["height"]
-            cw, chh = clip_height(clip)
-            screen_w = int(cw * ph / chh) // 2 * 2
-            bg, bezel, x = phone_layers(cfg, screen_w, work)
-            inputs += ["-loop", "1", "-i", str(bg), "-loop", "1", "-i", str(bezel)]
-            graph = (f"{base}scale={screen_w}:{ph}:flags=lanczos,{pad}[v];"
-                     f"[1:v][v]overlay={x}:{cfg['phone']['top']}:shortest=1[a];[a][2:v]overlay=0:0[b]")
-            label_at = "left"
-        else:
-            crop = scene.get("crop")
-            c = f"crop={crop[0]}:{crop[1]}:{crop[2]}:{crop[3]}," if crop else ""
-            graph = f"{base}{c}scale={v['width']}:{v['height']}:flags=lanczos,{pad}[b]"
-            label_at = "right"
+        crop = scene["crop"]
+        graph = (f"[0:v]setpts=(PTS-STARTPTS)/{speed},fps={fps},crop={crop[0]}:{crop[1]}:{crop[2]}:{crop[3]},"
+                 f"scale={v['width']}:{v['height']}:flags=lanczos,{pad}[b]")
         if scene.get("label"):
             img = chip(scene["label"], font(cfg, "sans", lab["size"], 500), (lab["padX"], lab["padY"]), 10,
                        rgb("paper-band", 240), rgb("ink"), rgb("ink"))
-            img.save(work / f"{scene['id']}-label.png")
-            lx = lab["margin"] if label_at == "left" else v["width"] - lab["margin"] - img.width
-            n = inputs.count("-i")
-            inputs += ["-i", str(work / f"{scene['id']}-label.png")]
-            graph += f";[b][{n}:v]overlay={lx}:{lab['margin']},format=yuv420p[out]"
+            img.save(work / f"{sid}-label.png")
+            lx = v["width"] - lab["margin"] - img.width
+            inputs += ["-i", str(work / f"{sid}-label.png")]
+            graph += f";[b][1:v]overlay={lx}:{lab['margin']},format=yuv420p[out]"
         else:
             graph += ";[b]format=yuv420p[out]"
     run(["ffmpeg", "-v", "error", "-y", *inputs, "-filter_complex", graph, "-map", "[out]", "-t", str(dur),
-         "-r", str(v["fps"]), "-c:v", "libx264", "-preset", "medium", "-crf", str(v["crf"]), "-an", str(out)])
+         "-r", str(fps), "-c:v", "libx264", "-preset", "medium", "-crf", str(v["crf"]), "-an", str(out)])
 
 
 def loudness(path: Path, stream: str = "0:a:0") -> tuple[float, float]:
@@ -202,10 +275,45 @@ def subtitle_inputs(cfg: dict, items: list[cut.Cue], work: Path) -> tuple[list[s
     return inputs, ";".join(graph)
 
 
+def voice_problems(cfg: dict, narration: dict) -> list[str]:
+    """The voice folder must be the narration the cut was timed against."""
+    want = cfg["narration"]["seconds"]
+    got = {str(l["line"]): float(l["duration"]) for l in narration["lines"]}
+    tol = float(cfg["narration"]["toleranceSecs"])
+    if set(want) != set(got):
+        return [f"voice has lines {sorted(got)}, the cut was timed for {sorted(want)}"]
+    return [f"line {k} is {got[k]}s in the voice, {want[k]}s in the cut" for k in want if abs(got[k] - float(want[k])) > tol]
+
+
+def preview(a: argparse.Namespace) -> None:
+    """One still per scene (its middle), for checking crops and text before the long build."""
+    cfg = cut.load(a.cut)
+    a.out.mkdir(parents=True, exist_ok=True)
+    work = Path(tempfile.mkdtemp(prefix="kekal-preview-"))
+    try:
+        for scene in cfg["scenes"]:
+            if a.only and scene["id"] not in a.only:
+                continue
+            s = dict(scene)
+            if "clip" in s:
+                span = (float(s["out"]) - float(s["in"])) * a.at
+                s["in"] = float(s["in"]) + span
+                s["out"] = s["in"] + 0.5
+                s["speed"] = 1
+                s["dur"] = 0.5
+            part = work / f"{s['id']}.mp4"
+            segment(cfg, s, a.src, work, part)
+            run(["ffmpeg", "-v", "error", "-y", "-sseof", "-0.1", "-i", str(part), "-frames:v", "1", str(a.out / f"{s['id']}.png")])
+            print(a.out / f"{s['id']}.png", flush=True)
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
+
+
 def build(a: argparse.Namespace) -> None:
     cfg = cut.load(a.cut)
     narration = json.loads((a.voice / "narration.json").read_text(encoding="utf-8"))
-    errs = cut.problems(cfg["scenes"], narration, cfg["rules"])
+    errs = cut.problems(cfg["scenes"], narration, cfg["rules"]) + cut.look_problems(cfg) + voice_problems(cfg, narration)
+    errs += cut.silence_problems(cfg["scenes"], narration, cfg["rules"]["silence"])
     if errs:
         raise SystemExit("cut problems:\n- " + "\n- ".join(errs))
     placed = cut.place(cfg["scenes"], narration)
@@ -241,6 +349,14 @@ def probe(path: Path, entries: str, stream: str | None = None) -> str:
     return subprocess.run(args, capture_output=True, text=True, check=True).stdout.strip()
 
 
+def silence_spans(log: str, what: str, length: float) -> list[tuple[float, float]]:
+    """(start, end) pairs from ffmpeg silencedetect / freezedetect output; an open span ends at the file's end."""
+    starts = [float(x) for x in re.findall(rf"{what}_start: ?(-?[\d.]+)", log)]
+    ends = [float(x) for x in re.findall(rf"{what}_end: ?(-?[\d.]+)", log)]
+    ends += [length] * (len(starts) - len(ends))
+    return [(round(a, 2), round(b, 2)) for a, b in zip(starts, ends)]
+
+
 def measure(path: Path, cfg: dict, frames: Path | None = None) -> int:
     rules = cfg["rules"]
     video_len = float(probe(path, "format=duration"))
@@ -263,6 +379,20 @@ def measure(path: Path, cfg: dict, frames: Path | None = None) -> int:
             fails.append(f"mean {mean} dB outside {lo}..{hi}")
         if peak > rules["maxPeakDb"]:
             fails.append(f"peak {peak} dB above {rules['maxPeakDb']}")
+    sil, fr = rules["silence"], rules["freeze"]
+    err = run(["ffmpeg", "-v", "info", "-nostats", "-i", str(path), "-map", "0:a:0", "-af",
+               f"silencedetect=noise={sil['noiseDb']}dB:d={sil['minSecs']}", "-f", "null", "-"])
+    gaps = silence_spans(err, "silence", video_len)
+    share = sum(b - a for a, b in gaps) / video_len
+    report.update(silences=[[a, b] for a, b in gaps], silenceShare=round(share, 3))
+    fails += [f"silence {a}s to {b}s is over {sil['maxGapSecs']}s" for a, b in gaps if b - a > sil["maxGapSecs"]]
+    if share > sil["maxShare"]:
+        fails.append(f"silence is {share:.0%} of the video, over {sil['maxShare']:.0%}")
+    err = run(["ffmpeg", "-v", "info", "-nostats", "-i", str(path), "-map", "0:v:0", "-vf",
+               f"freezedetect=n={fr['noiseDb']}dB:d={fr['minSecs']}", "-f", "null", "-"])
+    frozen = silence_spans(err, "freeze", video_len)
+    report["frozen"] = [[a, b] for a, b in frozen]
+    fails += [f"picture frozen from {a}s to {b}s" for a, b in frozen]
     if frames:
         frames.mkdir(parents=True, exist_ok=True)
         for name, t in (("frame-0", 0.0), ("frame-mid", video_len / 2), ("frame-end", max(video_len - 1, 0))):
@@ -283,6 +413,12 @@ def main() -> None:
     b.add_argument("--out", type=Path, required=True)
     b.add_argument("--cut", type=Path, default=DEFAULT_CUT)
     b.add_argument("--frames", type=Path, help="also save three still frames here")
+    v = sub.add_parser("preview")
+    v.add_argument("--src", type=Path, required=True)
+    v.add_argument("--out", type=Path, required=True, help="folder for one still per scene")
+    v.add_argument("--cut", type=Path, default=DEFAULT_CUT)
+    v.add_argument("--at", type=float, default=0.5, help="where in each clip, 0..1")
+    v.add_argument("--only", nargs="*", help="scene ids")
     m = sub.add_parser("measure")
     m.add_argument("file", type=Path)
     m.add_argument("--cut", type=Path, default=DEFAULT_CUT)
@@ -290,6 +426,8 @@ def main() -> None:
     a = p.parse_args()
     if a.cmd == "build":
         build(a)
+    elif a.cmd == "preview":
+        preview(a)
     else:
         sys.exit(measure(a.file, cut.load(a.cut), a.frames))
 

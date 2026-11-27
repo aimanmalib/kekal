@@ -136,3 +136,79 @@ def stamp(secs: float) -> str:
 def srt(items: list[Cue]) -> str:
     blocks = [f"{i}\n{stamp(c.start)} --> {stamp(c.end)}\n{c.text}\n" for i, c in enumerate(items, 1)]
     return "\n".join(blocks)
+
+
+# --- v3 look rules: how big the product is in the frame, held frames, and silence between narration lines ---
+
+UI_KINDS = {"zoom", "still", "wide", "phone"}
+
+
+def even(x: float) -> int:
+    return int(x) // 2 * 2
+
+
+def panel_size(crop: list, zoom: dict) -> tuple[int, int]:
+    """Size of a zoomed panel: the crop box scaled to fit inside zoom.maxWidth x zoom.maxHeight."""
+    s = min(float(zoom["maxWidth"]) / crop[0], float(zoom["maxHeight"]) / crop[1])
+    return even(crop[0] * s), even(crop[1] * s)
+
+
+def ui_share(scene: dict, cfg: dict) -> float | None:
+    """Share of the frame width the product's screen fills, or None when the scene declares no crop box."""
+    crop = scene.get("crop")
+    if not crop:
+        return None
+    if scene["kind"] == "wide":
+        return 1.0
+    return panel_size(crop, cfg["zoom"])[0] / float(cfg["video"]["width"])
+
+
+def look_problems(cfg: dict) -> list[str]:
+    """Scenes that show the product too small, without a crop box, stretched, or frozen on a held last frame."""
+    errs = []
+    rules, v = cfg["rules"], cfg["video"]
+    for s in cfg["scenes"]:
+        if s["kind"] in UI_KINDS:
+            share = ui_share(s, cfg)
+            if share is None:
+                errs.append(f"{s['id']}: shows the product but declares no crop box")
+            elif share < float(rules["minUiShare"]):
+                errs.append(f"{s['id']}: product fills {share:.0%} of the frame width, under {rules['minUiShare']:.0%}")
+            if s["kind"] == "wide" and s.get("crop"):
+                aspect, frame = s["crop"][0] / s["crop"][1], v["width"] / v["height"]
+                if abs(aspect / frame - 1) > 0.02:
+                    errs.append(f"{s['id']}: crop {s['crop'][:2]} would be stretched to the {v['width']}x{v['height']} frame")
+        if "clip" in s:
+            shown = (float(s["out"]) - float(s["in"])) / float(s.get("speed", 1))
+            if float(s["dur"]) - shown > float(rules["maxHoldSecs"]):
+                errs.append(f"{s['id']}: holds its last frame for {float(s['dur']) - shown:.1f}s")
+    return errs
+
+
+def narration_from_secs(seconds: dict) -> dict:
+    """A narration dict (as narrate.py writes) from the line lengths recorded in the cut file."""
+    return {"lines": [{"line": int(k), "text": "", "duration": float(v)} for k, v in seconds.items()]}
+
+
+def silences(scenes: list[dict], narration: dict, min_secs: float) -> list[tuple[float, float]]:
+    """Stretches of at least min_secs with no narration line playing, the lead-in and the tail included."""
+    placed = place(scenes, narration)
+    out, t = [], 0.0
+    for p in placed:
+        if p.start - t >= min_secs:
+            out.append((round(t, 3), p.start))
+        t = max(t, p.end)
+    end = total(scenes)
+    if end - t >= min_secs:
+        out.append((round(t, 3), end))
+    return out
+
+
+def silence_problems(scenes: list[dict], narration: dict, rule: dict) -> list[str]:
+    gaps = silences(scenes, narration, float(rule["minSecs"]))
+    errs = [f"no narration from {a}s to {b}s ({b - a:.1f}s, over {rule['maxGapSecs']}s)" for a, b in gaps
+            if b - a > float(rule["maxGapSecs"])]
+    share = sum(b - a for a, b in gaps) / max(total(scenes), 0.001)
+    if share > float(rule["maxShare"]):
+        errs.append(f"silence is {share:.0%} of the video, over {rule['maxShare']:.0%}")
+    return errs

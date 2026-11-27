@@ -1,51 +1,577 @@
 {
-  "_doc": "Demo video cut, read by scripts/video/assemble.py. Clip paths are relative to --src (the footage folder from ADR 0019). dur = scene length in seconds (the last frame holds if the clip is shorter); speed > 1 plays faster and the scene's label says so; lines = [narration line, seconds after the scene starts]. crop = [w, h, x, y] in clip pixels before scaling.",
-  "video": { "width": 1920, "height": 1080, "fps": 30, "crf": 20 },
-  "phone": { "height": 880, "top": 30, "bezel": 14, "radius": 44 },
-  "audio": { "sampleRate": 48000, "targetMeanDb": -20.5, "limitDb": -2.0, "bitrate": "160k" },
-  "rules": { "maxSecs": 170, "minGapSecs": 0.2, "maxCueChars": 72, "meanDbRange": [-23, -17], "maxPeakDb": -1.5, "audioVideoSlackSecs": 0.5 },
+  "_doc": "Demo video cut, read by scripts/video/assemble.py. Clip and image paths are relative to --src (the footage folder from ADR 0019). dur = scene length in seconds; speed > 1 plays faster and the scene's label says so; lines = [narration line, seconds after the scene starts]. crop = [w, h, x, y] in clip pixels. Kinds: zoom = the crop of a clip in a framed panel with one large sentence (side) beside it; still = the same for an image, slowly zooming to zoomTo around focus [x, y] (0..1); wide = the crop scaled to the full frame (16:9 crops only); title = the closing card drawn from 'closing'.",
+  "video": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "crf": 20
+  },
+  "phone": {
+    "height": 880,
+    "top": 30,
+    "bezel": 14,
+    "radius": 44
+  },
+  "audio": {
+    "sampleRate": 48000,
+    "targetMeanDb": -20.5,
+    "limitDb": -2.0,
+    "bitrate": "160k"
+  },
+  "rules": {
+    "maxSecs": 170,
+    "minGapSecs": 0.2,
+    "maxCueChars": 72,
+    "meanDbRange": [
+      -23,
+      -17
+    ],
+    "maxPeakDb": -1.5,
+    "audioVideoSlackSecs": 0.5,
+    "minUiShare": 0.45,
+    "maxHoldSecs": 0.5,
+    "silence": {
+      "_doc": "No narration for minSecs or more counts as silence (ffmpeg silencedetect at noiseDb on the finished file).",
+      "noiseDb": -35,
+      "minSecs": 1.5,
+      "maxGapSecs": 3.0,
+      "maxShare": 0.2
+    },
+    "freeze": {
+      "_doc": "A picture that does not change for minSecs (ffmpeg freezedetect at noiseDb) is a frozen scene.",
+      "noiseDb": -60,
+      "minSecs": 4.0
+    }
+  },
   "fonts": {
     "sans": "apps/web/node_modules/@fontsource-variable/public-sans/files/public-sans-latin-wght-normal.woff2",
     "serif": "apps/web/node_modules/@fontsource-variable/newsreader/files/newsreader-latin-wght-normal.woff2",
     "mono": "apps/web/node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-400-normal.woff2"
   },
-  "subtitle": { "size": 40, "bottom": 34, "padX": 28, "padY": 14, "radius": 14 },
-  "label": { "size": 28, "margin": 48, "padX": 18, "padY": 10 },
+  "subtitle": {
+    "size": 40,
+    "bottom": 34,
+    "padX": 28,
+    "padY": 14,
+    "radius": 14
+  },
+  "label": {
+    "size": 28,
+    "margin": 48,
+    "padX": 18,
+    "padY": 10
+  },
   "liveFootage": {
     "_doc": "Footage filmed on the public site by e2e/tests/film-live.spec.ts (E2E_VIDEO + E2E_FILM_LIVE, English UI). typeDelayMs = pause between typed keys; holdSecs = seconds held on each moment so the cut has room; examplePaths = the finished /contoh paths shown, the last one has its first public record opened; countdownFromTop = where the demo countdown is held, as a share of the screen height from the top. live-run.json in the footage folder keeps the card link and the demo transactions for the explorer shots (explorerFootage.liveShots).",
     "typeDelayMs": 45,
-    "holdSecs": { "open": 3, "step": 2, "button": 2.5, "paid": 5, "steps": 4, "example": 4, "record": 6, "card": 4 },
-    "examplePaths": ["A", "D"],
+    "holdSecs": {
+      "open": 3,
+      "step": 2,
+      "button": 2.5,
+      "paid": 5,
+      "steps": 4,
+      "example": 4,
+      "record": 6,
+      "card": 4
+    },
+    "examplePaths": [
+      "A",
+      "D"
+    ],
     "countdownFromTop": 0.45
   },
   "explorerFootage": {
     "_doc": "Explorer footage filmed by e2e/tests/film-explorer.spec.ts (E2E_VIDEO + E2E_EXPLORER, Chromium project) from the run in config/examples.json. tx = [path, step] in that file; address = a key of that file. Each stop scrolls to the heading with exactly that name ('heading') or the first element containing that text ('text'); neither = stay where the page is; the target lands marginPx below the top, clear of the explorer's sticky tab bar. Then it holds for 'hold' seconds.",
-    "viewport": { "width": 1280, "height": 720 },
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
     "liveShots": [
-      { "id": "explorer-live-payout", "run": "demo-silent", "step": -1, "like": "explorer-payout" },
-      { "id": "explorer-live-dormant", "run": "demo-closed", "step": -1, "like": "explorer-payout" }
+      {
+        "id": "explorer-live-payout",
+        "run": "demo-silent",
+        "step": -1,
+        "like": "explorer-payout"
+      },
+      {
+        "id": "explorer-live-dormant",
+        "run": "demo-closed",
+        "step": -1,
+        "like": "explorer-payout"
+      }
     ],
     "_liveShotsDoc": "liveShots film transactions from the last live recording (<E2E_VIDEO>/live-run.json from film-live.spec.ts): run = which demo scene, step = index into its steps (-1 = the payout, the last one), like = the shot whose stops it reuses. Skipped when that file is absent.",
     "loadSecs": 6,
     "marginPx": 110,
     "shots": [
-      { "id": "explorer-deposit", "tx": ["setup", "deposit"], "stops": [{ "hold": 2 }, { "heading": "Tokens", "hold": 6 }] },
-      { "id": "explorer-payout", "tx": ["B", "settle_unanswered"], "stops": [{ "hold": 2 }, { "heading": "Tokens", "hold": 5 }, { "text": "Reserve Paid", "hold": 6 }] },
-      { "id": "explorer-program", "address": "programId", "stops": [{ "hold": 8 }] }
+      {
+        "id": "explorer-deposit",
+        "tx": [
+          "setup",
+          "deposit"
+        ],
+        "stops": [
+          {
+            "hold": 2
+          },
+          {
+            "heading": "Tokens",
+            "hold": 6
+          }
+        ]
+      },
+      {
+        "id": "explorer-payout",
+        "tx": [
+          "B",
+          "settle_unanswered"
+        ],
+        "stops": [
+          {
+            "hold": 2
+          },
+          {
+            "heading": "Tokens",
+            "hold": 5
+          },
+          {
+            "text": "Reserve Paid",
+            "hold": 6
+          }
+        ]
+      },
+      {
+        "id": "explorer-program",
+        "address": "programId",
+        "stops": [
+          {
+            "hold": 8
+          }
+        ]
+      }
     ]
   },
   "scenes": [
-    { "id": "home", "kind": "phone", "clip": "clips/webkit-iphone13-home.webm", "in": 0, "out": 22, "dur": 22, "lines": [[1, 0.3], [2, 3.7]], "label": "Home page on an iPhone 13" },
-    { "id": "shop", "kind": "wide", "clip": "clips/chromium-en-kedai-seller.webm", "in": 8, "out": 44.5, "speed": 5, "crop": [1088, 612, 0, 0], "dur": 8.2, "lines": [[3, 0.2]], "label": "Shop board: deposit, issue a card · sped up 5×" },
-    { "id": "deposit-explorer", "kind": "wide", "clip": "clips/chromium-explorer-deposit.webm", "in": 15, "out": 22.7, "crop": [1040, 585, 120, 40], "dur": 6.5, "lines": [], "label": "Solana Explorer, devnet: the deposit locked in the shop's vault" },
-    { "id": "buyer", "kind": "phone", "clip": "clips/webkit-iphone13-ms-kedai-buyer.webm", "in": 0, "out": 10.5, "dur": 10.5, "lines": [[4, 0.3]], "label": "The buyer's phone, in Bahasa Melayu" },
-    { "id": "silent", "kind": "phone", "clip": "clips/webkit-iphone13-demo-silent.webm", "in": 0, "out": 20.4, "dur": 20.4, "lines": [[5, 0.4], [6, 13.0]], "label": "Test shop with a 5-second answer window" },
-    { "id": "payout-tokens", "kind": "wide", "clip": "clips/chromium-explorer-payout.webm", "in": 23.5, "out": 27.5, "crop": [1040, 585, 120, 40], "dur": 4.0, "lines": [], "label": "Solana Explorer, devnet: the reserve paid to the buyer" },
-    { "id": "payout-event", "kind": "wide", "clip": "clips/chromium-explorer-payout.webm", "in": 30.0, "out": 34.0, "crop": [1040, 585, 120, 40], "dur": 4.0, "lines": [], "label": "The program's own record of the payout" },
-    { "id": "closed", "kind": "phone", "clip": "clips/webkit-iphone13-demo-closed.webm", "in": 2.0, "out": 18.32, "dur": 16.3, "lines": [[7, 1.0]], "label": "Test shop with a 5-second check-in window" },
-    { "id": "honest", "kind": "wide", "clip": "clips/chromium-en-kedai-seller.webm", "in": 105.6, "out": 106.8, "crop": [853, 480, 60, 140], "dur": 10.2, "lines": [[8, 0.3]], "label": "Shop board: a claim waiting for the shop" },
-    { "id": "program", "kind": "wide", "clip": "clips/chromium-explorer-program.webm", "in": 13.8, "out": 17.6, "crop": [656, 369, 140, 90], "dur": 5.0, "lines": [[9, 0.3]], "label": "The Kekal program on Solana devnet" },
-    { "id": "tests", "kind": "wide", "clip": "term/cargo-test.mp4", "in": 0, "out": 16.07, "dur": 16.07, "lines": [] },
-    { "id": "close", "kind": "wide", "clip": "clips/chromium-home.webm", "in": 5.5, "out": 13.5, "dur": 12, "lines": [[10, 0.6], [11, 8.4]], "label": "kekal.sasateguh.com" }
-  ]
+    {
+      "id": "open-paid",
+      "kind": "zoom",
+      "clip": "live-v3/webkit-iphone13-live-demo-silent.webm",
+      "in": 80.0,
+      "out": 84.5,
+      "dur": 4.5,
+      "crop": [
+        780,
+        700,
+        0,
+        380
+      ],
+      "lines": [
+        [
+          1,
+          0.4
+        ]
+      ],
+      "label": "Live on Solana devnet · Narration: synthetic voice",
+      "side": "The shop went quiet. The buyer was paid."
+    },
+    {
+      "id": "open-explorer",
+      "kind": "wide",
+      "clip": "live-v3/chromium-explorer-live-payout.webm",
+      "in": 16.5,
+      "out": 19.3,
+      "dur": 2.8,
+      "crop": [
+        1000,
+        563,
+        140,
+        95
+      ],
+      "lines": [
+        [
+          2,
+          1.4
+        ]
+      ],
+      "label": "Solana Explorer, devnet: 25 tokens to the card holder"
+    },
+    {
+      "id": "card",
+      "kind": "still",
+      "image": "live-v3/live-card-1.png",
+      "crop": [
+        1241,
+        1240,
+        0,
+        0
+      ],
+      "zoomTo": 1.12,
+      "focus": [
+        0.3,
+        0.35
+      ],
+      "dur": 8.0,
+      "lines": [],
+      "label": "A card printed from the shop board on devnet",
+      "side": "The shop's own promise: it fixes its installation work."
+    },
+    {
+      "id": "hero",
+      "kind": "zoom",
+      "clip": "clips/webkit-iphone13-home.webm",
+      "in": 0.5,
+      "out": 6.5,
+      "dur": 6.0,
+      "crop": [
+        780,
+        760,
+        0,
+        60
+      ],
+      "lines": [],
+      "label": "kekal.sasateguh.com on an iPhone 13",
+      "side": "A warranty that outlives the shop."
+    },
+    {
+      "id": "shop",
+      "kind": "zoom",
+      "clip": "live-v3/chromium-live-kedai-seller.webm",
+      "in": 3.0,
+      "out": 26.0,
+      "speed": 3.5,
+      "dur": 6.57,
+      "crop": [
+        700,
+        640,
+        100,
+        40
+      ],
+      "lines": [
+        [
+          3,
+          0.2
+        ]
+      ],
+      "label": "Shop board on devnet · sped up 3.5×",
+      "side": "Lock a reserve. Check in. Print a card with a QR code."
+    },
+    {
+      "id": "deposit-explorer",
+      "kind": "wide",
+      "clip": "clips/chromium-explorer-deposit.webm",
+      "in": 15.0,
+      "out": 17.5,
+      "dur": 2.5,
+      "crop": [
+        1040,
+        585,
+        120,
+        40
+      ],
+      "lines": [],
+      "label": "Solana Explorer, devnet: the deposit locked in the shop's vault"
+    },
+    {
+      "id": "buyer",
+      "kind": "zoom",
+      "clip": "live-v3/webkit-iphone13-live-buyer.webm",
+      "in": 2.0,
+      "out": 7.0,
+      "dur": 5.0,
+      "crop": [
+        780,
+        700,
+        0,
+        0
+      ],
+      "lines": [
+        [
+          4,
+          0.2
+        ]
+      ],
+      "label": "Live on Solana devnet · the buyer's phone",
+      "side": "No wallet. No fees."
+    },
+    {
+      "id": "buyer-active",
+      "kind": "zoom",
+      "clip": "live-v3/webkit-iphone13-live-buyer.webm",
+      "in": 7.0,
+      "out": 15.0,
+      "speed": 2,
+      "dur": 4.0,
+      "crop": [
+        780,
+        720,
+        0,
+        300
+      ],
+      "lines": [],
+      "label": "Live on Solana devnet · sped up 2×",
+      "side": "The card shows the reserve and the shop's deadline."
+    },
+    {
+      "id": "claim",
+      "kind": "zoom",
+      "clip": "live-v3/webkit-iphone13-live-demo-silent.webm",
+      "in": 7.5,
+      "out": 13.8,
+      "speed": 2,
+      "dur": 3.15,
+      "crop": [
+        780,
+        700,
+        0,
+        628
+      ],
+      "lines": [
+        [
+          5,
+          0.6
+        ]
+      ],
+      "label": "Live on Solana devnet · sped up 2×",
+      "side": "Something breaks. The buyer files a claim."
+    },
+    {
+      "id": "countdown",
+      "kind": "zoom",
+      "clip": "live-v3/webkit-iphone13-live-demo-silent.webm",
+      "in": 19.0,
+      "out": 76.6,
+      "speed": 8,
+      "dur": 7.2,
+      "crop": [
+        780,
+        700,
+        0,
+        250
+      ],
+      "lines": [
+        [
+          6,
+          6.3
+        ]
+      ],
+      "label": "Live on Solana devnet · sped up 8×",
+      "side": "The shop has a fixed time to answer. It stays silent."
+    },
+    {
+      "id": "pay",
+      "kind": "zoom",
+      "clip": "live-v3/webkit-iphone13-live-demo-silent.webm",
+      "in": 78.0,
+      "out": 84.0,
+      "dur": 6.0,
+      "crop": [
+        780,
+        700,
+        0,
+        380
+      ],
+      "lines": [],
+      "label": "Live on Solana devnet",
+      "side": "Time is up. Anyone can press the button."
+    },
+    {
+      "id": "pay-explorer",
+      "kind": "wide",
+      "clip": "live-v3/chromium-explorer-live-payout.webm",
+      "in": 22.5,
+      "out": 25.5,
+      "dur": 3.0,
+      "crop": [
+        1000,
+        563,
+        140,
+        40
+      ],
+      "lines": [],
+      "label": "Solana Explorer, devnet: the program's Reserve Paid record"
+    },
+    {
+      "id": "closed-countdown",
+      "kind": "zoom",
+      "clip": "live-v3/webkit-iphone13-live-demo-closed.webm",
+      "in": 12.0,
+      "out": 71.6,
+      "speed": 24,
+      "dur": 2.48,
+      "crop": [
+        780,
+        700,
+        0,
+        280
+      ],
+      "lines": [
+        [
+          7,
+          0.3
+        ]
+      ],
+      "label": "Live on Solana devnet · sped up 24×",
+      "side": "A shop stops checking in."
+    },
+    {
+      "id": "closed-mark",
+      "kind": "zoom",
+      "clip": "live-v3/webkit-iphone13-live-demo-closed.webm",
+      "in": 73.4,
+      "out": 75.9,
+      "dur": 2.5,
+      "crop": [
+        780,
+        720,
+        0,
+        380
+      ],
+      "lines": [],
+      "label": "Live on Solana devnet · two refused retries cut",
+      "side": "Anyone can mark it silent."
+    },
+    {
+      "id": "closed-paid",
+      "kind": "zoom",
+      "clip": "live-v3/webkit-iphone13-live-demo-closed.webm",
+      "in": 84.6,
+      "out": 87.6,
+      "dur": 3.0,
+      "crop": [
+        780,
+        720,
+        0,
+        480
+      ],
+      "lines": [],
+      "label": "Live on Solana devnet",
+      "side": "Every card it issued can be paid."
+    },
+    {
+      "id": "examples",
+      "kind": "zoom",
+      "clip": "live-v3/chromium-live-examples.webm",
+      "in": 1.5,
+      "out": 12.0,
+      "speed": 2,
+      "dur": 5.25,
+      "crop": [
+        600,
+        560,
+        80,
+        60
+      ],
+      "lines": [
+        [
+          8,
+          0.15
+        ]
+      ],
+      "label": "Finished paths on devnet · sped up 2×",
+      "side": "An honest shop loses nothing."
+    },
+    {
+      "id": "examples-tx",
+      "kind": "wide",
+      "clip": "live-v3/chromium-live-examples-1.webm",
+      "in": 2.5,
+      "out": 5.0,
+      "dur": 2.5,
+      "crop": [
+        1000,
+        563,
+        140,
+        40
+      ],
+      "lines": [],
+      "label": "Solana Explorer, devnet: one public record"
+    },
+    {
+      "id": "program",
+      "kind": "wide",
+      "clip": "clips/chromium-explorer-program.webm",
+      "in": 12.5,
+      "out": 15.5,
+      "dur": 3.0,
+      "crop": [
+        656,
+        369,
+        140,
+        90
+      ],
+      "lines": [
+        [
+          9,
+          0.2
+        ]
+      ],
+      "label": "Kekal on devnet · program hash 2060781a…f77c matches the local build"
+    },
+    {
+      "id": "tests",
+      "kind": "wide",
+      "clip": "term/cargo-test.mp4",
+      "in": 13.0,
+      "out": 16.06,
+      "dur": 3.06,
+      "crop": [
+        1920,
+        1080,
+        0,
+        0
+      ],
+      "lines": []
+    },
+    {
+      "id": "close",
+      "kind": "title",
+      "dur": 11.5,
+      "lines": [
+        [
+          10,
+          0.4
+        ],
+        [
+          11,
+          8.9
+        ]
+      ]
+    }
+  ],
+  "zoom": {
+    "_doc": "Panel for zoom and still scenes: the crop fits in maxWidth x maxHeight, top-aligned at top, on the 'panel' side (left unless the scene says right); the sentence fills the rest of the width.",
+    "maxWidth": 1100,
+    "maxHeight": 880,
+    "top": 50,
+    "margin": 88,
+    "border": 5,
+    "radius": 26,
+    "sideSize": 64,
+    "sideLineGap": 1.22
+  },
+  "narration": {
+    "_doc": "Line lengths of the narration this cut is timed against (narration.json in the voice folder). build refuses a voice whose lines differ by more than toleranceSecs.",
+    "voice": "voice-v3-af_heart",
+    "toleranceSecs": 0.05,
+    "seconds": {
+      "1": 2.816,
+      "2": 14.656,
+      "3": 6.443,
+      "4": 6.613,
+      "5": 6.293,
+      "6": 7.381,
+      "7": 5.355,
+      "8": 6.827,
+      "9": 5.632,
+      "10": 7.787,
+      "11": 2.261
+    }
+  },
+  "closing": {
+    "title": "Kekal",
+    "tagline": "The warranty that outlives the shop.",
+    "demoPath": "/demo",
+    "note": "Solana devnet only. No shop uses it yet.",
+    "zoomTo": 1.04
+  }
 }
