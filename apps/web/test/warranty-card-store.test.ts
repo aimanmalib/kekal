@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { activateCard, addPending, pendingKey, resolveKey, type KeyStorage } from "../src/lib/warranty/card-store";
 import { ActionError, encodeSeed, keypairFromSeed } from "../src/lib/warranty/client";
+// Static imports: loading the SDK and the program module is slow on a busy host and must not
+// count against a single test's 5 s timer (it timed out once that way inside the gate).
+import { accountFieldOffset } from "@kekal/sdk";
+import { chainHolder } from "../src/lib/warranty/program";
 
 const KEY = "kekal.card.TestWarranty";
 
@@ -137,8 +141,6 @@ describe("card key storage: activation cannot lose the new key", () => {
 
 describe("chainHolder: re-reads the holder after an unconfirmed send", () => {
   it("asks /api/rpc for only the 32 holder bytes of a program-owned account and decodes them", async () => {
-    const { accountFieldOffset } = await import("@kekal/sdk");
-    const { chainHolder } = await import("../src/lib/warranty/program");
     const holderBytes = keypairFromSeed(seedOf(8)).publicKey.toBytes();
     let sent: { method: string; params: [string, { dataSlice: { offset: number; length: number } }] } | null = null;
     const original = globalThis.fetch;

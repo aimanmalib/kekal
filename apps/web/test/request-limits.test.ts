@@ -36,18 +36,21 @@ describe("readBodyText", () => {
 });
 
 describe("POST /api/session/nonce", () => {
-  beforeAll(() => {
+  let POST: typeof import("../src/app/api/session/nonce/route").POST;
+  // The route is loaded once here, after the env is set, so a slow module load on a busy host
+  // falls under this hook's timeout and not under a single test's 5 s timer.
+  beforeAll(async () => {
     process.env.KEKAL_SQLITE_PATH = ":memory:";
     process.env.KEKAL_SESSION_SECRET = "s".repeat(webConfig.session.minSecretLength);
     process.env.KEKAL_SITE_URL = SITE;
-  });
+    ({ POST } = await import("../src/app/api/session/nonce/route"));
+  }, 30_000);
   afterAll(() => {
     process.env = { ...saved };
   });
   const json = (pubkey: string, pad = 0) => JSON.stringify({ pubkey, lang: "en" }) + " ".repeat(pad);
 
   it("names the configured site even when the request comes in under another host", async () => {
-    const { POST } = await import("../src/app/api/session/nonce/route");
     const req = streamed("http://lookalike.example/api/session/nonce", json(Keypair.generate().publicKey.toBase58()), {
       host: "lookalike.example",
     });
@@ -58,7 +61,6 @@ describe("POST /api/session/nonce", () => {
     expect(message).not.toContain("lookalike.example");
   });
   it("answers 413 to an oversized body sent without a length", async () => {
-    const { POST } = await import("../src/app/api/session/nonce/route");
     const pad = webConfig.rpc.maxBodyBytes + 1;
     const res = await POST(streamed("http://x/api/session/nonce", json(Keypair.generate().publicKey.toBase58(), pad)));
     expect(res.status).toBe(413);
