@@ -33,5 +33,6 @@ Index of the architecture decision records (ADRs) for Kekal; each record explain
 | [0026](decisions/0026-public-ci.md) | Public CI runs the test gate without a local validator | accepted |
 | [0027](decisions/0027-demo-funding.md) | The public demo pays only rent it needs, and reports runs left | accepted |
 | [0028](decisions/0028-live-footage.md) | Demo footage is filmed on the public devnet site, in English | accepted |
+| [0029](decisions/0029-video-v3-cut.md) | Third video cut: zoomed product panels, measured silence and frozen frames | accepted |
 
 New decisions: add an ADR as `decisions/NNNN-short-title.md` and a line here.
