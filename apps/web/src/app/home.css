@@ -1,7 +1,8 @@
-/* Home page: the title, then the sample card on a drawn phone, then the rules. From 56rem the phone gets its own column. */
+/* Home page. First screen: the title, the one-sentence story, the demo button, then the printed card and the same card
+   paid on a drawn phone. From 56rem the card and the phone share the right column. */
 .home {
   display: grid;
-  grid-template-areas: "links" "title" "phone" "intro" "how" "see" "why" "faq" "limits";
+  grid-template-areas: "links" "title" "story" "cta" "objects" "intro" "how" "see" "why" "faq" "limits";
   gap: var(--space-2);
   padding-top: var(--space-2);
 }
@@ -26,11 +27,65 @@
   text-wrap: balance;
 }
 
+.home-story {
+  grid-area: story;
+  margin: calc(-1 * var(--space-1)) 0 0;
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  line-height: 1.35;
+  max-width: 26ch;
+  text-wrap: balance;
+}
+
+.hero-cta {
+  grid-area: cta;
+}
+
+.hero-cta .home-cta {
+  margin: 0;
+}
+
+/* The printed card and the phone. One column on a phone: the card, then the phone with the paid stamp. */
+.hero-objects {
+  grid-area: objects;
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+}
+
 .phone-wrap {
-  grid-area: phone;
-  justify-self: center;
   width: min(100%, 22rem);
 }
+
+/* The A6 card as printed: paper with a hairline edge, set down slightly askew. Never animated. */
+.printed-card {
+  display: block;
+  width: min(100%, 15rem);
+  height: auto;
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  transform: rotate(-2deg);
+}
+
+.printed-card text {
+  font-kerning: normal;
+}
+
+.pc-paper-f { fill: var(--paper); }
+.pc-ink-f { fill: var(--ink); }
+.pc-ink-soft-f { fill: var(--ink-soft); }
+.pc-rule-f { fill: var(--rule); }
+.pc-copper-f { fill: var(--copper); }
+.pc-none-f { fill: none; }
+.pc-ink-s { stroke: var(--ink); }
+.pc-rule-s { stroke: var(--rule); }
+.pc-ink-soft-s { stroke: var(--ink-soft); }
+.pc-copper-s { stroke: var(--copper); }
+.pc-paper-s { stroke: var(--paper); }
+.pc-display { font-family: var(--font-display); font-style: italic; }
+.pc-ui { font-family: var(--font-ui); }
+.pc-ui-bold { font-family: var(--font-ui); font-weight: 600; }
+.pc-mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
 
 .intro {
   grid-area: intro;
@@ -152,9 +207,11 @@
 
 @media (min-width: 56rem) {
   .home {
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-    grid-template-rows: auto auto 1fr;
-    grid-template-areas: "links links" "title phone" "intro phone" "how how" "see see" "why why" "faq faq" "limits limits";
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    grid-template-rows: auto auto auto 1fr;
+    grid-template-areas:
+      "links links" "title objects" "story objects" "cta objects" "intro objects"
+      "how how" "see see" "why why" "faq faq" "limits limits";
     gap: var(--space-3) var(--space-4);
     align-items: start;
     padding-top: var(--space-4);
@@ -162,6 +219,33 @@
 
   .home-title {
     max-width: 14ch;
+  }
+
+  .home-story {
+    font-size: var(--step-2);
+    line-height: 1.25;
+  }
+
+  /* The phone on the right, the printed card behind its left edge. */
+  .hero-objects {
+    position: relative;
+    display: block;
+    padding-left: 38%;
+  }
+
+  .hero-objects .phone-wrap {
+    position: relative;
+    width: 100%;
+    max-width: 22rem;
+    margin-left: auto;
+  }
+
+  .printed-card {
+    position: absolute;
+    top: var(--space-4);
+    left: 0;
+    width: 46%;
+    transform: rotate(-4deg);
   }
 }
 

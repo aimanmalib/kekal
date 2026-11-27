@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { SiteFrame } from "@/components/SiteFrame";
-import { HomeFacts } from "@/components/HomeFacts";
+import { HomeCta, HomeFacts } from "@/components/HomeFacts";
 import { JudgeLinks } from "@/components/JudgeLinks";
 import { PhoneFrame } from "@/components/PhoneFrame";
 import { WarrantyCard } from "@/components/WarrantyCard";
 import { HowItWorks } from "@/components/home/HowItWorks";
+import { PrintedCard } from "@/components/home/PrintedCard";
 import { HomeLimits, HomeQuestions, HomeWhy } from "@/components/home/HomeReading";
 import { SeeItHappen } from "@/components/home/SeeItHappen";
 import { clusterSettings } from "@kekal/server";
@@ -14,6 +15,7 @@ import { translator, type MessageKey } from "@/lib/i18n";
 import { localeMetadata } from "@/lib/page-metadata";
 import { requestLang } from "@/lib/request-lang";
 import { readProgramStats } from "@/lib/shop/read";
+import { sampleCard } from "@/lib/shop/sample-card";
 
 const rules: MessageKey[] = ["home.rule.silent", "home.rule.gone", "home.rule.expired"];
 
@@ -33,6 +35,7 @@ export default async function Home() {
   ]).catch(() => null);
   const network = t(`cluster.${cluster.name}` as MessageKey);
   const examples = siteExamples(cluster.name);
+  const printed = await sampleCard(lang, sampleReserve(), cluster.deployed);
   const explorer = clusterSettings(cluster.name).explorerAddress.replace("{address}", cluster.programId);
   return (
     <SiteFrame lang={lang} t={t}>
@@ -45,21 +48,29 @@ export default async function Home() {
           network={network}
         />
         <h1 className="home-title">{t("home.title")}</h1>
-        <PhoneFrame
-          label={t("home.phone.label")}
-          title={t("app.name")}
-          caption={t(cluster.deployed ? "card.sample.note" : "card.sample.notePending")}
-        >
-          <WarrantyCard
-            t={t}
-            product={t("card.sample.product")}
-            reserve={sampleReserve()}
-            currency={webConfig.currency}
-            expires={t("card.sample.expires")}
-            status={t("status.claim.paidOrphan")}
-            stamp={t("stamp.paid")}
-          />
-        </PhoneFrame>
+        <p className="home-story">{t("home.story")}</p>
+        <div className="hero-cta">
+          <HomeCta t={t} programId={cluster.deployed ? cluster.programId : null} examplesReady={examples !== null} />
+        </div>
+        {/* The printed card the buyer keeps, and the same card on the phone once the shop went silent. */}
+        <div className="hero-objects">
+          <PrintedCard card={printed} label={t("home.print.label")} />
+          <PhoneFrame
+            label={t("home.phone.label")}
+            title={t("app.name")}
+            caption={t(cluster.deployed ? "card.sample.note" : "card.sample.notePending")}
+          >
+            <WarrantyCard
+              t={t}
+              product={t("card.sample.product")}
+              reserve={sampleReserve()}
+              currency={webConfig.currency}
+              expires={t("card.sample.expires")}
+              status={t("status.claim.paidOrphan")}
+              stamp={t("stamp.paid")}
+            />
+          </PhoneFrame>
+        </div>
         <section className="intro">
           <p className="lede">{t("home.lede")}</p>
           <ul className="rules">
@@ -72,9 +83,7 @@ export default async function Home() {
             stats={stats}
             decimals={cluster.tokenDecimals}
             currency={webConfig.currency}
-            programId={cluster.deployed ? cluster.programId : null}
             network={network}
-            examplesReady={examples !== null}
           />
         </section>
         <HowItWorks t={t} lang={lang} />

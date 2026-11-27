@@ -17,24 +17,30 @@ interface Props {
   examplesReady: boolean;
 }
 
-/** The demo call to action, live numbers read from the program and where to go next. */
-export function HomeFacts({ t, stats, decimals, currency, programId, network, examplesReady }: Props) {
+/** The call to action in the first screen: the live demo once the program is deployed, and the finished examples once
+ * a run is recorded. Nothing while neither exists. */
+export function HomeCta({ t, programId, examplesReady }: Pick<Props, "t" | "programId" | "examplesReady">) {
+  if (!programId && !examplesReady) return null;
+  return (
+    <p className="home-cta">
+      {programId ? (
+        <Link href="/demo" className="button">
+          {t("home.cta")}
+        </Link>
+      ) : null}
+      {examplesReady ? (
+        <Link href="/contoh" className={programId ? "button button-link" : "button"}>
+          {t("home.examples")}
+        </Link>
+      ) : null}
+    </p>
+  );
+}
+
+/** Live numbers read from the program and where to go next. */
+export function HomeFacts({ t, stats, decimals, currency, network }: Omit<Props, "programId" | "examplesReady">) {
   return (
     <section className="home-facts">
-      {programId || examplesReady ? (
-        <p className="home-cta">
-          {programId ? (
-            <Link href="/demo" className="button">
-              {t("home.cta")}
-            </Link>
-          ) : null}
-          {examplesReady ? (
-            <Link href="/contoh" className={programId ? "button button-link" : "button"}>
-              {t("home.examples")}
-            </Link>
-          ) : null}
-        </p>
-      ) : null}
       {stats ? (
         <dl className="figures" aria-label={fill(t("home.stats.label"), { network })}>
           <div>

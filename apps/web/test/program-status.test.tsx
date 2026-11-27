@@ -9,7 +9,7 @@ import { DemoClosed } from "../src/components/demo/DemoClosed";
 import { ExamplesView } from "../src/components/demo/ExamplesView";
 import { ShopNetworkNote } from "../src/components/kedai/ShopNetworkNote";
 import { WalletPicker } from "../src/components/kedai/WalletPicker";
-import { HomeFacts } from "../src/components/HomeFacts";
+import { HomeCta, HomeFacts } from "../src/components/HomeFacts";
 import { SiteFrame } from "../src/components/SiteFrame";
 import { parseFlag, runtimeCluster } from "../src/lib/config";
 import { buildHealth } from "../src/lib/health";
@@ -123,15 +123,10 @@ describe("site notice and /demo state", () => {
   });
   const home = (programId: string | null, examplesReady = true) =>
     renderToStaticMarkup(
-      <HomeFacts
-        t={translator("en")}
-        stats={null}
-        decimals={6}
-        currency="USDC"
-        programId={programId}
-        network={en["cluster.devnet"]}
-        examplesReady={examplesReady}
-      />,
+      <>
+        <HomeCta t={translator("en")} programId={programId} examplesReady={examplesReady} />
+        <HomeFacts t={translator("en")} stats={null} decimals={6} currency="USDC" network={en["cluster.devnet"]} />
+      </>,
     );
   it("the home page offers the finished examples, not the closed demo, while the program is missing", () => {
     const html = home(null);
@@ -282,8 +277,7 @@ describe("error texts and the sweep of every page while the program is missing a
     const t = translator("en");
     const network = en["cluster.devnet"];
     const homeHtml = renderToStaticMarkup(
-      <HomeFacts t={t} stats={null} decimals={6} currency="USDC" programId={finished.programId}
-        network={network} examplesReady />,
+      <HomeCta t={t} programId={finished.programId} examplesReady />,
     );
     expect(homeHtml).toMatch(/<a class="button" href="\/demo">/);
     expect(homeHtml).toContain('href="/contoh"');

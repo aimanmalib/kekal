@@ -89,22 +89,42 @@ describe("home page", () => {
     const { default: Home } = await import("../src/app/page");
     return renderToStaticMarkup(await Home());
   };
-  it("puts the sample card on a phone right after the title, in both languages", { timeout: 30_000 }, async () => {
+  it("tells the story in the first screen: title, one sentence, the demo button, the printed card, the paid phone", { timeout: 30_000 }, async () => {
+    vi.stubEnv("KEKAL_CLUSTER", "devnet");
+    vi.stubEnv("KEKAL_PROGRAM_DEPLOYED", "true");
+    for (const [lang, dict] of langs) {
+      const html = await render(lang);
+      const at = {
+        title: html.indexOf(`<h1 class="home-title">${dict["home.title"]}</h1>`),
+        story: html.indexOf(`<p class="home-story">${dict["home.story"].replaceAll("'", "&#x27;")}</p>`),
+        button: html.indexOf(`<a class="button" href="/demo">${dict["home.cta"]}</a>`),
+        printed: html.indexOf('<svg class="printed-card"'),
+        phone: html.indexOf('<div class="phone"'),
+        intro: html.indexOf('<section class="intro">'),
+      };
+      expect(Object.values(at).every((i) => i > -1), `${lang} ${JSON.stringify(at)}`).toBe(true);
+      expect(Object.values(at), lang).toEqual([...Object.values(at)].sort((a, b) => a - b));
+      // At most 25 words of prose before the button: the title and the one sentence.
+      const words = `${dict["home.title"]} ${dict["home.story"]}`.split(/\s+/).length;
+      expect(words, lang).toBeLessThanOrEqual(25);
+      const printed = html.slice(at.printed, html.indexOf("</svg>", at.printed));
+      expect(printed, lang).toContain(`aria-label="${dict["home.print.label"]}"`);
+      for (const key of ["card.title", "card.sample.product", "card.sample.serial"] as const) expect(printed, `${lang} ${key}`).toContain(`>${dict[key]}</text>`);
+      const onPhone = html.slice(at.phone, at.intro);
+      expect(onPhone, lang).toContain(`aria-label="${dict["home.phone.label"]}"`);
+      expect(onPhone, lang).toContain(`class="card-title">${dict["card.title"]}`);
+      expect(onPhone, lang).toContain(dict["stamp.paid"]);
+      expect(onPhone, lang).toContain(dict["card.sample.note"]);
+    }
+  });
+  it("offers the finished examples, not the closed demo, in the first screen while the program is not deployed", { timeout: 30_000 }, async () => {
     vi.stubEnv("KEKAL_CLUSTER", "devnet");
     vi.stubEnv("KEKAL_PROGRAM_DEPLOYED", "false");
     for (const [lang, dict] of langs) {
       const html = await render(lang);
-      const title = html.indexOf(`<h1 class="home-title">${dict["home.title"]}</h1>`);
-      const phone = html.indexOf('<div class="phone"');
-      const lede = html.indexOf(`<section class="intro">`);
-      expect(title, lang).toBeGreaterThan(-1);
-      expect(phone, lang).toBeGreaterThan(title);
-      expect(lede, lang).toBeGreaterThan(phone);
-      const onPhone = html.slice(phone, lede);
-      expect(onPhone, lang).toContain(`aria-label="${dict["home.phone.label"]}"`);
-      expect(onPhone, lang).toContain(`class="card-title">${dict["card.title"]}`);
-      expect(onPhone, lang).toContain(dict["stamp.paid"]);
-      expect(onPhone, lang).toContain(dict["card.sample.notePending"]);
+      expect(html, lang).not.toContain('href="/demo"');
+      expect(html.indexOf('<svg class="printed-card"'), lang).toBeGreaterThan(html.indexOf(`<p class="home-story">`));
+      expect(html, lang).toContain(dict["card.sample.notePending"]);
     }
   });
   it("shows the reviewer row only for the links config has, while the program is not deployed", async () => {

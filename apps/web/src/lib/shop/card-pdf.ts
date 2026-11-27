@@ -1,7 +1,7 @@
 // The A6 PDF card: one page per language. Standard PDF fonts (no font files to ship); characters they cannot print are
 // replaced, and the full text stays on the warranty page.
 import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage } from "pdf-lib";
-import { cardOps, type CardColor, type CardFont, type CardPage } from "./card";
+import { cardOps, type CardColor, type CardFont, type CardPage, type Measure } from "./card";
 
 export type CardPalette = Record<CardColor, string>;
 
@@ -45,6 +45,23 @@ function draw(page: PDFPage, ops: ReturnType<typeof cardOps>, fonts: Record<Card
   }
 }
 
+async function embedFonts(doc: PDFDocument): Promise<Record<CardFont, PDFFont>> {
+  return {
+    display: await doc.embedFont(StandardFonts.TimesRomanItalic),
+    ui: await doc.embedFont(StandardFonts.Helvetica),
+    uiBold: await doc.embedFont(StandardFonts.HelveticaBold),
+    mono: await doc.embedFont(StandardFonts.Courier),
+  };
+}
+
+const measureWith = (fonts: Record<CardFont, PDFFont>): Measure => (text, font, sz) =>
+  fonts[font].widthOfTextAtSize(printable(text, fonts[font]), sz);
+
+/** The PDF's own text measurer, for laying out the card where no canvas exists (the server-drawn sample card). */
+export async function pdfMeasure(): Promise<Measure> {
+  return measureWith(await embedFonts(await PDFDocument.create()));
+}
+
 export async function cardPdf(
   pages: CardPage[],
   qr: { size: number; dark: boolean[]; margin: number },
@@ -56,13 +73,8 @@ export async function cardPdf(
   doc.setTitle(title);
   doc.setCreator("Kekal");
   doc.setProducer("Kekal");
-  const fonts: Record<CardFont, PDFFont> = {
-    display: await doc.embedFont(StandardFonts.TimesRomanItalic),
-    ui: await doc.embedFont(StandardFonts.Helvetica),
-    uiBold: await doc.embedFont(StandardFonts.HelveticaBold),
-    mono: await doc.embedFont(StandardFonts.Courier),
-  };
-  const measure = (text: string, font: CardFont, sz: number) => fonts[font].widthOfTextAtSize(printable(text, fonts[font]), sz);
+  const fonts = await embedFonts(doc);
+  const measure = measureWith(fonts);
   for (const p of pages) {
     const page = doc.addPage([size.width, size.height]);
     const ops = cardOps(p, qr, size.width, size.height, measure).map((op) =>
