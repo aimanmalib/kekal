@@ -14,7 +14,7 @@
   },
   "audio": {
     "sampleRate": 48000,
-    "targetMeanDb": -20.5,
+    "targetMeanDb": -18.0,
     "limitDb": -2.0,
     "bitrate": "160k"
   },
@@ -62,7 +62,7 @@
     "padY": 10
   },
   "liveFootage": {
-    "_doc": "Footage filmed on the public site by e2e/tests/film-live.spec.ts (E2E_VIDEO + E2E_FILM_LIVE, English UI). typeDelayMs = pause between typed keys; holdSecs = seconds held on each moment so the cut has room; examplePaths = the finished /contoh paths shown, the last one has its first public record opened; countdownFromTop = where the demo countdown is held, as a share of the screen height from the top. live-run.json in the footage folder keeps the card link and the demo transactions for the explorer shots (explorerFootage.liveShots).",
+    "_doc": "Footage filmed on the public site by e2e/tests/film-live.spec.ts (E2E_VIDEO + E2E_FILM_LIVE, English UI). typeDelayMs = pause between typed keys; holdSecs = seconds held on each moment so the cut has room; examplePaths = the finished /contoh paths shown, the last one has its first public record opened; shopPage = the public shop page (the showcase shop on devnet) filmed on a phone from its reserve down to its QR slip; countdownFromTop = where the demo countdown is held, as a share of the screen height from the top. live-run.json in the footage folder keeps the card link and the demo transactions for the explorer shots (explorerFootage.liveShots).",
     "typeDelayMs": 45,
     "holdSecs": {
       "open": 3,
@@ -78,7 +78,8 @@
       "A",
       "D"
     ],
-    "countdownFromTop": 0.45
+    "countdownFromTop": 0.45,
+    "shopPage": "/kedai/HL5rXKX63SEPURLxuWhjvwZFjuiEamqFsdRciqGaMhm8"
   },
   "explorerFootage": {
     "_doc": "Explorer footage filmed by e2e/tests/film-explorer.spec.ts (E2E_VIDEO + E2E_EXPLORER, Chromium project) from the run in config/examples.json. tx = [path, step] in that file; address = a key of that file. Each stop scrolls to the heading with exactly that name ('heading') or the first element containing that text ('text'); neither = stay where the page is; the target lands marginPx below the top, clear of the explorer's sticky tab bar. Then it holds for 'hold' seconds.",
@@ -218,7 +219,7 @@
     {
       "id": "hero",
       "kind": "zoom",
-      "clip": "clips/webkit-iphone13-home.webm",
+      "clip": "live-v3b/webkit-iphone13-home.webm",
       "in": 0.5,
       "out": 6.5,
       "dur": 6.0,
@@ -226,7 +227,7 @@
         780,
         760,
         0,
-        60
+        0
       ],
       "lines": [],
       "label": "kekal.sasateguh.com on an iPhone 13",
@@ -427,7 +428,7 @@
         380
       ],
       "lines": [],
-      "label": "Live on Solana devnet · two refused retries cut",
+      "label": "Live on Solana devnet",
       "side": "Anyone can mark it silent."
     },
     {
@@ -487,6 +488,29 @@
       "label": "Solana Explorer, devnet: one public record"
     },
     {
+      "id": "shop-page",
+      "kind": "zoom",
+      "clip": "live-v3b/webkit-iphone13-live-shop-page.webm",
+      "in": 0.5,
+      "out": 17.0,
+      "speed": 2,
+      "dur": 8.25,
+      "crop": [
+        780,
+        760,
+        0,
+        0
+      ],
+      "lines": [
+        [
+          9,
+          0.4
+        ]
+      ],
+      "label": "Built during the hackathon · live on devnet · sped up 2×",
+      "side": "Before paying, anyone can see what the shop has locked."
+    },
+    {
       "id": "program",
       "kind": "wide",
       "clip": "clips/chromium-explorer-program.webm",
@@ -501,7 +525,7 @@
       ],
       "lines": [
         [
-          9,
+          10,
           0.2
         ]
       ],
@@ -528,11 +552,11 @@
       "dur": 11.5,
       "lines": [
         [
-          10,
+          11,
           0.4
         ],
         [
-          11,
+          12,
           8.9
         ]
       ]
@@ -551,7 +575,7 @@
   },
   "narration": {
     "_doc": "Line lengths of the narration this cut is timed against (narration.json in the voice folder). build refuses a voice whose lines differ by more than toleranceSecs.",
-    "voice": "voice-v3-af_heart",
+    "voice": "voice-v3b-af_heart",
     "toleranceSecs": 0.05,
     "seconds": {
       "1": 2.816,
@@ -562,9 +586,10 @@
       "6": 7.381,
       "7": 5.355,
       "8": 6.827,
-      "9": 5.632,
-      "10": 7.787,
-      "11": 2.261
+      "9": 6.293,
+      "10": 5.632,
+      "11": 7.787,
+      "12": 2.261
     }
   },
   "closing": {

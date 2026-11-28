@@ -39,5 +39,6 @@ Index of the architecture decision records (ADRs) for Kekal; each record explain
 | [0032](decisions/0032-public-shop-page.md) | Public shop page `/kedai/<owner>`: reserve, check-ins and claim windows linked to the explorer, cached, printable QR slip | accepted |
 | [0033](decisions/0033-shared-warranty-reads.md) | Shared warranty reads (single-flight, 2 s reuse, two RPC calls per repeat read), 503 + Retry-After on rate limits, `/demo` keeps checking after a failed read | accepted |
 | [0034](decisions/0034-hackathon-tracks.md) | Hackathon tracks: Best App Overall and Best DeFi only; partner tracks only when their integration runs on the live site | accepted |
+| [0035](decisions/0035-video-cut-v3b.md) | Fourth video cut: a scene of the public shop page built during the hackathon, the home page re-filmed, a louder mix | accepted |
 
 New decisions: add an ADR as `decisions/NNNN-short-title.md` and a line here.

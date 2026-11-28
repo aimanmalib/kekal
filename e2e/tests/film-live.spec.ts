@@ -18,6 +18,7 @@ interface LiveFootage {
   holdSecs: { open: number; step: number; button: number; paid: number; steps: number; example: number; record: number; card: number };
   examplePaths: string[];
   countdownFromTop: number;
+  shopPage: string;
 }
 const footage = (JSON.parse(readFileSync(join(root, "scripts", "video", "demo-cut.json"), "utf8")) as { liveFootage: LiveFootage })
   .liveFootage;
@@ -159,4 +160,21 @@ test("film live: the buyer opens the card on a phone", async ({ browser, baseURL
   await expect(card.getByText(t("panel.holder"))).toBeVisible();
   await hold(card, footage.holdSecs.paid);
   await closeContext(context, info, "live-buyer");
+});
+
+test("film live: the public shop page on a phone", async ({ browser, baseURL }, info) => {
+  phoneOnly(info);
+  const { context } = await newContext(browser, { lang, baseURL: baseURL!, options: deviceOptions(info) });
+  const page = await context.newPage();
+  await page.goto(footage.shopPage);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(t("shopPage.title"));
+  await hold(page, footage.holdSecs.open);
+  await bringUp(page, page.getByRole("heading", { name: t("shopPage.reserve.heading") }), 1800);
+  await hold(page, footage.holdSecs.step);
+  await bringUp(page, page.getByRole("heading", { name: t("shopPage.windows.heading") }), 1800);
+  await hold(page, footage.holdSecs.step);
+  const slip = page.getByRole("img", { name: t("shopPage.slip.qrAlt") });
+  await bringUp(page, slip, 1800, 0.3);
+  await hold(page, footage.holdSecs.card);
+  await closeContext(context, info, "live-shop-page");
 });
