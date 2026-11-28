@@ -73,3 +73,4 @@ One line per step, newest last. Dates are UTC.
 - 2026-11-27: Hackathon tracks recorded: Best App Overall and Best DeFi with code links; no partner track, since `/api/health` lists no live integration (ADR 0034).
 - 2026-11-28: Home page "How it works" screens load with the page instead of on scroll, so full-page screenshots and link previews show all three; repository About now links the live site and lists topics.
 - 2026-11-28: Demo video cut 4: a phone scene of the public shop page with its own narration line, the home page re-filmed from the live site, plain label on path C, louder mix (ADR 0035).
+- 2026-11-28: Submission text final: the description names the feature built during the hackathon (the public shop page) instead of pointing to the README; the headline figures (72 program tests, 20 instructions, 68.7 s demo to paid, 8 simultaneous readers, warranty page script size) are taken from MEASURED.md.
