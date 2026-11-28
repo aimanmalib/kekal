@@ -33,6 +33,7 @@ const SHOT_HEIGHT = 780;
 const url = (a: Asset): string => (typeof a === "string" ? a : a.src);
 
 /** Plain <picture>, not next/image: the files are already sized and encoded, so no optimiser has to run in the container.
+ * Eager, default decoding: a full-page capture (a reviewer's screenshot tool) paints them without scrolling.
  * Three steps, each with a real screen from the browser tests in the page's language. A sequence, so an ordered list. */
 export function HowItWorks({ t, lang }: { t: Translate; lang: Lang }) {
   return (
@@ -51,7 +52,6 @@ export function HowItWorks({ t, lang }: { t: Translate; lang: Lang }) {
                   height={SHOT_HEIGHT}
                   alt={t(`home.how.${step}.alt` as MessageKey)}
                   loading="eager"
-                  decoding="async"
                 />
               </picture>
               <h3>{t(`home.how.${step}.title` as MessageKey)}</h3>

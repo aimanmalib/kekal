@@ -158,6 +158,8 @@ describe("home page below the first screen", () => {
       // Loaded with the page, not on scroll: a full-page screenshot (a reviewer's tool, a link preview) shows all three.
       expect(how.match(/<img [^>]*loading="eager"/g), lang).toHaveLength(3);
       expect(how, lang).not.toContain('loading="lazy"');
+      // decoding="async" left them blank in a full-page Chromium capture at 1440 px, measured on the live site.
+      expect(how, lang).not.toContain('decoding="async"');
       for (const step of ["shop", "card", "paid"]) {
         expect(how, lang).toMatch(new RegExp(`<img src="[^"]*${step}-${lang}[^"]*\\.webp"[^>]*width="390" height="780"`));
         expect(how, lang).toContain(`alt="${dict[`home.how.${step}.alt` as keyof typeof dict].replaceAll("'", "&#x27;")}"`);
