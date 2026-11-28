@@ -62,8 +62,9 @@ The parts around the program (web app, fee relayer, keeper) and the money flow a
   on the live site in WebKit (iPhone 13) and Chromium ([measurements](docs/MEASURED.md)). A keeper process heartbeats the
   demo shop and sends the steps anyone may send. [`/contoh`](https://kekal.sasateguh.com/contoh) shows all five paths
   from a devnet run, each step linked to its transaction.
-- **Video:** a 135-second cut is recorded (the web app, the devnet explorer and a replay of the program tests); it is not
-  published yet.
+- **Video:** a 100-second demo with narration by a stock synthetic voice: the home page and the public shop page filmed on
+  the live site, the demo paths, the devnet explorer and a replay of the program tests
+  ([measurements](docs/MEASURED.md#demo-video-28-nov-2026)). The public video link is added here once it is published.
 - **Built during the hackathon:** a public page for each shop, [`/kedai/<owner>`](https://kekal.sasateguh.com/kedai/HL5rXKX63SEPURLxuWhjvwZFjuiEamqFsdRciqGaMhm8)
   (see the table under [Built during the hackathon](#built-during-the-hackathon)).
 - **Integrations:** none. The site runs on its own SQLite store; a Postgres store is written and tested
@@ -107,7 +108,8 @@ with status 0; the counts are in the next section. The first `anchor build` comp
 
 ## Tests
 
-Counts measured again on 25 Nov 2026; commands and run times are on the [measurements page](docs/MEASURED.md).
+Counts measured on 25 Nov 2026, the web app and video cut tests again on 28 Nov; commands and run times are on the
+[measurements page](docs/MEASURED.md).
 
 [CI](.github/workflows/ci.yml) runs on every push to `main`: format, `anchor build`, the IDL check, clippy and the program tests;
 then lint, typecheck, the SDK, server, keeper, script and web tests, the Postgres store tests and the web build. The local
@@ -122,7 +124,7 @@ validator runs and the browser tests stay in `scripts/gerbang-ujian.sh` and `scr
 | Script tests (cluster config, locales, how warranties are issued, deploy checks, RPC pacing) | `scripts/test/` | 22 | pass |
 | Keeper tests (heartbeats, dormant shops, due settling steps, image bundle) | `apps/keeper/test/` | 10 | pass |
 | Deploy script tests (uptime alerts, image smoke test, proxy route template) | `scripts/test/deploy.test.sh` | 9 | pass |
-| Video cut tests (narration timing, subtitle splitting, cut file, explorer shots) | `scripts/video/test_cut.py` | 11 | pass |
+| Video cut tests (narration timing, subtitle splitting, cut file, explorer shots) | `scripts/video/test_cut.py` | 22 | pass |
 | Server package tests (store on SQLite, keys, RPC failover, demo shop funding) | `packages/server/test/` | 22 | pass |
 | Store tests on a throwaway Postgres container | `scripts/test-postgres.sh` | 9 | pass |
 | Lifecycle paths A to E on a local validator | `scripts/lifecycle.ts` | 5 | pass |
@@ -218,6 +220,7 @@ Kick Off was on 27 Nov 2026 at 15:00 UTC. The tag
 |-------------|------|---------|
 | 27 Nov | Public shop page [`/kedai/<owner>`](https://kekal.sasateguh.com/kedai/HL5rXKX63SEPURLxuWhjvwZFjuiEamqFsdRciqGaMhm8): before buying, anyone sees the reserve a shop has locked, its live warranties, its last and next check-in, the claim windows and the arbiter, each figure linked to the explorer, with a QR slip to print on a quote. Linked from the warranty page and the shop board; no program change | `114a049`, `93d656a` |
 | 27 Nov | The live demo holds up when several people use it at once: reads of one warranty are shared and reused for two seconds (two RPC calls per repeat read instead of seven or more), a rate-limited RPC gives 503 with Retry-After instead of 502, and `/demo` keeps checking after a failed read instead of showing the claim form again. Eight simultaneous reads: 8 × 200; two demo runs at once both paid. No program change | `d98dca8`, `cd37d93` |
+| 28 Nov | Demo video cut 4: a phone scene of the public shop page with its own narration line, the home page re-filmed from the live site, a louder mix; the How it works screens on the home page load with the page | `da21685`, `88fd188`, `80ba3d8` |
 
 ## Related work
 

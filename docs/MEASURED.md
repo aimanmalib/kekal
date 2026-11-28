@@ -218,11 +218,19 @@ Command: `pnpm --filter @kekal/scripts measure-cu --cluster devnet --report <lif
 Balances read again at 17:22 UTC the same day were unchanged: fee relayer `5iAiugNu…` 2.46 SOL, demo shop key `DmxxbJiD…`
 1.51 SOL, arbiter 0.1 SOL ([`measured/live-site.json`](measured/live-site.json)).
 
-## Demo video (25 Nov 2026)
+## Demo video (28 Nov 2026)
 
-The second cut of the demo video is 135.17 s long (`ffprobe -show_entries format=duration`). It shows the web app (home page
-filmed on the live site, the demo paths on a local validator), the devnet explorer and a replay of real `cargo test`
-output. It has not been published yet.
+The fourth cut of the demo video ([ADR 0035](decisions/0035-video-cut-v3b.md)) replaces the 135.17 s second cut measured on
+25 Nov. Measured on the finished file on 28 Nov 2026 at 07:10 UTC:
+
+| Check | Command | Result |
+|---|---|---|
+| Length | `ffprobe -show_entries format=duration` | 100.27 s (audio stream 100.26 s) |
+| Loudness | `ffmpeg -af ebur128=peak=true` | -16.9 LUFS integrated, true peak -1.9 dBFS |
+| Mean and peak level | `ffmpeg -af volumedetect` | -18.1 dB mean, -2.0 dB max |
+| Video cut tests | `pytest scripts/video/test_cut.py` | 22 passed, 0.05 s |
+
+The narration is a stock synthetic voice. The video has not been published yet.
 
 ## Public shop page (27 Nov 2026, UTC)
 
