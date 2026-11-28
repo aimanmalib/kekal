@@ -155,6 +155,9 @@ describe("home page below the first screen", () => {
       // Three steps, each a screen in the page's own language, AVIF first with WebP as the fallback, sized to avoid layout shift.
       const how = html.slice(order[1]!, order[2]);
       expect(how.match(/<source type="image\/avif" srcSet="[^"]+\.avif"/g), lang).toHaveLength(3);
+      // Loaded with the page, not on scroll: a full-page screenshot (a reviewer's tool, a link preview) shows all three.
+      expect(how.match(/<img [^>]*loading="eager"/g), lang).toHaveLength(3);
+      expect(how, lang).not.toContain('loading="lazy"');
       for (const step of ["shop", "card", "paid"]) {
         expect(how, lang).toMatch(new RegExp(`<img src="[^"]*${step}-${lang}[^"]*\\.webp"[^>]*width="390" height="780"`));
         expect(how, lang).toContain(`alt="${dict[`home.how.${step}.alt` as keyof typeof dict].replaceAll("'", "&#x27;")}"`);

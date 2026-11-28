@@ -50,7 +50,7 @@ export function HowItWorks({ t, lang }: { t: Translate; lang: Lang }) {
                   width={SHOT_WIDTH}
                   height={SHOT_HEIGHT}
                   alt={t(`home.how.${step}.alt` as MessageKey)}
-                  loading="lazy"
+                  loading="eager"
                   decoding="async"
                 />
               </picture>
