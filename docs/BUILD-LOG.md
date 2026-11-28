@@ -75,3 +75,4 @@ One line per step, newest last. Dates are UTC.
 - 2026-11-28: Demo video cut 4: a phone scene of the public shop page with its own narration line, the home page re-filmed from the live site, plain label on path C, louder mix (ADR 0035).
 - 2026-11-28: Submission text final: the description names the feature built during the hackathon (the public shop page) instead of pointing to the README; the headline figures (72 program tests, 20 instructions, 68.7 s demo to paid, 8 simultaneous readers, warranty page script size) are taken from MEASURED.md.
 - 2026-11-28: Final submission pack: README status names the 100-second demo video, the video cut test count is 22, the build-during table lists the fourth video cut; measurements page records the video length and loudness.
+- 2026-11-28: Demo page first screen shows the printed warranty card beside the heading (EN + BM caption: its code opens the demo page on a phone); web only, program unchanged.

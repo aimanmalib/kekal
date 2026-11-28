@@ -157,6 +157,7 @@
   "demo.lede": "No wallet and no sign-up. This page makes a card key in your browser, a demo shop issues you a real warranty on the test network, and you watch the reserve reach you when the shop goes quiet. Every step is a public transaction you can open.",
   "demo.noWait": "Short of time?",
   "demo.examplesLink": "See finished examples of every path",
+  "demo.card.caption": "The card a shop prints for each sale. Its code opens this page, so you can follow along on your phone.",
   "demo.reading": "Reading the warranty…",
   "demo.checking": "Checking the chain again. The network is busy, so this can take a few seconds; the page updates by itself.",
   "demo.silent.title": "The shop goes silent on your claim",

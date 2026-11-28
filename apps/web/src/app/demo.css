@@ -95,7 +95,48 @@
   gap: var(--space-4);
 }
 
+/* First screen: the printed card beside the heading, so the page opens on the object the demo is about. */
+.demo-head-card {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.demo-head-text {
+  min-width: 0;
+}
+
+.demo-card {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  min-width: 0;
+}
+
+/* home.css places the card absolutely over the phone on wide screens; here it stands on its own. */
+.demo-card .printed-card {
+  position: static;
+  width: min(100%, 13rem);
+  transform: rotate(-2deg);
+}
+
+.demo-card figcaption {
+  max-width: 24ch;
+  margin: 0;
+  text-align: center;
+}
+
 @media (min-width: 56rem) {
+  .demo-head-card {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 18rem);
+    align-items: center;
+    column-gap: var(--space-5);
+  }
+
+  .demo-card .printed-card {
+    width: 100%;
+  }
+
   .scene {
     grid-template-columns: minmax(0, 1fr) minmax(0, 24rem);
     align-items: start;

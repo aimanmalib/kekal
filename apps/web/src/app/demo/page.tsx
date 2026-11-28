@@ -4,12 +4,14 @@ import { SiteFrame } from "@/components/SiteFrame";
 import { siteExamples } from "@/lib/demo/site-examples";
 import { DemoClosed } from "@/components/demo/DemoClosed";
 import { DemoScene, type DemoSettings } from "@/components/demo/DemoScene";
-import { runtimeCluster, webConfig } from "@/lib/config";
+import { PrintedCard } from "@/components/home/PrintedCard";
+import { runtimeCluster, sampleReserve, webConfig } from "@/lib/config";
 import { SCENES } from "@/lib/demo/scene";
 import { translator, type MessageKey } from "@/lib/i18n";
 import { localeMetadata } from "@/lib/page-metadata";
 import { relayerAddress } from "@/lib/relay/runtime";
 import { requestLang } from "@/lib/request-lang";
+import { sampleCard } from "@/lib/shop/sample-card";
 
 export const dynamic = "force-dynamic";
 
@@ -49,15 +51,23 @@ export default async function DemoPage() {
     );
   }
   const relayer = relayerAddress();
+  // The same printed card as the home page; its code opens this page, so a visitor can carry the demo to a phone.
+  const printed = await sampleCard(lang, sampleReserve(), true);
   return (
     <SiteFrame lang={lang} t={t}>
       <main className="demo">
-        <section className="demo-head">
-          <h1>{t("demo.title")}</h1>
-          <p className="lede">{t("demo.lede")}</p>
-          <p className="note">
-            {t("demo.noWait")} <Link href="/contoh">{t("demo.examplesLink")}</Link>
-          </p>
+        <section className="demo-head demo-head-card">
+          <div className="demo-head-text">
+            <h1>{t("demo.title")}</h1>
+            <p className="lede">{t("demo.lede")}</p>
+            <p className="note">
+              {t("demo.noWait")} <Link href="/contoh">{t("demo.examplesLink")}</Link>
+            </p>
+          </div>
+          <figure className="demo-card">
+            <PrintedCard card={printed} label={t("home.print.label")} />
+            <figcaption className="note">{t("demo.card.caption")}</figcaption>
+          </figure>
         </section>
         {SCENES.map((kind) => (
           <DemoScene key={kind} kind={kind} lang={lang} relayer={relayer} settings={settings} />
